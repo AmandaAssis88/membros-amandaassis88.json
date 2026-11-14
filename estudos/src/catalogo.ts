@@ -476,7 +476,8 @@ export const TRILHAS: Trilha[] = [
   },
   {
     id: "produto",
-    nome: "Como um app funciona",
+    nome: "Como um software funciona",
+    nome: "Como um software funciona",
     pasta: "profissoes/produto",
     grupo: "profissoes",
     bebida: "Pão francês",
