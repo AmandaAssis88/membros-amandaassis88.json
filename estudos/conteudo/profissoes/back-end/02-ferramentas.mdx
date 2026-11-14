@@ -1,0 +1,74 @@
+Back-end é a área com **mais opções de linguagem**. A boa notícia: os conceitos (rotas, regras, banco) são os mesmos em todas.
+
+## Linguagens e frameworks
+
+<Linguagens ids={["java", "python", "javascript", "typescript", "csharp", "go", "php", "kotlin"]} />
+
+| Linguagem | Frameworks famosos | Onde aparece muito |
+| --- | --- | --- |
+| **Java** | Spring Boot | bancos, grandes empresas, sistemas críticos |
+| **Python** | Django, FastAPI, Flask | startups, dados e IA, automação |
+| **JavaScript / TypeScript** | Node.js com Express, NestJS | startups, quem já faz front-end |
+| **C#** | ASP.NET Core | empresas que usam Microsoft |
+| **Go** | Gin, Fiber (ou só a biblioteca padrão) | sistemas de alta performance, nuvem |
+| **PHP** | Laravel | sites e e-commerces (boa parte da web roda em PHP!) |
+| **Kotlin** | Spring Boot, Ktor | empresas que já usam Java |
+
+O mesmo "olá" em dois frameworks:
+
+```python-exemplo
+# Python com FastAPI
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/api/salas")
+def listar_salas():
+    return [{"id": 1, "nome": "back-end"}, {"id": 2, "nome": "front-end"}]
+```
+
+```java
+// Java com Spring Boot (o trecho do controller)
+@RestController
+public class SalaController {
+    @GetMapping("/api/salas")
+    public List<Sala> listarSalas() {
+        return salaService.listarTodas();
+    }
+}
+```
+
+Os dois fazem a mesma coisa: quando chega um `GET /api/salas`, devolvem a lista de salas em JSON.
+
+<Nota tipo="dica" titulo="Você já começou!">
+Java e Python já têm trilha aqui no site. As classes, os métodos e as listas que você aprendeu lá são exatamente o que aparece num back-end.
+</Nota>
+
+## Bancos de dados
+
+| Tipo | Como guarda | Exemplos |
+| --- | --- | --- |
+| **Relacional (SQL)** | tabelas com linhas e colunas, ligadas entre si | PostgreSQL, MySQL, SQL Server |
+| **Documentos (NoSQL)** | documentos parecidos com JSON | MongoDB, Firestore |
+| **Chave-valor** | um dicionário gigante e muito rápido | Redis (muito usado como cache) |
+
+<Linguagens ids={["sql"]} />
+
+**SQL** é a linguagem para conversar com bancos relacionais, e vale a pena aprender cedo: aparece em praticamente toda vaga de back-end.
+
+## Ferramentas do dia a dia
+
+| Ferramenta | Para quê |
+| --- | --- |
+| Postman / Insomnia | testar as rotas da API sem precisar de tela |
+| DBeaver / pgAdmin | ver e consultar o banco de dados |
+| Docker | subir o banco e a API no seu computador com um comando |
+| Git + GitHub | versionar e colaborar |
+| Swagger / OpenAPI | documentar a API (o "cardápio" para o front) |
+| Logs e monitoramento | entender o que aconteceu quando algo quebra |
+
+## Resumindo
+
+- Muitas linguagens, mesmos conceitos: Java/Spring, Python/FastAPI, Node, C#, Go, PHP.
+- Bancos relacionais (SQL) e NoSQL; SQL é obrigatório na mochila.
+- Postman, Docker e o banco de dados aberto no DBeaver fazem parte do dia a dia.

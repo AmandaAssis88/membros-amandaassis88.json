@@ -1,0 +1,72 @@
+QA é uma porta de entrada muito boa para a tecnologia: dá para começar testando manualmente e ir crescendo para a automação. Este é o nosso caminho sugerido, sem pressa.
+
+<Roadmap etapas={[
+  {
+    titulo: "Base de tudo",
+    tempo: "1 a 2 meses",
+    itens: [
+      "Fundamentos e lógica aqui do site",
+      "Como a web funciona (a trilha do pão francês)",
+      "Git e GitHub: abrir issues, comentar em PRs",
+    ],
+  },
+  {
+    titulo: "Pensar como QA",
+    tempo: "1 mês",
+    itens: [
+      "Escrever casos de teste e relatos de bug",
+      "Técnicas: valor limite, partição, exploratório",
+      "Usar o DevTools (F12): console e aba Network",
+    ],
+  },
+  {
+    titulo: "Testar APIs",
+    tempo: "1 mês",
+    itens: [
+      "HTTP: métodos, status, JSON",
+      "Postman ou Insomnia para montar requisições",
+      "Testar uma API pública (ex.: a do GitHub)",
+    ],
+  },
+  {
+    titulo: "Programar para testar",
+    tempo: "2 a 3 meses",
+    itens: [
+      "Uma linguagem até funções e classes",
+      "Testes de unidade (pytest, Jest ou JUnit)",
+      "Testes de tela com Playwright ou Cypress",
+    ],
+    linguagens: ["python", "javascript", "java"],
+  },
+  {
+    titulo: "Testes no dia a dia do time",
+    tempo: "contínuo",
+    itens: [
+      "Rodar testes no CI (GitHub Actions)",
+      "Noções de testes de performance e acessibilidade",
+      "Ser QA no projeto do chat da Unidunedev 🧪",
+    ],
+  },
+]} />
+
+<Nota tipo="dica" titulo="Pratique aqui mesmo">
+Uma forma ótima de treinar: escolha um desafio do repositório `estudos` e crie novos casos de teste para ele (`entradaN.txt` e `saidaN.txt`), pensando nos limites. Se achar um caso que quebra a solução de alguém, você acabou de fazer trabalho de QA de verdade!
+</Nota>
+
+## O que costuma aparecer em vagas
+
+- Escrita de casos de teste e relatos de bug.
+- Testes de API (Postman).
+- Uma ferramenta de automação (Cypress, Playwright ou Selenium).
+- Git e noções de CI.
+- Metodologias ágeis (Scrum, Kanban).
+
+<Nota tipo="ia" titulo="QA e IA">
+A IA ajuda a gerar casos de teste e scripts de automação, mas quem decide **o que importa testar** é você. Use a IA para ganhar tempo e sempre pergunte: "que caso estranho ela esqueceu?". Em geral, esqueceu vários.
+</Nota>
+
+## Resumindo
+
+- Comece pela base, aprenda a pensar como QA e depois automatize.
+- API primeiro, depois programação e testes de tela.
+- O projeto do chat vai precisar de QA desde o primeiro dia.

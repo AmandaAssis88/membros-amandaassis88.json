@@ -1,0 +1,75 @@
+Front-end é tudo o que roda **no navegador**: as telas, os botões, os formulários, as animações. É a parte do produto que as pessoas veem e tocam. Por isso costuma ser a primeira paixão de muita gente!
+
+## Onde fica no mapa
+
+<Camadas destaque="front-end" />
+
+O front-end fica entre o **usuário** e a **internet**. Ele mostra as informações na tela, reage aos cliques e, quando precisa de dados ou quer salvar algo, **faz requisições para a API do back-end**. Depois recebe a resposta (em JSON) e atualiza a tela.
+
+## O cupcake: as três camadas do front
+
+<Nota tipo="analogia" titulo="Pensa num cupcake">
+- **HTML** é a massa e a forminha: a **estrutura**. Título, parágrafo, botão, imagem.
+- **CSS** é a cobertura e os confeitos: a **aparência**. Cores, tamanhos, posições, animações.
+- **JavaScript** é o recheio que surpreende: o **comportamento**. O que acontece quando você clica, digita ou rola.
+</Nota>
+
+```html
+<button id="curtir">❤️ Curtir</button>
+<span id="total">0</span>
+```
+
+```css
+#curtir {
+  background: #ff8fb1;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+}
+```
+
+```javascript
+let curtidas = 0;
+document.querySelector("#curtir").addEventListener("click", () => {
+  curtidas++;
+  document.querySelector("#total").textContent = curtidas;
+});
+```
+
+O HTML cria o botão, o CSS deixa ele bonito e o JavaScript faz o número subir a cada clique.
+
+## O que faz no dia a dia
+
+- **Transforma o design em código**, pixel a pixel (ou quase 😅), a partir do Figma.
+- **Cria componentes** reutilizáveis: o card do mural, o botão, o campo de mensagem.
+- **Consome a API**: busca dados, envia formulários, trata erros ("sem internet", "não autorizado").
+- **Cuida da responsividade**: a mesma tela funcionando no celular, no tablet e no computador.
+- **Cuida da acessibilidade**: teclado, leitor de tela, contraste.
+- **Cuida da performance**: o site precisa abrir rápido, mesmo na internet do 4G.
+
+## Exemplo real: este site!
+
+O site de estudos que você está lendo é um projeto de front-end:
+
+| O que você vê | O que tem por trás |
+| --- | --- |
+| As xícaras e sobremesas animadas | SVG + animações em CSS |
+| Trocar de aula sem recarregar a página | uma SPA em React com rotas |
+| O ✓ das aulas concluídas | estado salvo no navegador (localStorage) |
+| O botão Copiar | JavaScript usando a área de transferência |
+
+Aperte F12, vá em **Elements** e passeie pelo HTML desta página. Tudo o que o front-end faz está ali, aberto.
+
+<Quiz
+  pergunta="O botão está no lugar certo, mas com a cor errada. Em qual das três camadas está o problema?"
+  opcoes={["HTML", "CSS", "JavaScript"]}
+  correta={1}
+  explicacao="Cor é aparência: é trabalho do CSS."
+/>
+
+## Resumindo
+
+- Front-end é tudo o que roda no navegador.
+- HTML estrutura, CSS deixa bonito, JavaScript dá comportamento.
+- Ele conversa com o back-end fazendo requisições para a API.
+- Responsividade, acessibilidade e performance também são parte do trabalho.

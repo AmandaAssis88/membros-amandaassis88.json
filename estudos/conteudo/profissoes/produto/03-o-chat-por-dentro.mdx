@@ -1,0 +1,122 @@
+Agora vamos usar tudo o que você viu para desmontar o **nosso próximo projeto**: o chat da Unidunedev. Quando a gente começar a construir, cada pessoa vai saber onde a sua parte se encaixa.
+
+<Nota tipo="dica" titulo="É um esboço">
+O chat ainda vai ser planejado com todo mundo. As escolhas aqui são um exemplo para você enxergar as peças, não uma decisão final.
+</Nota>
+
+## As telas (UI/UX, front-end e mobile)
+
+O que o usuário vê:
+
+- **Entrar:** login com o GitHub (todo mundo aqui já tem conta!).
+- **Salas:** uma lista de grupos por área (back-end, front-end, mobile...).
+- **Conversa:** as mensagens, quem mandou, a hora, e o campo para escrever.
+- **Perfil:** o mesmo card do mural, com avatar e frase.
+
+UI/UX desenha essas telas primeiro. Depois o **front-end** constrói a versão web, e o **mobile**, o app. As duas versões conversam com **a mesma API**.
+
+## A API (back-end)
+
+O back-end oferece o "cardápio" de pedidos que o front e o app podem fazer:
+
+| Pedido | O que faz |
+| --- | --- |
+| `GET /api/salas` | lista as salas |
+| `GET /api/salas/backend/mensagens` | busca as últimas mensagens da sala |
+| `POST /api/salas/backend/mensagens` | manda uma mensagem nova |
+| `DELETE /api/mensagens/42` | apaga uma mensagem (só se for sua!) |
+
+E aplica as **regras de negócio**: precisa estar logado para mandar mensagem, mensagem não pode ser vazia, só o autor (ou um líder) pode apagar.
+
+### Tempo real: o WebSocket
+
+Num chat, a mensagem do colega precisa aparecer **na hora**, sem você recarregar a página. O HTTP comum é "pergunta e resposta": o servidor só fala quando é perguntado. Para o tempo real, usamos o **WebSocket**: uma conexão que **fica aberta**, e o servidor pode avisar "chegou mensagem nova!" a qualquer momento.
+
+<Passos itens={[
+  { icone: "✍️", titulo: "Ana envia", texto: "POST da mensagem" },
+  { icone: "⚙️", titulo: "Back-end", texto: "valida e salva no banco" },
+  { icone: "📡", titulo: "WebSocket", texto: "avisa quem está na sala" },
+  { icone: "💬", titulo: "Bruno vê", texto: "a mensagem aparece na hora" },
+]} />
+
+## Os dados (banco de dados)
+
+Um banco relacional organiza tudo em **tabelas**, como planilhas que se ligam:
+
+```sql
+CREATE TABLE usuarios (
+  id SERIAL PRIMARY KEY,
+  github VARCHAR(40) NOT NULL,
+  nome VARCHAR(80)
+);
+
+CREATE TABLE salas (
+  id SERIAL PRIMARY KEY,
+  nome VARCHAR(40) NOT NULL
+);
+
+CREATE TABLE mensagens (
+  id SERIAL PRIMARY KEY,
+  sala_id INT REFERENCES salas(id),
+  autor_id INT REFERENCES usuarios(id),
+  texto TEXT NOT NULL,
+  enviada_em TIMESTAMP DEFAULT NOW()
+);
+```
+
+Cada mensagem "aponta" para a sala e para o autor dela. Buscar as mensagens de uma sala vira uma consulta:
+
+```sql
+SELECT texto, enviada_em FROM mensagens WHERE sala_id = 3 ORDER BY enviada_em DESC LIMIT 50;
+```
+
+## Testes (QA) e publicação (DevOps)
+
+- **QA** escreve os casos de teste: mandar mensagem vazia, mandar 5 mil caracteres, perder a internet no meio, duas pessoas apagando a mesma mensagem...
+- **DevOps** monta o caminho automático: a cada PR, os testes rodam; quando entra na `main`, a nova versão vai para o ar sozinha. E monitora: se o servidor cair às 3 da manhã, alguém fica sabendo.
+
+## Você já usa isso!
+
+Os sites da Unidunedev já têm várias dessas peças funcionando:
+
+| Peça | No onboarding e no estudos |
+| --- | --- |
+| Front-end | React + TypeScript, rodando no seu navegador |
+| Back-end + banco | Supabase (guarda as inscrições do formulário) |
+| QA automatizado | GitHub Actions validando o JSON do mural e corrigindo os desafios |
+| DevOps | Cloudflare publicando os sites a cada push na `main` |
+| UI/UX | os estilos de chat, as bebidas e as sobremesas que você está vendo 😄 |
+
+Quando você abriu o PR do seu card no mural, passou por QA (o check verde) e por DevOps (o deploy automático) sem nem perceber!
+
+<Tarefa titulo="Desenhe uma funcionalidade">
+
+Escolha uma funcionalidade para o chat (por exemplo: "marcar uma mensagem como resposta certa"). Escreva, em tópicos:
+
+1. Como a tela fica (UI/UX).
+2. Qual rota da API ela usa e com qual método (back-end).
+3. O que muda no banco.
+4. Três testes que o QA faria.
+
+<Resposta>
+
+Um exemplo para "marcar como resposta certa":
+
+1. **Tela:** um botão ✅ aparece na mensagem para quem fez a pergunta; a resposta marcada fica com borda verde.
+2. **API:** `POST /api/mensagens/42/resposta-certa`. Regra: só o autor da pergunta pode marcar.
+3. **Banco:** uma coluna `resposta_certa_id` na mensagem da pergunta.
+4. **Testes:** outra pessoa tentar marcar (deve recusar); marcar duas respostas (deve trocar a anterior); a mensagem marcada ser apagada (o que acontece com a pergunta?).
+
+Leve a sua ideia para o grupo: é assim que as funcionalidades nascem!
+
+</Resposta>
+
+</Tarefa>
+
+## Resumindo
+
+- O chat tem telas (web e app), uma API, tempo real com WebSocket e um banco com usuários, salas e mensagens.
+- Cada profissão cuida de uma camada, e todas se conversam pelo contrato da API.
+- Os sites da Unidunedev já usam essas peças: você já está dentro de um produto de verdade.
+
+Agora escolha um prato da padaria e aprofunde na área que mais te chamou atenção! 🥐

@@ -1,0 +1,80 @@
+QA usa ferramentas para organizar os testes, para testar telas, para testar APIs e para automatizar tudo. Não precisa saber todas: escolha uma de cada tipo e aprofunde.
+
+## Linguagens
+
+Para automatizar testes, você precisa programar. As linguagens mais comuns em QA:
+
+<Linguagens ids={["python", "javascript", "java", "typescript"]} />
+
+A regra prática: **use a mesma linguagem do time**. Se o sistema é feito em Java, os testes automatizados costumam ser em Java também.
+
+## Testes de tela (end-to-end)
+
+Programas que abrem o navegador sozinhos, clicam, digitam e conferem o resultado, como se fossem um usuário robô:
+
+| Ferramenta | Linguagem | Destaque |
+| --- | --- | --- |
+| **Playwright** | JavaScript/TypeScript, Python, Java, C# | moderno, rápido, testa Chrome, Firefox e Safari |
+| **Cypress** | JavaScript/TypeScript | muito amigável para começar |
+| **Selenium** | várias | o veterano, muito usado em empresas grandes |
+| **Appium** | várias | testes de apps no celular |
+
+Um teste com Playwright em Python:
+
+```python-exemplo
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    navegador = p.chromium.launch()
+    pagina = navegador.new_page()
+    pagina.goto("https://onboarding.unidunedev.workers.dev/mural")
+
+    # o título da página precisa falar do mural
+    assert "Mural" in pagina.title()
+    navegador.close()
+```
+
+## Testes de API
+
+Para testar o back-end sem passar pela tela:
+
+- **Postman** e **Insomnia**: programas para montar requisições (`GET`, `POST`...) e ver as respostas. Ótimos para começar, sem código.
+- Bibliotecas como `requests` (Python) ou `supertest` (JavaScript) para automatizar.
+
+## Testes de unidade
+
+Testam um pedaço pequeno do código (uma função) isolado. Normalmente quem escreve é a própria pessoa dev, mas QA precisa entender:
+
+| Linguagem | Ferramenta |
+| --- | --- |
+| Python | `pytest` |
+| JavaScript/TypeScript | `Jest`, `Vitest` |
+| Java | `JUnit` |
+
+```python-exemplo
+def eh_par(n):
+    return n % 2 == 0
+
+def test_eh_par():
+    assert eh_par(4)
+    assert not eh_par(7)
+    assert eh_par(0)       # o zero é par!
+    assert eh_par(-2)      # negativos também
+```
+
+## Organização e relatos
+
+- **Jira**, **Azure DevOps**, **GitHub Issues**: onde os bugs e as tarefas são registrados.
+- **Planilhas ou ferramentas de gestão de testes** (TestRail, Xray): onde os casos de teste ficam organizados.
+- **DevTools do navegador** (F12): ver erros no console e as requisições na aba *Network*. Essencial!
+
+<Nota tipo="dica" titulo="Para começar hoje">
+Abra qualquer site, aperte F12 e vá na aba **Network**. Recarregue a página e veja cada requisição: o método, a rota, o status. É o mapa da aula "Do clique à resposta" acontecendo ao vivo.
+</Nota>
+
+## Resumindo
+
+- Linguagens: Python, JavaScript/TypeScript ou Java (a mesma do time).
+- Tela: Playwright, Cypress, Selenium. API: Postman, Insomnia.
+- Unidade: pytest, Jest, JUnit.
+- Organização: Jira ou GitHub Issues. E o DevTools sempre aberto.

@@ -1,0 +1,71 @@
+## Hierarquia visual
+
+O olho da pessoa precisa saber **para onde olhar primeiro**. Você controla isso com tamanho, peso da fonte, cor, contraste e espaço.
+
+- O mais importante fica **maior**, mais **forte** ou com mais **contraste**.
+- Uma tela tem **uma** ação principal (o botão cheio e colorido). As outras ficam mais discretas.
+- **Espaço em branco** não é desperdício: ele agrupa e separa as coisas.
+
+## Cores e contraste
+
+- Use poucas cores com papéis claros: uma principal (ações), neutras (fundo e texto) e cores de estado (verde sucesso, vermelho erro, amarelo atenção).
+- Texto precisa de **contraste** suficiente com o fundo. A referência (WCAG) pede pelo menos **4,5:1** para texto normal.
+- Nunca use **só a cor** para passar informação: quem é daltônico pode não ver a diferença. Junte um ícone ou um texto (✅ "Enviado", ❌ "Falhou").
+
+## Tipografia
+
+- No máximo duas famílias de fonte: uma para títulos e outra para texto.
+- Texto corrido entre 16 e 18 px na web, com linhas não muito longas (até ~75 caracteres).
+- Escala de tamanhos consistente (14, 16, 20, 24, 32...), em vez de um tamanho diferente para cada coisa.
+
+## As heurísticas de Nielsen
+
+São 10 princípios clássicos de usabilidade. Alguns que você vai usar sempre:
+
+| Princípio | Na prática |
+| --- | --- |
+| Mostrar o status do sistema | "Enviando...", barra de progresso, o check do PR ficando verde |
+| Falar a língua do usuário | "Sua mensagem não foi enviada", e não "Erro 500" |
+| Dar controle e liberdade | botão de desfazer, de voltar, de cancelar |
+| Prevenir erros | desabilitar "Enviar" com o campo vazio |
+| Reconhecer em vez de lembrar | mostrar opções em vez de pedir para digitar de memória |
+
+## Estados de uma tela
+
+Toda tela tem mais estados do que o "tudo certo". O design precisa prever todos:
+
+<Passos itens={[
+  { icone: "⏳", titulo: "Carregando", texto: "esqueleto ou animação" },
+  { icone: "📭", titulo: "Vazio", texto: "nenhuma mensagem ainda" },
+  { icone: "✅", titulo: "Normal", texto: "o caminho feliz" },
+  { icone: "⚠️", titulo: "Erro", texto: "e como sair dele" },
+]} />
+
+Um estado vazio bem feito ("Nenhuma mensagem ainda. Que tal dizer oi? 👋") transforma um momento chato num convite.
+
+## Acessibilidade
+
+Produto bom é produto que **todo mundo** consegue usar: quem enxerga pouco, quem usa leitor de tela, quem navega só com o teclado, quem tem pouca coordenação motora.
+
+- Áreas de toque de pelo menos **44 × 44 px** no celular.
+- Tudo acessível pelo teclado (Tab, Enter, Esc).
+- Imagens com texto alternativo.
+- Respeitar "reduzir movimento": o site de estudos para as animações das xícaras para quem pede isso!
+
+## Responsividade
+
+Desenhe pensando no **celular primeiro** (*mobile first*): é onde a maioria das pessoas está, e a tela pequena obriga a priorizar. Depois adapte para telas maiores.
+
+<Quiz
+  pergunta="O formulário mostra os campos com erro só pintando a borda de vermelho. Qual o problema?"
+  opcoes={["Nenhum, vermelho é universal", "Quem é daltônico pode não perceber; falta texto ou ícone", "A cor deveria ser amarela"]}
+  correta={1}
+  explicacao="Nunca dependa só da cor. Junte uma mensagem ('Informe seu e-mail') e um ícone."
+/>
+
+## Resumindo
+
+- Hierarquia: o mais importante salta aos olhos; uma ação principal por tela.
+- Contraste e acessibilidade não são opcionais.
+- Desenhe todos os estados: carregando, vazio, normal, erro.
+- Celular primeiro.

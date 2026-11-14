@@ -1,0 +1,85 @@
+Em mobile existem dois grandes caminhos: **nativo** (um app para cada sistema) e **multiplataforma** (um código para os dois).
+
+## Nativo
+
+Cada sistema tem a sua linguagem e a sua ferramenta oficial:
+
+| | Android | iOS (iPhone) |
+| --- | --- | --- |
+| Linguagem | Kotlin (antes, Java) | Swift (antes, Objective-C) |
+| Ferramenta | Android Studio | Xcode (só no Mac) |
+| Telas | Jetpack Compose | SwiftUI |
+
+<Linguagens ids={["kotlin", "swift", "java"]} />
+
+O mesmo botão nos dois mundos:
+
+```kotlin
+@Composable
+fun BotaoEnviar(aoClicar: () -> Unit) {
+    Button(onClick = aoClicar) {
+        Text("Enviar")
+    }
+}
+```
+
+```swift
+struct BotaoEnviar: View {
+    var aoClicar: () -> Void
+    var body: some View {
+        Button("Enviar", action: aoClicar)
+    }
+}
+```
+
+**Vantagens:** acesso total aos recursos do aparelho e a melhor performance. **Desvantagem:** dois apps, duas equipes, o dobro de trabalho.
+
+## Multiplataforma
+
+Um código só, que vira app para Android **e** iOS:
+
+| Framework | Linguagem | Quem criou | Destaque |
+| --- | --- | --- | --- |
+| **Flutter** | Dart | Google | desenha cada pixel; performance ótima e visual idêntico nos dois sistemas |
+| **React Native** | JavaScript/TypeScript | Meta | aproveita quem já sabe React do front-end |
+| **Kotlin Multiplatform** | Kotlin | JetBrains | compartilha a lógica, mantém telas nativas |
+
+<Linguagens ids={["dart", "javascript", "typescript"]} />
+
+O botão em Flutter:
+
+```dart
+ElevatedButton(
+  onPressed: () => enviarMensagem(),
+  child: const Text('Enviar'),
+)
+```
+
+<Nota tipo="curiosidade" titulo="Flutter na Unidunedev">
+Quem criou a Unidunedev trabalha com Flutter há anos, em apps de entrega e de beleza publicados nas lojas. Então, se o mobile te chamar atenção, já tem gente experiente no grupo para tirar dúvidas! 😉
+</Nota>
+
+## Ferramentas do dia a dia
+
+| Ferramenta | Para quê |
+| --- | --- |
+| Android Studio / Xcode / VS Code | escrever e rodar o app |
+| Emulador e simulador | um celular "de mentira" no computador |
+| Celular de verdade (modo desenvolvedor) | testar como o usuário vai sentir |
+| Firebase | notificações, analytics, relatórios de erro |
+| Figma | pegar o design das telas |
+| Play Console / App Store Connect | publicar nas lojas |
+
+## Qual escolher?
+
+- Quer **um código para os dois sistemas** e muitas vagas? Flutter ou React Native.
+- Já gosta de React do front-end? React Native aproveita isso.
+- Quer se especializar num sistema? Kotlin (Android) ou Swift (iOS).
+
+O mais importante: os **conceitos** (telas, estado, navegação, API, camadas) são os mesmos em todos. Aprendeu num, migra para outro bem mais rápido.
+
+## Resumindo
+
+- Nativo: Kotlin + Android Studio, Swift + Xcode.
+- Multiplataforma: Flutter (Dart), React Native (JS/TS).
+- Emulador, celular de verdade, Firebase e as lojas fazem parte do dia a dia.

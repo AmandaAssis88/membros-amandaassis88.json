@@ -4,7 +4,19 @@ import type { ComponentType } from "react";
 // Para adicionar uma aula: crie o .mdx em estudos/conteudo/<pasta>/ e coloque uma linha aqui.
 // O teste catalogo.test.ts confere se cada aula listada tem o seu arquivo (e vice-versa).
 
-export type TrilhaId = "fundamentos" | "logica" | "c" | "python" | "java";
+export type TrilhaId =
+  | "fundamentos"
+  | "logica"
+  | "c"
+  | "python"
+  | "java"
+  | "produto"
+  | "front-end"
+  | "back-end"
+  | "mobile"
+  | "devops"
+  | "ui-ux"
+  | "qa";
 
 export type Aula = {
   /** Parte final da URL: /c/ponteiros */
@@ -21,12 +33,21 @@ export type Trilha = {
   nome: string;
   /** Pasta no repositório estudos (e em estudos/conteudo/) */
   pasta: string;
-  grupo: "fundamentos" | "disciplinas" | "linguagens";
+  grupo: "fundamentos" | "disciplinas" | "linguagens" | "profissoes";
+  /** O item do cardápio: bebida (linguagens e bases) ou sobremesa/pão (profissões) */
   bebida: string;
   emoji: string;
   frase: string;
   sobre: string;
   aprender: string[];
+  /** Profissões: quão "pesada" é a trilha (1 leve, 2 média, 3 pesada) */
+  peso?: 1 | 2 | 3;
+  /** Profissões: ids das linguagens mais usadas na área (viram link quando a trilha existir) */
+  linguagens?: string[];
+  /** Profissões: o que essa área faz no projeto do chat da Unidunedev */
+  noChat?: string;
+  /** Cursos recomendados (aparecem no fim da última aula quando existirem) */
+  cursos?: { titulo: string; url: string; texto: string }[];
   /** Links para se aprofundar, mostrados no fim da última aula */
   documentacao?: { titulo: string; url: string; texto: string }[];
   /** Linguagem usada no botão "Testar" dos códigos */
@@ -62,7 +83,19 @@ export const GRUPOS: { id: Trilha["grupo"]; pasta: string; titulo: string; texto
     titulo: "Linguagens",
     texto: "Mão no código, uma linguagem por vez.",
   },
+  {
+    id: "profissoes",
+    pasta: "profissoes/",
+    titulo: "Profissões",
+    texto: "Cada área da tecnologia e onde ela fica no produto.",
+  },
 ];
+
+export const PESOS = {
+  1: { rotulo: "Leve", icone: "🪶" },
+  2: { rotulo: "Médio", icone: "🍽️" },
+  3: { rotulo: "Pesado", icone: "🏋️" },
+} as const;
 
 export const TRILHAS: Trilha[] = [
   {
@@ -438,6 +471,355 @@ export const TRILHAS: Trilha[] = [
         titulo: "Herança e coleções",
         resumo: "extends, @Override e ArrayList.",
         minutos: 15,
+      },
+    ],
+  },
+  {
+    id: "produto",
+    nome: "Como um app funciona",
+    pasta: "profissoes/produto",
+    grupo: "profissoes",
+    bebida: "Pão francês",
+    emoji: "🥖",
+    frase: "O pão de cada dia: comece por aqui antes de escolher uma área.",
+    sobre:
+      "Antes de escolher uma profissão, vale entender o produto inteiro: o que acontece entre o seu clique e a resposta na tela, quem cuida de cada parte e como todas as áreas trabalham juntas. É o mapa que você vai usar no projeto do chat.",
+    aprender: [
+      "Cliente, servidor, requisição e resposta",
+      "HTTP, rotas e JSON sem mistério",
+      "Quem cuida de cada camada do produto",
+      "O chat da Unidunedev desmontado peça por peça",
+    ],
+    peso: 1,
+    linguagens: ["javascript", "python", "java", "sql"],
+    noChat: "Esta trilha é o mapa do chat inteiro: cada aula mostra uma parte dele.",
+    aulas: [
+      {
+        slug: "do-clique-a-resposta",
+        arquivo: "01-do-clique-a-resposta",
+        titulo: "Do clique à resposta",
+        resumo: "Cliente, servidor, HTTP e JSON: a viagem de uma requisição.",
+        minutos: 15,
+      },
+      {
+        slug: "quem-cuida-de-cada-parte",
+        arquivo: "02-quem-cuida-de-cada-parte",
+        titulo: "Quem cuida de cada parte",
+        resumo: "As profissões no mapa e como uma funcionalidade nasce.",
+        minutos: 12,
+      },
+      {
+        slug: "o-chat-por-dentro",
+        arquivo: "03-o-chat-por-dentro",
+        titulo: "O chat da Unidunedev por dentro",
+        resumo: "Nosso próximo projeto, desmontado camada por camada.",
+        minutos: 15,
+      },
+    ],
+  },
+  {
+    id: "qa",
+    nome: "QA e testes",
+    pasta: "profissoes/qa",
+    grupo: "profissoes",
+    bebida: "Pão de queijo",
+    emoji: "🧀",
+    frase: "Leve e viciante: experimenta tudo antes de ir para a mesa.",
+    sobre:
+      "QA (Quality Assurance, garantia de qualidade) é quem garante que o produto funciona antes de chegar no usuário: planeja testes, caça bugs, automatiza verificações e defende a experiência de quem vai usar.",
+    aprender: [
+      "Testes manuais e automatizados",
+      "A pirâmide de testes",
+      "Como escrever um bom relato de bug",
+      "Ferramentas como Playwright, Cypress e pytest",
+    ],
+    peso: 1,
+    linguagens: ["python", "javascript", "java"],
+    noChat:
+      "No chat, QA testa o fluxo inteiro: entrar, criar sala, mandar mensagem, e o que acontece se a internet cair no meio.",
+    aulas: [
+      {
+        slug: "o-que-faz",
+        arquivo: "01-o-que-faz",
+        titulo: "O que faz e onde fica",
+        resumo: "A função de quem trabalha com QA e o lugar dela no produto.",
+        minutos: 12,
+      },
+      {
+        slug: "ferramentas",
+        arquivo: "02-ferramentas",
+        titulo: "Linguagens e ferramentas",
+        resumo: "O que se usa no dia a dia (e por onde começar).",
+        minutos: 12,
+      },
+      {
+        slug: "conceitos",
+        arquivo: "03-conceitos",
+        titulo: "Conceitos e arquitetura",
+        resumo: "As ideias que aparecem em qualquer empresa.",
+        minutos: 15,
+      },
+      {
+        slug: "roadmap",
+        arquivo: "04-roadmap",
+        titulo: "Roadmap do nosso jeito",
+        resumo: "Como chegar lá aos poucos, etapa por etapa.",
+        minutos: 10,
+      },
+    ],
+  },
+  {
+    id: "ui-ux",
+    nome: "UI/UX Design",
+    pasta: "profissoes/ui-ux",
+    grupo: "profissoes",
+    bebida: "Macaron",
+    emoji: "🌈",
+    frase: "Delicado, colorido e pensado nos mínimos detalhes.",
+    sobre:
+      "UX (experiência do usuário) é pensar como a pessoa vai usar o produto: o caminho, as dificuldades, o que ela sente. UI (interface) é o visual: cores, tipografia, botões e telas. Quem trabalha com design desenha o produto antes de existir código.",
+    aprender: [
+      "A diferença entre UI e UX",
+      "Pesquisa, wireframe e protótipo",
+      "Cores, tipografia, hierarquia e acessibilidade",
+      "Figma e design systems",
+    ],
+    peso: 1,
+    linguagens: ["html-css"],
+    noChat:
+      "No chat, UI/UX desenha as telas, define as cores e decide como deve ser criar uma sala ou responder uma mensagem.",
+    aulas: [
+      {
+        slug: "o-que-faz",
+        arquivo: "01-o-que-faz",
+        titulo: "O que faz e onde fica",
+        resumo: "A função de quem trabalha com UI/UX e o lugar dela no produto.",
+        minutos: 12,
+      },
+      {
+        slug: "ferramentas",
+        arquivo: "02-ferramentas",
+        titulo: "Linguagens e ferramentas",
+        resumo: "O que se usa no dia a dia (e por onde começar).",
+        minutos: 12,
+      },
+      {
+        slug: "conceitos",
+        arquivo: "03-conceitos",
+        titulo: "Conceitos e arquitetura",
+        resumo: "As ideias que aparecem em qualquer empresa.",
+        minutos: 15,
+      },
+      {
+        slug: "roadmap",
+        arquivo: "04-roadmap",
+        titulo: "Roadmap do nosso jeito",
+        resumo: "Como chegar lá aos poucos, etapa por etapa.",
+        minutos: 10,
+      },
+    ],
+  },
+  {
+    id: "front-end",
+    nome: "Front-end",
+    pasta: "profissoes/front-end",
+    grupo: "profissoes",
+    bebida: "Cupcake",
+    emoji: "🧁",
+    frase: "A parte que todo mundo vê (e quer pegar primeiro).",
+    sobre:
+      "Front-end é quem constrói o que roda no navegador: as telas, os botões, as animações e a conversa com o back-end. Transforma o design em código e cuida para o site funcionar em qualquer tela.",
+    aprender: [
+      "HTML, CSS e JavaScript: quem faz o quê",
+      "Componentes, estado e rotas",
+      "Como o front conversa com a API",
+      "Frameworks como React, Angular e Vue",
+    ],
+    peso: 2,
+    linguagens: ["html-css", "javascript", "typescript"],
+    noChat:
+      "No chat, o front-end constrói a versão web: lista de salas, a conversa e o campo de mensagem que fala com a API.",
+    aulas: [
+      {
+        slug: "o-que-faz",
+        arquivo: "01-o-que-faz",
+        titulo: "O que faz e onde fica",
+        resumo: "A função de quem trabalha com front-end e o lugar dela no produto.",
+        minutos: 12,
+      },
+      {
+        slug: "ferramentas",
+        arquivo: "02-ferramentas",
+        titulo: "Linguagens e ferramentas",
+        resumo: "O que se usa no dia a dia (e por onde começar).",
+        minutos: 12,
+      },
+      {
+        slug: "conceitos",
+        arquivo: "03-conceitos",
+        titulo: "Conceitos e arquitetura",
+        resumo: "As ideias que aparecem em qualquer empresa.",
+        minutos: 15,
+      },
+      {
+        slug: "roadmap",
+        arquivo: "04-roadmap",
+        titulo: "Roadmap do nosso jeito",
+        resumo: "Como chegar lá aos poucos, etapa por etapa.",
+        minutos: 10,
+      },
+    ],
+  },
+  {
+    id: "mobile",
+    nome: "Mobile",
+    pasta: "profissoes/mobile",
+    grupo: "profissoes",
+    bebida: "Croissant",
+    emoji: "🥐",
+    frase: "Várias camadas de massa, cabe na palma da mão.",
+    sobre:
+      "Mobile é quem cria os apps que a gente instala no celular. Usa recursos que o site não tem (câmera, notificações, GPS), precisa funcionar com internet ruim e passa pela aprovação das lojas.",
+    aprender: [
+      "Nativo × multiplataforma",
+      "Flutter, Kotlin, Swift e React Native",
+      "Arquitetura, estado e navegação no app",
+      "Do código até a loja de aplicativos",
+    ],
+    peso: 2,
+    linguagens: ["dart", "kotlin", "swift", "javascript"],
+    noChat:
+      "No chat, o mobile faz o app para Android e iOS, com notificação quando chega mensagem nova.",
+    aulas: [
+      {
+        slug: "o-que-faz",
+        arquivo: "01-o-que-faz",
+        titulo: "O que faz e onde fica",
+        resumo: "A função de quem trabalha com mobile e o lugar dela no produto.",
+        minutos: 12,
+      },
+      {
+        slug: "ferramentas",
+        arquivo: "02-ferramentas",
+        titulo: "Linguagens e ferramentas",
+        resumo: "O que se usa no dia a dia (e por onde começar).",
+        minutos: 12,
+      },
+      {
+        slug: "conceitos",
+        arquivo: "03-conceitos",
+        titulo: "Conceitos e arquitetura",
+        resumo: "As ideias que aparecem em qualquer empresa.",
+        minutos: 15,
+      },
+      {
+        slug: "roadmap",
+        arquivo: "04-roadmap",
+        titulo: "Roadmap do nosso jeito",
+        resumo: "Como chegar lá aos poucos, etapa por etapa.",
+        minutos: 10,
+      },
+    ],
+  },
+  {
+    id: "back-end",
+    nome: "Back-end",
+    pasta: "profissoes/back-end",
+    grupo: "profissoes",
+    bebida: "Bolo de chocolate",
+    emoji: "🎂",
+    frase: "Três camadas, recheio denso: pesado, mas é ele que sustenta a festa.",
+    sobre:
+      "Back-end é o que roda no servidor: recebe as requisições, aplica as regras de negócio, conversa com o banco de dados e devolve as respostas. O usuário não vê, mas sem ele nada funciona.",
+    aprender: [
+      "APIs REST: rotas, métodos e status",
+      "Regras de negócio e arquitetura em camadas",
+      "Bancos de dados SQL e NoSQL",
+      "Autenticação e segurança",
+    ],
+    peso: 3,
+    linguagens: ["java", "python", "javascript", "csharp", "go", "sql"],
+    noChat:
+      "No chat, o back-end cria a API (login, salas, mensagens), guarda tudo no banco e entrega as mensagens em tempo real.",
+    aulas: [
+      {
+        slug: "o-que-faz",
+        arquivo: "01-o-que-faz",
+        titulo: "O que faz e onde fica",
+        resumo: "A função de quem trabalha com back-end e o lugar dela no produto.",
+        minutos: 12,
+      },
+      {
+        slug: "ferramentas",
+        arquivo: "02-ferramentas",
+        titulo: "Linguagens e ferramentas",
+        resumo: "O que se usa no dia a dia (e por onde começar).",
+        minutos: 12,
+      },
+      {
+        slug: "conceitos",
+        arquivo: "03-conceitos",
+        titulo: "Conceitos e arquitetura",
+        resumo: "As ideias que aparecem em qualquer empresa.",
+        minutos: 15,
+      },
+      {
+        slug: "roadmap",
+        arquivo: "04-roadmap",
+        titulo: "Roadmap do nosso jeito",
+        resumo: "Como chegar lá aos poucos, etapa por etapa.",
+        minutos: 10,
+      },
+    ],
+  },
+  {
+    id: "devops",
+    nome: "DevOps",
+    pasta: "profissoes/devops",
+    grupo: "profissoes",
+    bebida: "Pão de fermentação natural",
+    emoji: "🍞",
+    frase: "Exige paciência e cuidado todo dia. Pesado, mas vale cada fatia.",
+    sobre:
+      "DevOps cuida do caminho entre o código e o usuário: servidores, nuvem, deploy automático, monitoramento e tudo que faz o sistema ficar no ar. Junta desenvolvimento (Dev) e operação (Ops).",
+    aprender: [
+      "Linux, terminal e redes",
+      "CI/CD: testar e publicar sozinho",
+      "Containers, Docker e nuvem",
+      "Monitoramento e infraestrutura como código",
+    ],
+    peso: 3,
+    linguagens: ["bash", "python", "go"],
+    noChat:
+      "No chat, DevOps publica cada versão automaticamente, cuida do servidor e avisa se o sistema cair.",
+    aulas: [
+      {
+        slug: "o-que-faz",
+        arquivo: "01-o-que-faz",
+        titulo: "O que faz e onde fica",
+        resumo: "A função de quem trabalha com DevOps e o lugar dela no produto.",
+        minutos: 12,
+      },
+      {
+        slug: "ferramentas",
+        arquivo: "02-ferramentas",
+        titulo: "Linguagens e ferramentas",
+        resumo: "O que se usa no dia a dia (e por onde começar).",
+        minutos: 12,
+      },
+      {
+        slug: "conceitos",
+        arquivo: "03-conceitos",
+        titulo: "Conceitos e arquitetura",
+        resumo: "As ideias que aparecem em qualquer empresa.",
+        minutos: 15,
+      },
+      {
+        slug: "roadmap",
+        arquivo: "04-roadmap",
+        titulo: "Roadmap do nosso jeito",
+        resumo: "Como chegar lá aos poucos, etapa por etapa.",
+        minutos: 10,
       },
     ],
   },

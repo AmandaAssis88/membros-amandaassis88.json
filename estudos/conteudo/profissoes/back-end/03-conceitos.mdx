@@ -1,0 +1,117 @@
+## API REST
+
+**REST** é o jeito mais comum de desenhar uma API. A ideia: tudo é um **recurso** (salas, mensagens, usuários), com um endereço, e os métodos HTTP dizem o que fazer com ele.
+
+| Rota | Método | Faz |
+| --- | --- | --- |
+| `/api/salas` | `GET` | lista as salas |
+| `/api/salas` | `POST` | cria uma sala |
+| `/api/salas/3` | `GET` | busca a sala 3 |
+| `/api/salas/3` | `PATCH` | altera a sala 3 |
+| `/api/salas/3` | `DELETE` | apaga a sala 3 |
+| `/api/salas/3/mensagens` | `GET` | mensagens da sala 3 |
+
+Um pedido e a resposta completos:
+
+```http
+POST /api/salas/3/mensagens
+Authorization: Bearer eyJhbGciOi...
+Content-Type: application/json
+```
+
+```json
+{ "texto": "Alguém revisa meu PR?" }
+```
+
+Resposta `201 Created`:
+
+```json
+{
+  "id": 981,
+  "salaId": 3,
+  "autor": "clehdev",
+  "texto": "Alguém revisa meu PR?",
+  "enviadaEm": "2026-11-14T16:02:11Z"
+}
+```
+
+## Arquitetura em camadas
+
+Dentro do back-end, o código também é organizado em camadas, cada uma com uma responsabilidade:
+
+<Passos itens={[
+  { icone: "🚪", titulo: "Controller", texto: "recebe a rota e devolve a resposta" },
+  { icone: "🧠", titulo: "Service", texto: "as regras de negócio" },
+  { icone: "🗄️", titulo: "Repository", texto: "conversa com o banco" },
+]} />
+
+```java
+// Controller: só recebe e responde
+@PostMapping("/api/salas/{id}/mensagens")
+public Mensagem enviar(@PathVariable long id, @RequestBody NovaMensagem pedido) {
+    return mensagemService.enviar(id, pedido.texto(), usuarioLogado());
+}
+
+// Service: as regras
+public Mensagem enviar(long salaId, String texto, Usuario autor) {
+    if (texto.isBlank()) throw new PedidoInvalido("Mensagem vazia");
+    if (texto.length() > 2000) throw new PedidoInvalido("Mensagem grande demais");
+    return mensagemRepository.salvar(new Mensagem(salaId, autor, texto));
+}
+```
+
+Assim, se um dia o banco mudar, só o repository muda. Se a regra mudar, só o service. É a mesma ideia de camadas do mobile, e o padrão **MVC** (Model, View, Controller) é um primo próximo.
+
+## Banco relacional e SQL
+
+```sql
+-- as 20 mensagens mais recentes da sala 3, com o nome do autor
+SELECT u.nome, m.texto, m.enviada_em
+FROM mensagens m
+JOIN usuarios u ON u.id = m.autor_id
+WHERE m.sala_id = 3
+ORDER BY m.enviada_em DESC
+LIMIT 20;
+```
+
+O `JOIN` junta duas tabelas pela ligação entre elas (o `autor_id` da mensagem aponta para o `id` do usuário). Entender isso é meio caminho andado no back-end.
+
+## Autenticação e autorização
+
+- **Autenticação:** *quem é você?* (login com senha, com o GitHub, com o Google).
+- **Autorização:** *o que você pode fazer?* (só líderes apagam mensagens dos outros).
+
+Depois do login, o back-end costuma entregar um **token** (por exemplo, um **JWT**): uma "pulseirinha de festa" que o front manda em todo pedido, no cabeçalho `Authorization`. O back-end confere a pulseirinha antes de deixar passar.
+
+<Nota tipo="cuidado" titulo="Senha nunca é guardada como texto">
+Senhas são guardadas com **hash** (uma transformação que não dá para desfazer, como bcrypt). Se o banco vazar, ninguém vê as senhas originais. E nunca coloque chaves secretas no front-end ou no GitHub!
+</Nota>
+
+## Monolito × microsserviços
+
+| | Monolito | Microsserviços |
+| --- | --- | --- |
+| O que é | um sistema só, com tudo dentro | vários sistemas pequenos, cada um com uma parte |
+| Bom para | começar, times pequenos, a maioria dos projetos | empresas grandes, partes que crescem muito |
+| Cuidado | pode virar uma bagunça se não for organizado | muito mais complexo de operar |
+
+O chat da Unidunedev vai começar (e muito provavelmente continuar) como um **monolito bem organizado**. Microsserviço cedo demais é um erro clássico.
+
+## Tempo real
+
+HTTP é pergunta e resposta. Para o servidor **avisar** o cliente (mensagem nova chegou!), usamos **WebSocket**, que mantém a conexão aberta. Chats, jogos online e painéis ao vivo usam isso.
+
+<Quiz
+  pergunta="Em qual camada fica a regra 'mensagem não pode ter mais de 2000 caracteres'?"
+  opcoes={["Controller", "Service", "Repository"]}
+  correta={1}
+  explicacao="Regras de negócio moram no Service. O controller só recebe e responde, e o repository só conversa com o banco."
+/>
+
+## Resumindo
+
+- REST: recursos com endereço + métodos HTTP.
+- Camadas: controller (entrada), service (regras), repository (banco).
+- SQL com JOIN é ferramenta do dia a dia.
+- Autenticação (quem é) × autorização (o que pode); tokens e senhas com hash.
+- Comece com um monolito organizado.

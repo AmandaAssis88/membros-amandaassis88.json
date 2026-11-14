@@ -1,0 +1,83 @@
+Back-end é uma das trilhas mais pesadas do cardápio, mas também uma das que mais tem vaga. A chave é ir em camadas, como o bolo: uma de cada vez.
+
+<Roadmap etapas={[
+  {
+    titulo: "Base de tudo",
+    tempo: "1 a 2 meses",
+    itens: [
+      "Fundamentos e lógica aqui do site",
+      "Como a web funciona (trilha do pão francês): HTTP, rotas, JSON",
+      "Git e GitHub",
+    ],
+  },
+  {
+    titulo: "Uma linguagem a fundo",
+    tempo: "2 a 3 meses",
+    itens: [
+      "Java ou Python até classes, coleções e tratamento de erros",
+      "Ler e escrever arquivos, organizar em pacotes/módulos",
+    ],
+    linguagens: ["java", "python", "javascript", "csharp"],
+  },
+  {
+    titulo: "Banco de dados",
+    tempo: "1 a 2 meses",
+    itens: [
+      "Modelar tabelas e relacionamentos",
+      "SQL: SELECT, INSERT, UPDATE, DELETE, JOIN",
+      "PostgreSQL rodando no seu computador (com Docker)",
+    ],
+    linguagens: ["sql"],
+  },
+  {
+    titulo: "Sua primeira API",
+    tempo: "2 meses",
+    itens: [
+      "Um framework: Spring Boot, FastAPI ou NestJS",
+      "CRUD completo de um recurso (salas, por exemplo)",
+      "Testar tudo no Postman",
+    ],
+  },
+  {
+    titulo: "API de verdade",
+    tempo: "2 a 3 meses",
+    itens: [
+      "Arquitetura em camadas e validações",
+      "Autenticação com token (JWT) e senhas com hash",
+      "Testes automatizados e documentação (Swagger)",
+    ],
+  },
+  {
+    titulo: "Nível profissional",
+    tempo: "contínuo",
+    itens: [
+      "Docker, deploy e logs (conversa com a trilha de DevOps)",
+      "Cache, filas e tempo real (WebSocket)",
+      "Construir a API do chat da Unidunedev 🎂",
+    ],
+  },
+]} />
+
+<Nota tipo="dica" titulo="Projetos para o portfólio">
+1. Uma API de lista de tarefas com banco de dados (o "Olá, mundo" do back-end).
+2. A mesma API com login e cada usuário vendo só as suas tarefas.
+3. Uma API publicada na internet, com documentação no Swagger.
+4. Um README caprichado explicando as rotas, com exemplos de requisição e resposta.
+</Nota>
+
+## O que costuma aparecer em vagas
+
+- Uma linguagem e seu framework (Java + Spring, Python + Django/FastAPI, Node + Nest, C# + .NET).
+- SQL e um banco relacional (PostgreSQL ou MySQL).
+- APIs REST, autenticação e testes.
+- Git, Docker e noções de nuvem.
+
+<Nota tipo="ia" titulo="Back-end e IA">
+A IA escreve um CRUD em segundos. O que ela não decide por você: as regras de negócio certas, a segurança e o que acontece quando mil pessoas fazem a mesma coisa ao mesmo tempo. Revise com atenção dobrada tudo que envolve senha, permissão e dinheiro.
+</Nota>
+
+## Resumindo
+
+- Base → uma linguagem a fundo → banco e SQL → primeira API → API de verdade.
+- Segurança e testes não são extras: fazem parte.
+- A API do chat é o projeto perfeito para treinar tudo isso.

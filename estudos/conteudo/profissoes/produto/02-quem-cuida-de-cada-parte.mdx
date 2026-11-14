@@ -1,0 +1,77 @@
+Um produto de verdade não é feito por uma pessoa só. Cada camada do mapa tem gente especializada cuidando dela. Nesta aula, vamos ver **quem é quem** e como todo mundo trabalha junto.
+
+## As profissões no mapa
+
+<Camadas />
+
+| Profissão | Prato no cardápio | Em uma frase |
+| --- | --- | --- |
+| 🎨 UI/UX Design | Macaron | desenha como o produto vai ser e como vai ser usado |
+| 🖥️ Front-end | Cupcake | transforma o design em telas que funcionam no navegador |
+| 📱 Mobile | Croissant | faz o app que a gente instala no celular |
+| ⚙️ Back-end | Bolo de chocolate | cria a API, as regras de negócio e cuida do banco |
+| 🧪 QA | Pão de queijo | garante que tudo funciona antes de chegar no usuário |
+| 🚀 DevOps | Pão de fermentação natural | coloca e mantém tudo no ar, de forma automática |
+
+<Nota tipo="dica" titulo="E o tal do full stack?">
+**Full stack** é quem trabalha com front-end **e** back-end. Não é "saber tudo de tudo": é conseguir fazer uma funcionalidade de ponta a ponta. Muita gente começa numa área e vai se espalhando com o tempo.
+</Nota>
+
+## Como uma funcionalidade nasce
+
+Vamos acompanhar uma ideia do começo ao fim: **"quero poder reagir às mensagens com emoji"**.
+
+<Passos itens={[
+  { icone: "💡", titulo: "Ideia", texto: "alguém pede a funcionalidade" },
+  { icone: "🎨", titulo: "Design", texto: "UI/UX desenha o botão e o fluxo" },
+  { icone: "⚙️", titulo: "API", texto: "back-end cria a rota e salva no banco" },
+  { icone: "🖥️", titulo: "Telas", texto: "front e mobile mostram as reações" },
+  { icone: "🧪", titulo: "Testes", texto: "QA testa os casos estranhos" },
+  { icone: "🚀", titulo: "Deploy", texto: "DevOps publica para todo mundo" },
+]} />
+
+1. **UI/UX** pensa: onde fica o botão? Dá para reagir mais de uma vez? Como fica no celular? E desenha as telas no Figma.
+2. **Back-end** cria a rota `POST /mensagens/42/reacoes`, a regra "uma reação de cada tipo por pessoa" e a tabela no banco.
+3. **Front-end** e **Mobile** criam o botão, chamam a API e mostram as reações embaixo da mensagem.
+4. **QA** testa: e se clicar 10 vezes rápido? E se a mensagem foi apagada? E no celular sem internet?
+5. **DevOps** garante que a nova versão passe pelos testes automáticos e vá para o ar sem derrubar nada.
+
+Na prática, tudo isso acontece em paralelo e com muita conversa. Por isso **saber o básico de cada área** ajuda tanto: você entende o que o colega precisa.
+
+## O contrato entre front e back
+
+Para front e back trabalharem ao mesmo tempo, eles combinam antes **como vai ser a conversa**: qual rota, o que vai no pedido e o que volta na resposta. Isso é o **contrato da API**:
+
+```http
+POST /api/mensagens/42/reacoes
+```
+
+```json
+{ "emoji": "🔥" }
+```
+
+Resposta esperada: `201 Created`, com a lista atualizada de reações. Com isso combinado, o front pode até usar uma resposta "de mentira" enquanto o back termina a parte dele.
+
+## Times de verdade
+
+Em empresas, essas pessoas costumam estar no mesmo **time** (às vezes chamado de *squad*), cuidando de uma parte do produto. Um time típico tem:
+
+- 1 pessoa de produto (decide **o que** fazer e por quê);
+- 1 pessoa de design;
+- algumas pessoas de desenvolvimento (front, back, mobile);
+- 1 pessoa de QA;
+- apoio de DevOps (às vezes compartilhado entre vários times).
+
+<Quiz
+  pergunta="Quem deve garantir a regra 'só o autor pode apagar a própria mensagem'?"
+  opcoes={["O front-end, escondendo o botão", "O back-end, recusando o pedido de quem não é o autor", "O banco de dados sozinho"]}
+  correta={1}
+  explicacao="Esconder o botão é bom para a experiência, mas quem garante a regra é o back-end: o front pode ser burlado."
+/>
+
+## Resumindo
+
+- Cada camada tem especialistas: UI/UX, front, mobile, back, QA e DevOps.
+- Uma funcionalidade passa por todos eles, muitas vezes em paralelo.
+- O **contrato da API** permite que front e back trabalhem juntos sem se atropelar.
+- Full stack = front + back de ponta a ponta.

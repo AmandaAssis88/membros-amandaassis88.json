@@ -1,0 +1,84 @@
+## CI/CD
+
+- **CI (Integração Contínua):** a cada mudança, o código é testado automaticamente. Problemas aparecem cedo, no PR, e não no usuário.
+- **CD (Entrega/Deploy Contínuo):** se passou nos testes, a nova versão é publicada automaticamente.
+
+O pipeline que valida o JSON do mural da Unidunedev (um pouco resumido):
+
+```yaml
+name: Validar membros
+
+on:
+  pull_request:
+    paths:
+      - "membros/**"
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run validar-membros
+```
+
+Lendo: "quando abrirem um PR que mexe em `membros/`, pegue uma máquina Ubuntu, baixe o código, instale o Node e as dependências e rode a validação". Se a validação falhar, o check fica vermelho.
+
+## Ambientes
+
+O código passa por "andares" antes de chegar em todo mundo:
+
+<Passos itens={[
+  { icone: "💻", titulo: "Local", texto: "no computador de quem programa" },
+  { icone: "🧪", titulo: "Preview / homologação", texto: "uma cópia para testar" },
+  { icone: "🌍", titulo: "Produção", texto: "o que os usuários usam" },
+]} />
+
+Os links de prévia que a Cloudflare cria em cada PR são exatamente um ambiente de preview: dá para ver a mudança funcionando antes do merge.
+
+## Containers × máquinas virtuais
+
+| | Máquina virtual | Container |
+| --- | --- | --- |
+| O que é | um computador inteiro simulado, com sistema operacional | só a aplicação e o que ela precisa |
+| Tamanho | gigabytes | megabytes |
+| Liga em | minutos | segundos |
+
+Containers são leves, por isso dá para rodar dezenas num servidor. Quando são muitos, o **Kubernetes** organiza: sobe mais cópias quando o tráfego aumenta, reinicia o que cair e distribui o trabalho.
+
+## Infraestrutura como código
+
+Em vez de clicar no painel da nuvem para criar um banco, você **escreve** o que quer num arquivo (Terraform, por exemplo), guarda no Git e aplica. Vantagens: dá para revisar em PR, repetir igualzinho em outro ambiente e voltar atrás. A configuração do deploy dos sites da Unidunedev (os arquivos `wrangler.jsonc`) é um exemplo pequeno disso.
+
+## Observabilidade
+
+Não dá para consertar o que você não vê. Os três pilares:
+
+- **Logs:** o diário do sistema ("16:02 mensagem 981 salva", "16:03 ERRO ao conectar no banco").
+- **Métricas:** números ao longo do tempo (requisições por segundo, uso de memória, tempo de resposta).
+- **Alertas:** "se o erro 500 passar de 1% por 5 minutos, avisa no celular de quem está de plantão".
+
+## Escalar
+
+Quando o chat ficar famoso 😄, um servidor não vai dar conta:
+
+- **Escala vertical:** um servidor maior (mais memória, mais CPU). Simples, mas tem limite.
+- **Escala horizontal:** mais servidores iguais, com um **balanceador de carga** distribuindo os pedidos. É o que os sistemas grandes fazem.
+
+<Quiz
+  pergunta="Um PR abriu e o check ficou vermelho. Em que parte do CI/CD isso aconteceu?"
+  opcoes={["CI: os testes automáticos falharam", "CD: o site caiu", "Monitoramento: alerta disparou"]}
+  correta={0}
+  explicacao="O check do PR é a integração contínua. Vermelho = algum teste ou validação falhou, e o código não deve entrar até ser corrigido."
+/>
+
+## Resumindo
+
+- CI testa cada mudança; CD publica sozinho o que passou.
+- Local → preview → produção.
+- Containers são leves; Kubernetes orquestra muitos deles.
+- Infraestrutura como código + logs, métricas e alertas.
+- Escalar na vertical (maior) ou na horizontal (mais).

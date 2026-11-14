@@ -1,0 +1,63 @@
+QA vem de **Quality Assurance**, garantia de qualidade. É a pessoa que pergunta "e se...?" antes de o usuário descobrir sozinho. Muita gente chama de **tester** ou **analista de testes**.
+
+<Nota tipo="analogia" titulo="O provador da padaria">
+Antes de o pão de queijo ir para a vitrine, alguém experimenta: está cru por dentro? Salgado demais? Queimou embaixo? QA é esse provador, só que de software. E o melhor provador não experimenta só o pão bonito do meio da fornada: experimenta o da ponta, o menor, o que ficou mais tempo no forno.
+</Nota>
+
+## Onde fica no mapa
+
+<Camadas destaque="qa" />
+
+QA não fica numa camada só: atravessa **todas**. Testa a tela, a API, o banco e, principalmente, o **caminho inteiro**, do clique até a resposta.
+
+## O que faz no dia a dia
+
+- **Entende a funcionalidade** antes de existir código: lê o pedido, vê o design e já pensa nos problemas.
+- **Escreve casos de teste**: listas do que precisa ser verificado.
+- **Testa manualmente**: usa o sistema como um usuário (curioso e meio desastrado).
+- **Automatiza testes**: escreve código que testa o código, e roda sozinho a cada mudança.
+- **Relata bugs** de um jeito que a pessoa dev consiga reproduzir e corrigir.
+- **Defende o usuário**: "funciona" não basta, tem que ser fácil e não pode irritar.
+
+## Um exemplo de mente de QA
+
+Funcionalidade: "o usuário digita a idade e o sistema diz se pode votar". Quem desenvolveu testou com 20 e com 10. QA testa:
+
+| Entrada | Por quê |
+| --- | --- |
+| `16` | o limite exato (lembra do "teste os limites" da trilha de lógica?) |
+| `15` e `17` | um de cada lado do limite |
+| `0` e `-5` | idades impossíveis |
+| `150` | idade absurda |
+| `abc` | não é número |
+| vazio | a pessoa só apertou Enter |
+
+Metade dos bugs do mundo mora nessas linhas.
+
+## Manual × automatizado
+
+| | Manual | Automatizado |
+| --- | --- | --- |
+| Como | uma pessoa usa o sistema | um programa testa o sistema |
+| Bom para | explorar, sentir a experiência, achar o inesperado | repetir as mesmas verificações sempre, rápido |
+| Ponto fraco | lento e cansativo de repetir | só testa o que alguém lembrou de escrever |
+
+As duas se completam. Uma boa QA hoje sabe **programar**, porque a automação é cada vez mais importante.
+
+<Nota tipo="curiosidade" titulo="Você já usou testes automatizados aqui!">
+A correção dos desafios do repositório `estudos` é um teste automatizado: o robô roda seu programa com as entradas de teste e compara a saída. E o check do mural confere se o seu JSON está certo. Isso é trabalho de QA!
+</Nota>
+
+<Quiz
+  pergunta="A regra é 'frete grátis acima de R$ 100'. Qual valor é o MAIS importante de testar?"
+  opcoes={["R$ 50", "R$ 100 exatos", "R$ 500"]}
+  correta={1}
+  explicacao="O valor exato do limite é onde mais aparecem erros de > no lugar de >=. Depois, teste os vizinhos: 99,99 e 100,01."
+/>
+
+## Resumindo
+
+- QA garante a qualidade antes do usuário: testa, caça bugs e defende a experiência.
+- Atravessa todas as camadas do produto.
+- Testes manuais exploram; testes automatizados repetem sem cansar.
+- O segredo: pensar nos limites e nos casos estranhos.

@@ -1,4 +1,7 @@
 import type { TrilhaId } from "../catalogo";
+import { Comida, type ComidaId } from "./comida";
+
+const COMIDAS: string[] = ["produto", "front-end", "back-end", "mobile", "devops", "ui-ux", "qa"];
 
 /** Vapor subindo: três (ou dois) fiozinhos animados. */
 function Vapor({ xs, y, cor }: { xs: number[]; y: number; cor: string }) {
@@ -37,6 +40,7 @@ function Rotulo({ x, y, texto, cor }: { x: number; y: number; texto: string; cor
 
 /** Uma bebida para cada trilha: o "cardápio" do site. */
 export function Bebida({ trilha, tamanho = 120 }: { trilha: TrilhaId; tamanho?: number }) {
+  if (COMIDAS.includes(trilha)) return <Comida trilha={trilha as ComidaId} tamanho={tamanho} />;
   return (
     <svg
       className={`bebida bebida-${trilha}`}
@@ -158,6 +162,13 @@ const ITENS: Record<TrilhaId, string[]> = {
   c: ["0x7f", "&x", "*p", "{ }", "\\0", "0x1a", "int", "&", "*", ";"],
   python: ["", "", "", "", "", "", "", "", "", ""],
   java: ["", "", "", "", "", "", "", "", "", ""],
+  produto: ["GET", "200", "→", "JSON", "←", "/api", "POST", "201", "→", "{ }"],
+  qa: ["✓", "✗", "bug", "✓", "assert", "✓", "✗", "test", "✓", "🐞"],
+  "ui-ux": ["◯", "△", "▢", "Aa", "◯", "▢", "△", "#ff8fb1", "Aa", "◯"],
+  "front-end": ["<div>", "{ }", "px", "</>", "css", "<p>", "#fff", "flex", "<a>", "js"],
+  mobile: ["tap", "iOS", "APK", "▢", "swipe", "🔔", "tap", "▢", "Android", "▢"],
+  "back-end": ["GET", "POST", "200", "/api", "{json}", "SQL", "404", "JWT", "PUT", "201"],
+  devops: ["$", "git push", "✓", "deploy", "☁", "docker", "$", "ci", "✓", "☁"],
 };
 
 /** Detalhes que flutuam no fundo do topo de cada trilha. */

@@ -1,0 +1,69 @@
+## As linguagens
+
+No navegador, só três linguagens rodam de verdade: HTML, CSS e JavaScript. Todo o resto vira uma delas no final.
+
+<Linguagens ids={["html-css", "javascript", "typescript"]} />
+
+- **HTML e CSS:** a base. Não dá para pular.
+- **JavaScript:** a linguagem da web. Roda em todo navegador.
+- **TypeScript:** JavaScript com **tipos** (como em Java e C). O editor avisa os erros antes de rodar. Hoje é o padrão em empresas, e é o que a Unidunedev usa nos sites.
+
+```typescript
+type Mensagem = {
+  autor: string;
+  texto: string;
+};
+
+function resumo(m: Mensagem): string {
+  return `${m.autor}: ${m.texto}`;
+}
+```
+
+Se você tentar chamar `resumo(42)`, o TypeScript reclama na hora: "42 não é uma Mensagem".
+
+## Frameworks: não reinventar a roda
+
+Fazer um site grande só com JavaScript puro fica bagunçado rápido. Os **frameworks** organizam o código em **componentes**:
+
+| Framework | Quem criou | Destaque |
+| --- | --- | --- |
+| **React** | Meta | o mais usado no mercado; é o dos sites da Unidunedev |
+| **Angular** | Google | completo e opinativo, muito usado em empresas grandes e bancos |
+| **Vue** | comunidade | gentil para começar, muito popular |
+| **Svelte** | comunidade | leve e com sintaxe enxuta |
+
+E existem os **meta-frameworks**, que adicionam rotas, renderização no servidor e mais: **Next.js** (React), **Nuxt** (Vue), **Angular Universal**.
+
+<Nota tipo="dica" titulo="Qual escolher?">
+Aprenda bem **HTML, CSS e JavaScript** primeiro. Depois escolha **um** framework (React é a aposta mais segura para vagas). Quem domina a base aprende o segundo framework em semanas.
+</Nota>
+
+## Estilos
+
+- **CSS puro:** sempre vale a pena dominar.
+- **Tailwind CSS:** classes prontas direto no HTML (`class="p-4 rounded-full"`). Muito popular.
+- **Bibliotecas de componentes:** shadcn/ui, Material UI, Bootstrap. Botões, menus e janelas prontos.
+
+## Ferramentas do dia a dia
+
+| Ferramenta | Para quê |
+| --- | --- |
+| VS Code | escrever o código |
+| DevTools do navegador (F12) | inspecionar HTML/CSS, ver erros e requisições |
+| Node.js + npm | instalar bibliotecas e rodar ferramentas |
+| Vite | criar o projeto e ver as mudanças na hora (o onboarding usa!) |
+| Git + GitHub | versionar e colaborar |
+| Figma (Dev Mode) | pegar medidas e cores do design |
+
+## Testes no front
+
+- **Vitest / Jest:** testam funções e componentes.
+- **Testing Library:** testa componentes como o usuário usaria ("clicar no botão Enviar").
+- **Playwright / Cypress:** testes de ponta a ponta no navegador.
+
+## Resumindo
+
+- No navegador: HTML, CSS e JavaScript (TypeScript vira JavaScript).
+- Frameworks organizam em componentes: React, Angular, Vue.
+- DevTools é seu melhor amigo.
+- Base forte primeiro, framework depois.

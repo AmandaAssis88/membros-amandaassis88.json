@@ -1,0 +1,114 @@
+Toda vez que você abre um app, manda uma mensagem ou curte uma foto, acontece uma pequena viagem entre o seu aparelho e um computador em algum lugar do mundo. Entender essa viagem é entender **como quase todo software funciona**.
+
+## O mapa inteiro
+
+Guarde esta imagem. Ela vai aparecer em todas as trilhas de profissões, cada vez com uma parte acesa:
+
+<Camadas />
+
+Lendo da esquerda para a direita: o **usuário** mexe numa tela (site ou app). A tela manda um **pedido** pela internet. Um programa no **servidor** recebe, decide o que fazer, consulta o **banco de dados** e manda uma **resposta** de volta. Em volta de tudo, tem gente desenhando (UI/UX), testando (QA) e mantendo tudo no ar (DevOps).
+
+## Cliente e servidor
+
+<Nota tipo="analogia" titulo="Pensa num restaurante">
+- Você, na mesa, é o **cliente**: escolhe no cardápio e faz o pedido.
+- O garçom leva o pedido até a cozinha: é a **internet** (e a **API**, que é o "cardápio" do que dá para pedir).
+- A cozinha prepara: é o **servidor** (o back-end).
+- A despensa guarda os ingredientes: é o **banco de dados**.
+
+Você nunca entra na cozinha. Só faz pedidos pelo jeito combinado, e a comida chega pronta.
+</Nota>
+
+- **Cliente** é quem pede: o navegador, o app do celular.
+- **Servidor** é quem responde: um computador ligado 24 horas, rodando um programa que espera pedidos.
+
+## A viagem de uma requisição
+
+Imagine que você abriu o mural do onboarding da Unidunedev. O que acontece:
+
+<Passos itens={[
+  { icone: "👆", titulo: "Você clica", texto: "no link do mural" },
+  { icone: "📤", titulo: "Requisição", texto: "o navegador pede: GET /mural" },
+  { icone: "⚙️", titulo: "Servidor", texto: "acha a página e os dados" },
+  { icone: "📥", titulo: "Resposta", texto: "200 OK + o conteúdo" },
+  { icone: "🖼️", titulo: "Tela", texto: "o navegador desenha os cards" },
+]} />
+
+Esse "pedir e responder" acontece dezenas de vezes por segundo enquanto você usa a internet.
+
+## HTTP: a língua do pedido
+
+Cliente e servidor conversam em **HTTP**, um protocolo (um conjunto de regras combinadas). Um pedido HTTP tem um **método** e um **endereço** (a rota):
+
+```http
+GET /api/salas HTTP/1.1
+Host: chat.unidunedev.dev
+```
+
+| Método | Significa | Exemplo no chat |
+| --- | --- | --- |
+| `GET` | buscar algo | listar as salas |
+| `POST` | criar algo | mandar uma mensagem nova |
+| `PUT` / `PATCH` | alterar algo | editar uma mensagem |
+| `DELETE` | apagar algo | apagar uma mensagem |
+
+E toda resposta vem com um **código de status**, um número que diz como foi:
+
+| Código | Significa |
+| --- | --- |
+| `200` | deu certo |
+| `201` | criado com sucesso |
+| `400` | o pedido veio errado (faltou algo) |
+| `401` / `403` | você não está logado / não tem permissão |
+| `404` | não encontrado (a famosa página 404!) |
+| `500` | erro no servidor (a culpa é do back-end 😅) |
+
+## JSON: o formato dos dados
+
+Os dados viajam quase sempre em **JSON**, um formato de texto que humanos e programas conseguem ler. Você já usou: é o mesmo formato do seu card no mural!
+
+```json
+{
+  "id": 42,
+  "sala": "back-end",
+  "autor": "clehdev",
+  "texto": "Alguém sabe o que é um status 404?",
+  "enviadaEm": "2026-11-14T15:30:00"
+}
+```
+
+Chaves entre aspas, dois-pontos, valores (texto, número, verdadeiro/falso, listas), tudo dentro de chaves. Simples assim.
+
+## Front, back e banco: quem faz o quê
+
+| Parte | Onde roda | Responsabilidade |
+| --- | --- | --- |
+| **Front-end** | no navegador do usuário | mostrar as telas e mandar os pedidos |
+| **Mobile** | no celular do usuário | a mesma coisa, só que num app instalado |
+| **Back-end** | no servidor | receber pedidos, aplicar as regras, responder |
+| **Banco de dados** | no servidor (ou num serviço) | guardar os dados de forma organizada e segura |
+
+<Nota tipo="cuidado" titulo="Regra de ouro">
+O front-end roda no computador do usuário, então **qualquer um pode ver e mexer** no código dele (aperte F12 em qualquer site!). Por isso as regras importantes, como "só o dono pode apagar a mensagem", ficam sempre no **back-end**.
+</Nota>
+
+<Quiz
+  pergunta="Você manda uma mensagem nova no chat. Qual método HTTP faz mais sentido?"
+  opcoes={["GET", "POST", "DELETE"]}
+  correta={1}
+  explicacao="POST é o método para criar algo novo no servidor. GET só busca, DELETE apaga."
+/>
+
+<Quiz
+  pergunta="O servidor respondeu 404. O que aconteceu?"
+  opcoes={["Deu tudo certo", "O que você pediu não foi encontrado", "Você não tem internet"]}
+  correta={1}
+  explicacao="404 = não encontrado. A rota ou o item pedido não existe."
+/>
+
+## Resumindo
+
+- **Cliente** pede, **servidor** responde. Essa é a base de quase tudo na web.
+- A conversa é em **HTTP**: método (`GET`, `POST`...) + rota + status (`200`, `404`...).
+- Os dados viajam em **JSON**.
+- Front e mobile mostram; back-end decide; banco guarda.

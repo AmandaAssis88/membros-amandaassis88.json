@@ -11,6 +11,17 @@ const ROTULOS: Record<string, string> = {
   saida: "Saída no terminal",
   terminal: "Terminal",
   texto: "Texto",
+  javascript: "JavaScript",
+  typescript: "TypeScript",
+  dart: "Dart",
+  kotlin: "Kotlin",
+  swift: "Swift",
+  sql: "SQL",
+  json: "JSON",
+  yaml: "YAML",
+  http: "HTTP",
+  html: "HTML",
+  css: "CSS",
 };
 
 async function copiarTexto(texto: string) {
@@ -32,14 +43,23 @@ async function copiarTexto(texto: string) {
 }
 
 /** Bloco de código das aulas: realce, número das linhas, Copiar e Testar no OnlineGDB. */
-export function Codigo({ codigo, linguagem }: { codigo: string; linguagem: string }) {
+export function Codigo({
+  codigo,
+  linguagem: linguagemOriginal,
+}: {
+  codigo: string;
+  linguagem: string;
+}) {
+  // ```python-exemplo: realça como Python, mas sem o botão Testar (precisa de algo que o OnlineGDB não tem)
+  const soExemplo = linguagemOriginal.endsWith("-exemplo");
+  const linguagem = linguagemOriginal.replace(/-exemplo$/, "");
   const [copiado, setCopiado] = useState(false);
   const [testando, setTestando] = useState(false);
   const texto = codigo.replace(/\n$/, "");
   const linhas = texto.split("\n");
   // Só mostra "Testar" quando o código é um programa completo (trechos soltos não rodam sozinhos).
   const testavel =
-    linguagem === "python" ||
+    (!soExemplo && linguagem === "python") ||
     (linguagem === "c" && /\bmain\s*\(/.test(texto)) ||
     (linguagem === "java" && /static\s+void\s+main/.test(texto));
   const saida = linguagem === "saida" || linguagem === "terminal";

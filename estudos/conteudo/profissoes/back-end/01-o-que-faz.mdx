@@ -1,0 +1,56 @@
+Back-end é tudo o que roda **no servidor**: recebe os pedidos do site e do app, decide o que pode e o que não pode, conversa com o banco de dados e manda a resposta. O usuário nunca vê, mas é ele que segura a festa inteira.
+
+<Nota tipo="analogia" titulo="Pensa num bolo de três camadas">
+Por fora, o bolo de chocolate é só uma cobertura bonita (o front). Mas o que sustenta tudo são as camadas lá dentro: a que **recebe** os pedidos (as rotas da API), a que **decide** (as regras de negócio) e a que **guarda** (o banco de dados). Pesado? Um pouco. Mas sem ele não tem festa.
+</Nota>
+
+## Onde fica no mapa
+
+<Camadas destaque="back-end" />
+
+O back-end fica do outro lado da internet. O front-end e o mobile **fazem requisições**; elas **batem numa rota** da API; o back-end processa, consulta ou grava no **banco de dados** e devolve uma **resposta** (geralmente em JSON, com um código de status).
+
+## A viagem dentro do back-end
+
+Quando chega um `POST /api/salas/backend/mensagens`, o back-end faz algo assim:
+
+<Passos itens={[
+  { icone: "🚪", titulo: "Rota", texto: "recebe o pedido" },
+  { icone: "🔐", titulo: "Autenticação", texto: "quem está pedindo? está logado?" },
+  { icone: "📏", titulo: "Validação", texto: "a mensagem veio vazia? é grande demais?" },
+  { icone: "🧠", titulo: "Regra de negócio", texto: "pode mandar nessa sala?" },
+  { icone: "🗄️", titulo: "Banco", texto: "salva a mensagem" },
+  { icone: "📨", titulo: "Resposta", texto: "201 Created + a mensagem salva" },
+]} />
+
+Se algo der errado no caminho, responde com o status certo: `401` (não está logado), `400` (mensagem vazia), `403` (não pode nessa sala), `500` (algo quebrou aqui dentro).
+
+## O que faz no dia a dia
+
+- **Cria e mantém a API:** as rotas que o front e o mobile usam.
+- **Escreve as regras de negócio:** "só o autor pode apagar", "no máximo 10 salas por pessoa", "o frete é grátis acima de R$ 100".
+- **Modela o banco de dados:** quais tabelas existem e como se ligam.
+- **Cuida da segurança:** senhas, permissões, dados pessoais (LGPD).
+- **Integra com outros serviços:** pagamento, e-mail, login com o GitHub.
+- **Cuida da performance:** a API precisa responder rápido para milhares de pessoas ao mesmo tempo.
+
+## Regra de negócio: o coração do back-end
+
+Regra de negócio é **a lógica que define como o produto funciona**, e ela mora no back-end porque é o único lugar que o usuário não consegue alterar. Lembra que o front-end roda no computador da pessoa e pode ser mexido pelo F12? Se a regra "só o autor apaga a mensagem" ficasse só no front, qualquer um com um pouco de curiosidade apagaria as mensagens dos outros.
+
+<Nota tipo="curiosidade" titulo="Onde está o back-end da Unidunedev?">
+As inscrições do onboarding vão para o **Supabase**, um serviço que entrega banco de dados, API e autenticação prontos (o chamado *Backend as a Service*). As regras de segurança ficam no próprio banco: o site só consegue **inserir** inscrições, nunca ler as dos outros. É back-end, mesmo sem um servidor escrito à mão.
+</Nota>
+
+<Quiz
+  pergunta="Onde deve ficar a regra 'cada pessoa só pode votar uma vez na enquete'?"
+  opcoes={["No front-end, desabilitando o botão", "No back-end, recusando o segundo voto", "No CSS"]}
+  correta={1}
+  explicacao="Desabilitar o botão é bom para a experiência, mas a garantia precisa estar no back-end, que ninguém consegue alterar."
+/>
+
+## Resumindo
+
+- Back-end roda no servidor: recebe requisições, aplica regras, usa o banco, responde.
+- O caminho: rota → autenticação → validação → regra → banco → resposta.
+- Regras importantes ficam sempre no back-end.

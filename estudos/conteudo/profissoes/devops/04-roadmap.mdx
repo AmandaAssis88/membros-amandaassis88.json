@@ -1,0 +1,86 @@
+DevOps é uma trilha pesada porque junta um pouco de tudo: programação, sistemas operacionais, redes, nuvem e muita paciência. Normalmente, quem chega lá passou antes por desenvolvimento ou suporte. Sem pressa: um degrau de cada vez.
+
+<Roadmap etapas={[
+  {
+    titulo: "Base de tudo",
+    tempo: "1 a 2 meses",
+    itens: [
+      "Fundamentos e lógica aqui do site",
+      "Como a web funciona (trilha do pão francês)",
+      "Git e GitHub de verdade: branches, PRs, conflitos",
+    ],
+  },
+  {
+    titulo: "Linux e terminal",
+    tempo: "2 meses",
+    itens: [
+      "Usar Linux no dia a dia (WSL no Windows serve!)",
+      "Arquivos, permissões, processos e pacotes",
+      "Scripts em Bash para automatizar tarefas",
+    ],
+    linguagens: ["bash"],
+  },
+  {
+    titulo: "Redes e uma linguagem",
+    tempo: "1 a 2 meses",
+    itens: [
+      "IP, DNS, portas, HTTP e HTTPS",
+      "Python para automações",
+      "Entender como uma API e um banco funcionam (trilha de back-end)",
+    ],
+    linguagens: ["python"],
+  },
+  {
+    titulo: "Containers e CI/CD",
+    tempo: "2 meses",
+    itens: [
+      "Docker e Docker Compose",
+      "GitHub Actions: testar e publicar um projeto seu",
+      "Ler os workflows da Unidunedev e propor melhorias",
+    ],
+  },
+  {
+    titulo: "Nuvem",
+    tempo: "2 a 3 meses",
+    itens: [
+      "Um provedor a fundo (AWS, Azure ou Google Cloud), no plano gratuito",
+      "Publicar uma API com banco na nuvem",
+      "Uma certificação de entrada (opcional, mas ajuda no currículo)",
+    ],
+  },
+  {
+    titulo: "Nível profissional",
+    tempo: "contínuo",
+    itens: [
+      "Kubernetes e Terraform",
+      "Monitoramento com Grafana e alertas",
+      "Montar o deploy e o monitoramento do chat da Unidunedev 🍞",
+    ],
+    linguagens: ["go"],
+  },
+]} />
+
+<Nota tipo="dica" titulo="Projetos para o portfólio">
+1. Um script em Bash ou Python que automatiza algo chato do seu dia.
+2. Um projeto seu com GitHub Actions rodando testes em cada PR.
+3. Uma API com banco rodando em Docker Compose, com README explicando como subir.
+4. A mesma API publicada na nuvem, com deploy automático a cada push.
+</Nota>
+
+## O que costuma aparecer em vagas
+
+- Linux, terminal e scripts.
+- Docker e CI/CD (GitHub Actions, GitLab CI ou Jenkins).
+- Uma nuvem (AWS é a mais pedida).
+- Kubernetes e Terraform para vagas mais avançadas.
+- Monitoramento e noções de segurança.
+
+<Nota tipo="ia" titulo="DevOps e IA">
+A IA é ótima para explicar mensagens de erro e escrever o primeiro rascunho de um YAML ou Dockerfile. Mas em DevOps um comando errado pode apagar um banco de produção: **nunca rode o que você não entendeu**, principalmente com permissão de administrador.
+</Nota>
+
+## Resumindo
+
+- Base → Linux → redes e Python → Docker e CI/CD → nuvem → Kubernetes.
+- Normalmente se chega em DevOps depois de passar por desenvolvimento.
+- O pipeline da Unidunedev é um ótimo laboratório para começar.

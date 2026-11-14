@@ -1,12 +1,14 @@
 import { Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Check, Github, Laptop, Target } from "lucide-react";
+import { ArrowRight, Check, Code2, Github, Laptop, MessageCircle, Target } from "lucide-react";
 import { useEffect } from "react";
 import { Ambiente, Bebida } from "../components/bebida";
+import { Linguagens } from "../components/mapa";
 import {
   ESTUDOS_REPO_URL,
   GRUPOS,
   desafiosUrl,
   duracao,
+  PESOS,
   minutosDaTrilha,
   type Trilha,
 } from "../catalogo";
@@ -71,6 +73,7 @@ export function PaginaTrilha({ trilha }: { trilha: Trilha | undefined }) {
               {comecou ? "Continuar" : "Começar a primeira aula"} <ArrowRight size={16} />
             </Link>
             <span className="trilha-meta">
+              {trilha.peso && `${PESOS[trilha.peso].icone} ${PESOS[trilha.peso].rotulo} · `}
               {trilha.aulas.length} aulas · {duracao(minutosDaTrilha(trilha))}
             </span>
           </div>
@@ -146,30 +149,57 @@ export function PaginaTrilha({ trilha }: { trilha: Trilha | undefined }) {
               </p>
             </div>
           )}
-          <div className="lado-cartao">
-            <h2>
-              {trilha.grupo === "fundamentos" ? <Github size={18} /> : <Target size={18} />}{" "}
-              {trilha.grupo === "fundamentos" ? "Versão completa" : "Hora de praticar"}
-            </h2>
-            <p>
-              {trilha.grupo === "fundamentos"
-                ? "O material completo, com checkpoints e desafios sem IA, está no GitHub."
-                : "Depois das aulas, resolva os desafios no GitHub. A correção é automática no seu Pull Request."}
-            </p>
-            <a
-              className="botao botao-contorno"
-              href={
-                trilha.grupo === "fundamentos"
-                  ? `${ESTUDOS_REPO_URL}/tree/main/${trilha.pasta}`
-                  : desafiosUrl(trilha)
-              }
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Github size={16} />{" "}
-              {trilha.grupo === "fundamentos" ? "Abrir no GitHub" : "Ver desafios"}
-            </a>
-          </div>
+          {trilha.linguagens && (
+            <div className="lado-cartao">
+              <h2>
+                <Code2 size={18} /> Linguagens da área
+              </h2>
+              <p>
+                As mais usadas por quem trabalha com isso. As que já têm trilha aqui viram link:
+              </p>
+              <Linguagens ids={trilha.linguagens} />
+            </div>
+          )}
+          {trilha.noChat ? (
+            <div className="lado-cartao">
+              <h2>
+                <MessageCircle size={18} /> No projeto do chat
+              </h2>
+              <p>{trilha.noChat}</p>
+              <Link
+                to="/$trilha/$aula"
+                params={{ trilha: "produto", aula: "o-chat-por-dentro" }}
+                className="botao botao-contorno"
+              >
+                Ver o chat por dentro <ArrowRight size={16} />
+              </Link>
+            </div>
+          ) : (
+            <div className="lado-cartao">
+              <h2>
+                {trilha.grupo === "fundamentos" ? <Github size={18} /> : <Target size={18} />}{" "}
+                {trilha.grupo === "fundamentos" ? "Versão completa" : "Hora de praticar"}
+              </h2>
+              <p>
+                {trilha.grupo === "fundamentos"
+                  ? "O material completo, com checkpoints e desafios sem IA, está no GitHub."
+                  : "Depois das aulas, resolva os desafios no GitHub. A correção é automática no seu Pull Request."}
+              </p>
+              <a
+                className="botao botao-contorno"
+                href={
+                  trilha.grupo === "fundamentos"
+                    ? `${ESTUDOS_REPO_URL}/tree/main/${trilha.pasta}`
+                    : desafiosUrl(trilha)
+                }
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Github size={16} />{" "}
+                {trilha.grupo === "fundamentos" ? "Abrir no GitHub" : "Ver desafios"}
+              </a>
+            </div>
+          )}
         </aside>
       </section>
     </main>

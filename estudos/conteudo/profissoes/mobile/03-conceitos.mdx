@@ -1,0 +1,91 @@
+## Tudo é widget (ou componente)
+
+Assim como no front-end, a tela é montada com peças que se encaixam. No Flutter elas se chamam **widgets**; no Compose e no SwiftUI, **views** ou **composables**:
+
+```dart
+Column(
+  children: [
+    Text('Sala back-end'),
+    ListaDeMensagens(),
+    CampoDeMensagem(),
+  ],
+)
+```
+
+Uma coluna com um título, a lista de mensagens e o campo de texto. Cada peça pode ter outras peças dentro.
+
+## Estado
+
+O que muda enquanto a pessoa usa: a mensagem sendo digitada, se está carregando, a lista que chegou da API. Quando o estado muda, o app **redesenha** a parte da tela que depende dele. No Flutter existem várias formas de organizar o estado (ChangeNotifier, Bloc, Riverpod, Provider...). Todas resolvem o mesmo problema: **quem guarda a informação e quem é avisado quando ela muda**.
+
+## Navegação
+
+Apps têm pilhas de telas: você entra na sala (empilha uma tela), abre o perfil de alguém (empilha outra) e volta (desempilha). Também existem abas embaixo e menus laterais. Nos apps maiores, a navegação usa **rotas**, como no front-end (`/salas/backend`).
+
+## Camadas: a arquitetura do croissant
+
+Para o app crescer sem virar uma bagunça, o código é separado em camadas. Uma forma muito usada é a **Clean Architecture**, organizada **por funcionalidade** (*feature*):
+
+```texto
+lib/
+└── features/
+    └── chat/
+        ├── presentation/   telas e estado (o que o usuário vê)
+        ├── domain/         regras e entidades (Mensagem, Sala)
+        └── data/           API e armazenamento local
+```
+
+<Passos itens={[
+  { icone: "📱", titulo: "Presentation", texto: "a tela pede: 'me dá as mensagens'" },
+  { icone: "🧠", titulo: "Domain", texto: "regra: só mensagens não apagadas" },
+  { icone: "🌐", titulo: "Data", texto: "busca na API ou no cache do aparelho" },
+]} />
+
+A tela não sabe se os dados vieram da internet ou do celular: ela só pede. Isso facilita testar e trocar peças (por exemplo, mudar de API) sem mexer nas telas.
+
+## Consumindo a API
+
+O app faz as mesmas requisições que o front-end:
+
+```dart
+final resposta = await http.get(Uri.parse('$api/salas/backend/mensagens'));
+
+if (resposta.statusCode == 200) {
+  final mensagens = jsonDecode(resposta.body);
+  // atualiza o estado e a tela se redesenha
+} else {
+  // mostra um erro amigável e um botão de tentar de novo
+}
+```
+
+E precisa pensar mais na **internet ruim**: tempo limite, tentar de novo, mostrar o que já está salvo no aparelho.
+
+## Ciclo de vida e permissões
+
+- O app pode ir para **segundo plano** (a pessoa trocou de app), voltar ou ser fechado pelo sistema para economizar memória. É preciso salvar o que importa antes.
+- Para usar câmera, localização ou notificações, o app **pede permissão** ao usuário, e precisa funcionar bem mesmo se ele disser "não".
+
+## Publicação
+
+<Passos itens={[
+  { icone: "🛠️", titulo: "Build", texto: "gera o .aab (Android) e o .ipa (iOS)" },
+  { icone: "🧪", titulo: "Teste interno", texto: "TestFlight / teste fechado" },
+  { icone: "📝", titulo: "Loja", texto: "prints, descrição, privacidade" },
+  { icone: "⏳", titulo: "Revisão", texto: "Google e Apple aprovam" },
+  { icone: "🚀", titulo: "No ar", texto: "e acompanhando os erros" },
+]} />
+
+<Quiz
+  pergunta="Na Clean Architecture, em qual camada fica a chamada HTTP para a API?"
+  opcoes={["Presentation", "Domain", "Data"]}
+  correta={2}
+  explicacao="A camada Data cuida de buscar e guardar os dados (API, banco local). As telas ficam em Presentation e as regras em Domain."
+/>
+
+## Resumindo
+
+- Telas feitas de widgets/componentes; o estado manda redesenhar.
+- Navegação em pilha, abas e rotas.
+- Camadas (presentation, domain, data) organizadas por funcionalidade.
+- API com cuidado extra: internet ruim, offline, permissões.
+- Publicar nas lojas tem um processo próprio de revisão.

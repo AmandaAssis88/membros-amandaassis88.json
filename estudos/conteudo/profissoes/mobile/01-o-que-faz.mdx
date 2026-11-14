@@ -1,0 +1,54 @@
+Mobile é quem cria os **apps que a gente instala no celular**: WhatsApp, Instagram, o app do banco, o app de entrega. Parece um site, mas tem superpoderes (e responsabilidades) próprios.
+
+## Onde fica no mapa
+
+<Camadas destaque="mobile" />
+
+O app fica no mesmo lugar do front-end: entre o **usuário** e a **internet**. Ele mostra as telas, reage aos toques e **faz requisições para a mesma API do back-end** que o site usa. A diferença é onde ele roda: instalado no celular, e não dentro do navegador.
+
+<Nota tipo="analogia" titulo="Pensa num croissant">
+O croissant tem várias camadas finas de massa, uma em cima da outra, e cabe na palma da mão. Um app também: a camada das telas, a do estado, a que conversa com a API, a que guarda dados no aparelho, a que fala com a câmera e o GPS... Tudo bem organizadinho para caber num aparelho pequeno.
+</Nota>
+
+## O que o app tem que o site não tem
+
+- **Recursos do aparelho:** câmera, GPS, microfone, biometria, contatos, vibração.
+- **Notificações push:** o app avisa mesmo fechado ("Nova mensagem na sala back-end").
+- **Funcionar offline:** guarda dados no aparelho e sincroniza quando a internet volta.
+- **Ícone na tela inicial** e experiência mais fluida, com gestos.
+
+E os desafios que o site não tem:
+
+- **Lojas:** o app passa pela aprovação da Google Play e da App Store antes de chegar no usuário.
+- **Atualização:** se tem um bug, a correção só chega quando a pessoa atualizar o app.
+- **Milhares de aparelhos:** telas, versões de Android/iOS e desempenho diferentes.
+- **Bateria e internet ruim:** o app precisa ser econômico.
+
+## O que faz no dia a dia
+
+- Transforma o design das telas em código, seguindo os padrões de cada sistema (Android e iOS).
+- Organiza o app em camadas (telas, regras, dados) para ele crescer sem virar bagunça.
+- Integra com a API: login, listas, envio de dados, tratamento de erros e de internet lenta.
+- Usa recursos nativos: notificações, câmera, localização.
+- Publica nas lojas: gera as versões, prints, descrição e acompanha a aprovação.
+
+## Exemplo: o chat no celular
+
+No projeto do chat, o app mobile teria as mesmas telas da versão web (salas, conversa, perfil), mas com:
+
+- **notificação** quando chegar mensagem nova, mesmo com o app fechado;
+- **mensagens salvas no aparelho**, para abrir a conversa até sem internet;
+- **foto direto da câmera** para mandar no grupo.
+
+<Quiz
+  pergunta="O site e o app do chat mostram as mesmas mensagens. De onde as duas versões tiram os dados?"
+  opcoes={["Cada uma tem o seu próprio banco", "Da mesma API do back-end", "O app copia do site"]}
+  correta={1}
+  explicacao="Site e app são clientes diferentes da mesma API. Por isso a mensagem enviada no celular aparece no computador."
+/>
+
+## Resumindo
+
+- Mobile cria apps instalados no celular, clientes da mesma API que o site usa.
+- Tem superpoderes: notificações, câmera, GPS, offline.
+- Tem desafios próprios: lojas, atualizações, aparelhos variados.

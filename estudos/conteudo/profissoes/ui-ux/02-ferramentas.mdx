@@ -1,0 +1,73 @@
+Design de produto tem ferramentas próprias, e quase todas são visuais. Mas saber um pouco de código ajuda muito na conversa com o time.
+
+## Figma: a ferramenta principal
+
+O **Figma** é o padrão do mercado. Roda no navegador, é gratuito para começar e permite várias pessoas editando juntas, ao vivo (parecido com o Google Docs).
+
+No Figma você faz:
+
+- **Frames:** as telas, nos tamanhos de celular, tablet e computador.
+- **Componentes:** um botão desenhado uma vez e reaproveitado em todas as telas. Mudou o original, mudam todas as cópias.
+- **Auto layout:** caixas que se ajustam ao conteúdo, como o CSS faz.
+- **Protótipos:** liga as telas com cliques e animações para simular o app.
+- **Dev Mode:** quem programa vê medidas, cores e até trechos de CSS.
+
+O **FigJam**, do mesmo time, é um quadro branco para brainstorm, fluxos e mapas.
+
+## Outras ferramentas
+
+| Para quê | Ferramentas |
+| --- | --- |
+| Design de interfaces | Figma, Penpot (código aberto), Sketch (Mac) |
+| Quadro branco e fluxos | FigJam, Miro |
+| Ícones | Lucide, Material Symbols, Phosphor |
+| Ilustrações e avatares | DiceBear (os robôs do mural!), unDraw |
+| Paletas e contraste | Coolors, verificadores de contraste WCAG |
+| Pesquisa com usuários | Google Forms, Maze, entrevistas por vídeo |
+
+## Um pouquinho de código ajuda
+
+Quem faz design não precisa programar, mas entender **HTML e CSS** muda o jogo: você sabe o que é fácil ou difícil de construir, fala a língua do front-end e entende por que aquele espaçamento ficou diferente.
+
+<Linguagens ids={["html-css"]} />
+
+```css
+.botao-enviar {
+  background: #c8803e;   /* a cor do botão */
+  color: #fff;            /* a cor do texto */
+  padding: 12px 20px;     /* o "respiro" dentro do botão */
+  border-radius: 999px;   /* cantos totalmente arredondados */
+  font-weight: 700;
+}
+```
+
+Cada linha corresponde a uma decisão de UI que você tomou no Figma.
+
+## Design system
+
+Empresas grandes juntam todas as decisões visuais num **design system**: a biblioteca oficial de cores, fontes, espaçamentos, ícones e componentes, com regras de uso. Exemplos famosos e abertos para estudar:
+
+- **Material Design** (Google)
+- **Human Interface Guidelines** (Apple)
+- **Carbon** (IBM)
+
+Até a Unidunedev tem um mini design system: as cores café, a fonte Fredoka da logo, os cantos arredondados e as cores de cada trilha.
+
+<Tarefa titulo="Primeiro contato com o Figma">
+
+Crie uma conta gratuita no Figma e desenhe uma única tela: a lista de salas do chat da Unidunedev, no tamanho de celular. Use pelo menos um componente (por exemplo, o item da sala) repetido três vezes.
+
+<Dica>
+
+Pressione F para criar um Frame e escolha o tamanho "iPhone" ou "Android" no painel da direita. Selecione o item da sala e pressione Ctrl+Alt+K para transformá-lo em componente.
+
+</Dica>
+
+</Tarefa>
+
+## Resumindo
+
+- Figma é o padrão: telas, componentes, protótipos e Dev Mode.
+- FigJam ou Miro para fluxos e ideias.
+- HTML e CSS ajudam a falar a língua do front-end.
+- Design system = as regras visuais do produto num lugar só.

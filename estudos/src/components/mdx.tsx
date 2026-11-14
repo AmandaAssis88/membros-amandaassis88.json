@@ -1,6 +1,7 @@
 import { isValidElement, type ComponentProps, type ReactNode } from "react";
 import { Codigo } from "./codigo";
 import { Aba, Abas, Dica, Memoria, Nota, Passos, Quiz, Resposta, Tarefa } from "./blocos";
+import { Camadas, Linguagens, Roadmap } from "./mapa";
 
 function textoDe(no: ReactNode): string {
   if (typeof no === "string") return no;
@@ -40,4 +41,7 @@ export const componentesMdx = {
   Passos,
   Abas,
   Aba,
+  Camadas,
+  Linguagens,
+  Roadmap,
 };

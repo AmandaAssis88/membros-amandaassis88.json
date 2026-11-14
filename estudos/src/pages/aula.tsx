@@ -1,5 +1,6 @@
 import { Link, notFound } from "@tanstack/react-router";
 import {
+  GraduationCap,
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
@@ -11,6 +12,7 @@ import {
 import { Suspense, lazy, useEffect, type ComponentType } from "react";
 import { Bebida } from "../components/bebida";
 import { componentesMdx } from "../components/mdx";
+import { Linguagens } from "../components/mapa";
 import {
   ESTUDOS_REPO_URL,
   buscarAula,
@@ -131,7 +133,22 @@ export function PaginaAula({ trilha, slug }: { trilha: Trilha | undefined; slug:
             <Check size={16} /> {feita ? "Aula concluída" : "Marcar como concluída"}
           </button>
 
-          {ultima && (
+          {ultima && trilha.grupo === "profissoes" && (
+            <div className="aula-praticar">
+              <p className="kicker">🎯 FIM DA TRILHA</p>
+              <h2>Agora você conhece o mapa!</h2>
+              <p>
+                O próximo passo é colocar a mão no código. Comece por uma das linguagens da área e,
+                no projeto do chat da Unidunedev, você vai ver tudo isso funcionando junto.
+              </p>
+              {trilha.linguagens && <Linguagens ids={trilha.linguagens} />}
+              <Link to="/" hash="profissoes" className="botao botao-trilha">
+                Ver outras profissões <ArrowRight size={16} />
+              </Link>
+            </div>
+          )}
+
+          {ultima && trilha.grupo !== "profissoes" && (
             <div className="aula-praticar">
               <p className="kicker">🎯 FIM DA TRILHA</p>
               <h2>Agora é com você!</h2>
@@ -154,6 +171,25 @@ export function PaginaAula({ trilha, slug }: { trilha: Trilha | undefined; slug:
                 {trilha.grupo === "fundamentos" ? "Abrir no GitHub" : "Ir para os desafios"}
               </a>
             </div>
+          )}
+
+          {ultima && trilha.cursos && trilha.cursos.length > 0 && (
+            <section className="aula-docs">
+              <p className="kicker">
+                <GraduationCap size={14} /> CURSOS RECOMENDADOS
+              </p>
+              <h2>Para continuar estudando</h2>
+              <ul>
+                {trilha.cursos.map((d) => (
+                  <li key={d.url}>
+                    <a href={d.url} target="_blank" rel="noreferrer">
+                      {d.titulo} <ArrowUpRight size={14} />
+                    </a>
+                    <span>{d.texto}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
 
           {ultima && trilha.documentacao && (

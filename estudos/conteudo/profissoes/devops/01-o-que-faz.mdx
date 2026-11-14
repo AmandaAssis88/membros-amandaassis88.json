@@ -1,0 +1,60 @@
+Escrever o código é metade do caminho. A outra metade é fazer esse código **chegar no usuário e ficar no ar**: em servidores, na nuvem, atualizado, seguro e rápido. É disso que cuida quem trabalha com **DevOps**.
+
+<Nota tipo="analogia" titulo="Pensa num pão de fermentação natural">
+O pão de fermentação natural não se faz de uma vez: você alimenta o fermento todo dia, controla a temperatura, espera, observa. Quem faz bem **cria uma rotina** que funciona sozinha. DevOps é assim: monta processos automáticos (testar, publicar, monitorar) e cuida deles com paciência, para que o sistema "cresça" sem desandar.
+</Nota>
+
+## Onde fica no mapa
+
+<Camadas destaque="devops" />
+
+DevOps fica **embaixo de tudo**: é o chão onde o back-end, o banco e os sites rodam. E também fica **no caminho** entre o código e o usuário: o PR aprovado vira uma nova versão no ar sem ninguém precisar copiar arquivos na mão.
+
+## Dev + Ops
+
+O nome junta duas palavras:
+
+- **Dev** (desenvolvimento): quem escreve o código e quer lançar coisas novas rápido.
+- **Ops** (operações): quem mantém o sistema no ar e quer estabilidade.
+
+Antigamente eram times separados que viviam brigando ("funciona na minha máquina!" × "seu código derrubou o servidor!"). DevOps é a **cultura** de juntar os dois, com automação no meio. Com o tempo virou também uma profissão (às vezes chamada de engenharia de plataforma, SRE ou cloud).
+
+## O que faz no dia a dia
+
+- **CI/CD:** monta o caminho automático que testa e publica cada mudança.
+- **Infraestrutura:** cria e configura servidores, bancos e redes, quase sempre na nuvem.
+- **Containers:** empacota as aplicações para rodarem igual em qualquer lugar.
+- **Monitoramento:** gráficos, logs e alertas. Se o sistema ficar lento às 3 da manhã, alguém fica sabendo.
+- **Segurança e custos:** quem pode acessar o quê, backups e não deixar a conta da nuvem explodir.
+- **Ajuda os devs:** deixa fácil e seguro publicar código.
+
+## Você já usou DevOps aqui!
+
+| O que acontece | Quem faz |
+| --- | --- |
+| Você abre um PR no mural e aparece o check ✅ ou ❌ | GitHub Actions (CI) |
+| O PR entra na `main` e o site atualiza sozinho em 2 minutos | Cloudflare (CD) |
+| Cada PR ganha um link de prévia para testar antes | Cloudflare (ambientes de preview) |
+| Os sites aguentam muita gente acessando ao mesmo tempo | a rede da Cloudflare (infraestrutura) |
+
+<Passos itens={[
+  { icone: "📤", titulo: "git push", texto: "o código sobe" },
+  { icone: "🧪", titulo: "CI", texto: "testes rodam sozinhos" },
+  { icone: "📦", titulo: "Build", texto: "gera a versão final" },
+  { icone: "🚀", titulo: "Deploy", texto: "publica na nuvem" },
+  { icone: "📈", titulo: "Monitora", texto: "está tudo bem?" },
+]} />
+
+<Quiz
+  pergunta="O que significa o check verde que aparece no seu PR?"
+  opcoes={["Que alguém aprovou o código", "Que a automação (CI) rodou as verificações e passou", "Que o site já está no ar"]}
+  correta={1}
+  explicacao="O check é o resultado da integração contínua: os testes e validações automáticas passaram."
+/>
+
+## Resumindo
+
+- DevOps leva o código até o usuário e mantém tudo no ar.
+- Une desenvolvimento e operação com automação.
+- CI/CD, nuvem, containers e monitoramento são o dia a dia.
+- Os PRs da Unidunedev já passam por um pipeline de DevOps.

@@ -1,0 +1,88 @@
+## A pirâmide de testes
+
+Nem todo teste custa igual. A pirâmide mostra a proporção saudável:
+
+<Passos itens={[
+  { icone: "🧱", titulo: "Unidade", texto: "muitos, rápidos e baratos: testam uma função" },
+  { icone: "🔗", titulo: "Integração", texto: "alguns: testam peças juntas (API + banco)" },
+  { icone: "🧑‍💻", titulo: "Ponta a ponta", texto: "poucos, lentos: o fluxo inteiro pela tela" },
+]} />
+
+- **Unidade:** `eh_par(4)` dá `True`? Roda em milissegundos. Dá para ter milhares.
+- **Integração:** a rota `POST /mensagens` salva mesmo no banco? Precisa subir a API e o banco.
+- **Ponta a ponta (E2E):** um robô abre o navegador, faz login, entra na sala e manda mensagem. Testa tudo, mas é lento e quebra mais fácil.
+
+Se a empresa só tem testes de ponta a ponta, a pirâmide fica de cabeça para baixo: tudo demora e qualquer mudança quebra dezenas de testes.
+
+## Caso de teste
+
+Um caso de teste descreve **uma** verificação, de um jeito que qualquer pessoa consiga repetir:
+
+| Campo | Exemplo |
+| --- | --- |
+| Título | Não deve enviar mensagem vazia |
+| Pré-condição | Usuário logado, dentro da sala "back-end" |
+| Passos | 1. Deixar o campo vazio. 2. Clicar em Enviar. |
+| Resultado esperado | Nada é enviado e o botão fica desabilitado |
+
+## O relato de bug perfeito
+
+Um bom relato faz a pessoa dev corrigir em minutos. Um ruim ("não funciona!!!") vira uma semana de troca de mensagens.
+
+```texto
+Título: Mensagem com emoji no começo aparece cortada no app Android
+
+Ambiente: app 1.4.2, Android 14, Galaxy A54
+Passos:
+  1. Entrar na sala "front-end"
+  2. Enviar a mensagem "🔥 bora"
+Esperado: aparece "🔥 bora"
+Obtido: aparece "bora" (o emoji some)
+Frequência: sempre
+Evidência: print anexado
+```
+
+O segredo está nos **passos para reproduzir**. Se ninguém consegue fazer o bug acontecer de novo, ninguém consegue corrigir.
+
+## Técnicas para achar bugs
+
+- **Valor limite:** teste exatamente nas bordas (16 anos, R$ 100,00, 280 caracteres).
+- **Partição de equivalência:** divida as entradas em grupos que se comportam igual e teste um de cada (menor de idade, adulto, idade inválida).
+- **Teste exploratório:** use o sistema sem roteiro, com curiosidade. Clique duas vezes, volte no navegador, gire o celular, perca a internet.
+- **Teste de regressão:** depois de uma correção, confira se o que funcionava continua funcionando.
+
+## Testes no fluxo de trabalho (CI)
+
+Os testes automatizados rodam sozinhos a cada PR, no GitHub Actions ou outra ferramenta de CI (você vai ver isso na trilha de DevOps). Se algum falhar, o check fica vermelho e o código não entra. É exatamente o que acontece nos desafios do `estudos`:
+
+<Passos itens={[
+  { icone: "📤", titulo: "PR aberto" },
+  { icone: "🤖", titulo: "Testes rodam", texto: "compila e compara as saídas" },
+  { icone: "✅", titulo: "Passou", texto: "pode entrar" },
+  { icone: "❌", titulo: "Falhou", texto: "mostra o que deu errado" },
+]} />
+
+<Tarefa titulo="Seja a QA do chat">
+
+Escreva 5 casos de teste para a funcionalidade "editar uma mensagem que eu enviei". Pense em limites e em coisas estranhas.
+
+<Resposta>
+
+Alguns exemplos:
+
+1. Editar a própria mensagem: o texto muda e aparece "(editada)".
+2. Tentar editar a mensagem de outra pessoa: o sistema recusa (e a API devolve `403`).
+3. Apagar todo o texto e salvar: deve impedir (mensagem vazia).
+4. Editar uma mensagem que outra pessoa acabou de responder: a resposta continua ligada.
+5. Editar sem internet: mostra um aviso e não perde o que foi digitado.
+
+</Resposta>
+
+</Tarefa>
+
+## Resumindo
+
+- Pirâmide: muitos testes de unidade, alguns de integração, poucos de ponta a ponta.
+- Caso de teste: título, pré-condição, passos, resultado esperado.
+- Bug bom = passos para reproduzir + esperado × obtido + evidência.
+- Testes automatizados rodam no CI a cada PR.

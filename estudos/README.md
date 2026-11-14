@@ -19,7 +19,8 @@ estudos/
 ├── conteudo/               # as aulas (.mdx), nas mesmas pastas do repositório estudos
 │   ├── fundamentos/
 │   ├── disciplinas/logica/
-│   └── linguagens/{c,python,java}/
+│   ├── linguagens/{c,python,java}/
+│   └── profissoes/{produto,front-end,back-end,mobile,devops,ui-ux,qa}/
 └── src/
     ├── catalogo.ts         # trilhas, ordem das aulas, títulos e tempos
     ├── components/         # código com Copiar/Testar, Faça você mesmo, Quiz, Memória...
@@ -36,7 +37,12 @@ estudos/
    - `<Memoria celulas={[{ nome: "x", tipo: "int", valor: "5", endereco: "0x10" }]} />`
    - `<Passos itens={[{ icone: "📝", titulo: "Código", texto: "..." }]} />`
    - `<Abas>` com `<Aba rotulo="C">...</Aba>` para o mesmo exemplo em várias linguagens
+   - `<Camadas destaque="back-end" />`: o mapa do produto com uma camada acesa (`usuario`, `front-end`, `mobile`, `internet`, `back-end`, `banco`, `ui-ux`, `devops`, `qa` ou sem destaque)
+   - `<Linguagens ids={["java", "dart"]} />`: chips de linguagens. Se existir uma trilha com o mesmo id, o chip vira link sozinho (a lista fica em `src/linguagens.ts`)
+   - `<Roadmap etapas={[{ titulo: "...", tempo: "1 mês", itens: ["..."], linguagens: ["python"] }]} />`
+   - ` ```python-exemplo `: realça como Python, mas sem o botão Testar (para código que precisa de bibliotecas que o OnlineGDB não tem)
 2. Aula nova? Adicione uma linha em `src/catalogo.ts`. O teste `catalogo.test.ts` avisa se faltar algo.
+   Trilhas de profissões também aceitam `cursos: [{ titulo, url, texto }]`, que aparecem no fim da última aula.
 3. Cuidado no texto fora de código: `{`, `}` e `<` têm significado especial no MDX. Coloque entre crases.
 4. Abra o PR. A Cloudflare gera uma prévia do site para revisar antes do merge.
 

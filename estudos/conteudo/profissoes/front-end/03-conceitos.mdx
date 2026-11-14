@@ -1,0 +1,109 @@
+## Componentes
+
+Um **componente** é um pedaço de tela com sua própria aparência e comportamento, que você reaproveita. A tela vira um quebra-cabeça de componentes:
+
+<Passos itens={[
+  { icone: "📄", titulo: "Página", texto: "a sala do chat" },
+  { icone: "📦", titulo: "Lista", texto: "ListaDeMensagens" },
+  { icone: "💬", titulo: "Item", texto: "Mensagem (repetida N vezes)" },
+  { icone: "👤", titulo: "Detalhe", texto: "Avatar dentro da mensagem" },
+]} />
+
+Em React, um componente é uma função que devolve o "HTML" da tela:
+
+```typescript
+function Mensagem({ autor, texto }: { autor: string; texto: string }) {
+  return (
+    <div className="mensagem">
+      <b>{autor}</b>
+      <p>{texto}</p>
+    </div>
+  );
+}
+```
+
+## Estado
+
+**Estado** é a informação que pode mudar enquanto a pessoa usa a tela: o texto digitado, se o menu está aberto, a lista de mensagens. Quando o estado muda, o framework **redesenha** a parte da tela que depende dele.
+
+```typescript
+const [texto, setTexto] = useState("");
+// a pessoa digita → setTexto("oi") → o campo e o botão se atualizam sozinhos
+```
+
+## Conversando com a API
+
+Aqui o front encontra o back-end. Com o `fetch`, o JavaScript faz requisições HTTP:
+
+```javascript
+// Buscar as mensagens da sala (GET)
+const resposta = await fetch("/api/salas/backend/mensagens");
+const mensagens = await resposta.json();
+
+// Enviar uma mensagem nova (POST)
+await fetch("/api/salas/backend/mensagens", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ texto: "Oi, pessoal!" }),
+});
+```
+
+E o front precisa tratar os três momentos de toda requisição: **carregando** (mostra um esqueleto), **deu certo** (mostra os dados) e **deu erro** (mostra uma mensagem amigável e um "tentar de novo").
+
+## SPA e rotas
+
+Numa **SPA** (*Single Page Application*), o navegador baixa o site uma vez e o JavaScript troca as telas sem recarregar a página. As **rotas** ligam cada endereço a uma tela: `/mural` mostra o mural, `/c/ponteiros` mostra a aula de ponteiros.
+
+| Jeito | Como funciona | Bom para |
+| --- | --- | --- |
+| **SPA** (renderiza no navegador) | o JavaScript monta as telas | apps e painéis (como os sites da Unidunedev) |
+| **SSR** (renderiza no servidor) | o servidor manda o HTML pronto | sites que precisam aparecer bem no Google e abrir muito rápido |
+| **SSG** (gera estático) | as páginas são geradas no build | blogs e documentação |
+
+## Responsividade
+
+O mesmo site em telas de 360 px a 2000 px. As ferramentas principais do CSS:
+
+- **Flexbox** e **Grid** para organizar o layout.
+- **Media queries** para mudar o layout em telas menores:
+
+```css
+.cardapio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 760px) {
+  .cardapio {
+    grid-template-columns: 1fr;   /* no celular, um card por linha */
+  }
+}
+```
+
+## Arquitetura de pastas
+
+Projetos de front costumam organizar o código assim (o onboarding segue algo parecido):
+
+```texto
+src/
+├── components/   peças reutilizáveis (Botao, Card, Avatar)
+├── pages/        as telas (ou routes/)
+├── lib/          funções de apoio, chamadas à API
+├── styles/       CSS global
+└── main.tsx      onde tudo começa
+```
+
+<Quiz
+  pergunta="O usuário digitou no campo e o contador de caracteres atualizou sozinho. Que conceito é esse?"
+  opcoes={["Rota", "Estado", "Media query"]}
+  correta={1}
+  explicacao="O texto digitado é estado. Quando ele muda, o framework redesenha o que depende dele, como o contador."
+/>
+
+## Resumindo
+
+- Telas são feitas de componentes reutilizáveis.
+- Estado é o que muda; o framework redesenha a tela sozinho.
+- `fetch` conversa com a API; trate carregando, sucesso e erro.
+- SPA troca de tela sem recarregar; rotas ligam endereços a telas.
+- Flexbox, Grid e media queries deixam tudo responsivo.

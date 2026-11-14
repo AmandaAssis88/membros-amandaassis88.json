@@ -1,0 +1,59 @@
+Antes de qualquer linha de código, alguém precisa decidir **como o produto vai ser e como vai ser usado**. Esse é o trabalho de quem faz design de produto, com duas metades que andam juntas: **UX** e **UI**.
+
+## UX × UI
+
+- **UX (User Experience, experiência do usuário):** como é **usar** o produto. É fácil? A pessoa entende o que fazer? Chega onde quer em poucos passos? Fica frustrada em algum momento?
+- **UI (User Interface, interface do usuário):** como o produto **parece**. Cores, tipografia, ícones, espaçamentos, botões, animações.
+
+<Nota tipo="analogia" titulo="Pensa num macaron">
+UI é o macaron bonito na vitrine: a cor, o formato, o brilho. UX é a experiência de comer: está macio? É fácil de pegar? Esfarela na mão? Dá para comer em pé? Um macaron lindo que se desmancha todo na sua mão tem ótima UI e péssima UX.
+</Nota>
+
+## Onde fica no mapa
+
+<Camadas destaque="ui-ux" />
+
+UI/UX fica **antes** e **em volta** das telas: desenha o que o front-end e o mobile vão construir. Mas também conversa com o back-end ("dá para mostrar se a pessoa está online?") e com QA ("esse fluxo está confuso?").
+
+## O que faz no dia a dia
+
+- **Pesquisa:** conversa com usuários, observa como usam, descobre as dores de verdade.
+- **Define o fluxo:** quais telas existem e como a pessoa vai de uma para outra.
+- **Wireframe:** o rascunho das telas, só com caixas e textos, sem cor.
+- **Protótipo:** a versão bonita e clicável, que parece o app de verdade (mas não tem código).
+- **Testa com usuários:** observa pessoas usando o protótipo e ajusta.
+- **Entrega para desenvolvimento:** medidas, cores, estados (normal, carregando, erro, vazio) e conversa com front e mobile.
+
+<Passos itens={[
+  { icone: "🔍", titulo: "Pesquisa", texto: "qual é o problema?" },
+  { icone: "✏️", titulo: "Wireframe", texto: "rascunho em caixas" },
+  { icone: "🎨", titulo: "Protótipo", texto: "visual e clicável" },
+  { icone: "👀", titulo: "Teste", texto: "pessoas reais usando" },
+  { icone: "🤝", titulo: "Entrega", texto: "para front e mobile" },
+]} />
+
+## Exemplo real: o onboarding
+
+O site do onboarding da Unidunedev passou por decisões de UI/UX que você talvez nem tenha notado:
+
+- **O formulário em etapas** em vez de uma página enorme: menos assustador (UX).
+- **O rascunho salvo no navegador**: se fechar sem querer, não perde nada (UX).
+- **Os estilos de chat com prévia** (lofi, terminal, floresta...): você vê antes de escolher (UI e UX).
+- **O aviso laranja "falta só 1 passo"**: muita gente esquecia do PR, então o design passou a destacar isso (UX baseada no que aconteceu de verdade!).
+
+<Nota tipo="dica" titulo="Design não é só deixar bonito">
+Uma boa pergunta de UX vale mais que uma tela linda. "Por que a pessoa está abandonando o formulário na etapa 3?" Responder isso é design.
+</Nota>
+
+<Quiz
+  pergunta="O botão de enviar está lindo, mas fica escondido embaixo do teclado no celular. É um problema de UI ou de UX?"
+  opcoes={["UI", "UX", "Nenhum dos dois"]}
+  correta={1}
+  explicacao="O visual está ótimo, mas a experiência de usar está ruim: é um problema de UX."
+/>
+
+## Resumindo
+
+- UX = como é usar. UI = como parece. As duas andam juntas.
+- Design vem antes do código: pesquisa, wireframe, protótipo, teste.
+- Quem faz design conversa com todas as outras áreas.

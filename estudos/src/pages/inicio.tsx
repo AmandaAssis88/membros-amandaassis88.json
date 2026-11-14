@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Bebida } from "../components/bebida";
 import { CenaLofi } from "../components/lofi";
 import { CRIADOR } from "@/config";
-import { GRUPOS, TRILHAS, duracao, minutosDaTrilha, type Trilha } from "../catalogo";
+import { GRUPOS, PESOS, TRILHAS, duracao, minutosDaTrilha, type Trilha } from "../catalogo";
 import { idDaAula, useConcluidas } from "../progresso";
 
 function CartaoTrilha({ trilha, concluidas }: { trilha: Trilha; concluidas: string[] }) {
@@ -25,6 +25,11 @@ function CartaoTrilha({ trilha, concluidas }: { trilha: Trilha; concluidas: stri
         <span className="cartao-nome">{trilha.nome}</span>
         <span className="cartao-frase">{trilha.frase}</span>
         <span className="cartao-meta">
+          {trilha.peso && (
+            <span className="cartao-peso">
+              {PESOS[trilha.peso].icone} {PESOS[trilha.peso].rotulo} ·{" "}
+            </span>
+          )}
           {trilha.aulas.length} aulas · {duracao(minutosDaTrilha(trilha))}
           {feitas.length > 0 && ` · ${feitas.length} feita${feitas.length > 1 ? "s" : ""}`}
         </span>
@@ -101,6 +106,19 @@ export function Inicio() {
           ))}
         </div>
         <GrupoDoCardapio grupo={GRUPOS[2]!} concluidas={concluidas} />
+      </section>
+
+      <section className="cardapio padaria" id="profissoes">
+        <div className="secao-topo">
+          <p className="kicker">🥐 PADARIA DAS PROFISSÕES</p>
+          <h2>E pra acompanhar?</h2>
+          <p>
+            Sobremesas e pães: cada área da tecnologia, o que ela faz e onde fica no produto. Quanto
+            mais pesado o prato, mais desafiadora a trilha. Comece pelo pão francês: ele mostra o
+            mapa inteiro.
+          </p>
+        </div>
+        <GrupoDoCardapio grupo={GRUPOS[3]!} concluidas={concluidas} />
       </section>
 
       <section className="como-estudar">

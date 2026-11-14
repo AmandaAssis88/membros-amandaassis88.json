@@ -28,6 +28,44 @@ const PALAVRAS: Record<string, { chaves: string[]; tipos: string[] }> = {
         " ",
       ),
   },
+  javascript: {
+    chaves:
+      "const let var function return if else for while do switch case default break continue new class extends import from export async await try catch finally throw this of in typeof null undefined true false".split(
+        " ",
+      ),
+    tipos: "console fetch JSON Promise Array Object Math document window".split(" "),
+  },
+  dart: {
+    chaves:
+      "final var const class extends return if else for while switch case break continue new import async await void true false null this super required late".split(
+        " ",
+      ),
+    tipos: "int double String bool List Map Future Widget Text print".split(" "),
+  },
+  kotlin: {
+    chaves:
+      "fun val var class object return if else for while when in is null true false import package data override private".split(
+        " ",
+      ),
+    tipos: "Int Double String Boolean List println".split(" "),
+  },
+  swift: {
+    chaves:
+      "func let var struct class return if else for while in import some guard nil true false self".split(
+        " ",
+      ),
+    tipos: "Int Double String Bool View Text VStack print".split(" "),
+  },
+  sql: {
+    chaves:
+      "SELECT FROM WHERE INSERT INTO VALUES UPDATE SET DELETE CREATE TABLE PRIMARY KEY REFERENCES JOIN ON ORDER BY LIMIT AND OR NOT NULL DEFAULT".split(
+        " ",
+      ),
+    tipos: "INT INTEGER TEXT VARCHAR SERIAL TIMESTAMP BOOLEAN UUID".split(" "),
+  },
+  yaml: { chaves: "true false on".split(" "), tipos: [] },
+  json: { chaves: "true false null".split(" "), tipos: [] },
+  http: { chaves: "GET POST PUT PATCH DELETE HTTP".split(" "), tipos: [] },
   pseudo: {
     chaves:
       "algoritmo inicio fim se então senão fim-se enquanto faça fim-enquanto para de até passo fim-para escreva leia função retorne fim-função e ou não var".split(
@@ -38,7 +76,12 @@ const PALAVRAS: Record<string, { chaves: string[]; tipos: string[] }> = {
 };
 
 function montarRegex(linguagem: string) {
-  const comentario = linguagem === "python" ? "#.*" : "\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/";
+  const comentario =
+    linguagem === "python" || linguagem === "yaml"
+      ? "#.*"
+      : linguagem === "sql"
+        ? "--.*"
+        : "\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/";
   const partes = [
     `(?<comentario>${comentario})`,
     linguagem === "c" ? "(?<preproc>#\\s*\\w+(?:\\s*<[^>\\n]*>)?)" : null,
@@ -52,7 +95,8 @@ function montarRegex(linguagem: string) {
   return new RegExp(partes.join("|"), "g");
 }
 
-export function destacar(codigo: string, linguagem: string): Token[] {
+export function destacar(codigo: string, linguagemOriginal: string): Token[] {
+  const linguagem = linguagemOriginal === "typescript" ? "javascript" : linguagemOriginal;
   const conf = PALAVRAS[linguagem];
   if (!conf) return [{ tipo: "", texto: codigo }];
   const regex = montarRegex(linguagem);

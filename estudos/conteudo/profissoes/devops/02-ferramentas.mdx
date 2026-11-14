@@ -1,0 +1,73 @@
+DevOps tem **muita** ferramenta. Não se assuste: elas se organizam em poucos grupos, e o primeiro de todos é o terminal.
+
+## Linux e terminal
+
+A maioria dos servidores do mundo roda **Linux**, e quase tudo é feito pelo **terminal**. É a base de tudo em DevOps.
+
+```terminal
+ls -la                 # lista os arquivos
+cd /var/log            # entra na pasta de logs
+tail -f app.log        # acompanha o log ao vivo
+df -h                  # quanto espaço sobra no disco?
+ps aux | grep node     # quais programas node estão rodando?
+```
+
+## Linguagens
+
+<Linguagens ids={["bash", "python", "go"]} />
+
+- **Bash:** scripts para automatizar comandos do terminal.
+- **Python:** automações maiores, ferramentas internas.
+- **Go:** muitas ferramentas de nuvem (Docker, Kubernetes, Terraform) são escritas em Go.
+- **YAML:** não é linguagem de programação, mas você vai escrever YAML **o dia inteiro** (configurações de CI, Kubernetes, Docker Compose).
+
+## Os grandes grupos de ferramentas
+
+| Grupo | Para quê | Ferramentas |
+| --- | --- | --- |
+| Versionamento | todo o código e a configuração | Git, GitHub, GitLab |
+| CI/CD | testar e publicar sozinho | GitHub Actions, GitLab CI, Jenkins |
+| Containers | empacotar a aplicação | Docker, Docker Compose |
+| Orquestração | rodar muitos containers | Kubernetes |
+| Nuvem | servidores e serviços sob demanda | AWS, Azure, Google Cloud, Cloudflare |
+| Infraestrutura como código | criar a infra a partir de arquivos | Terraform, Pulumi |
+| Monitoramento | métricas, logs e alertas | Grafana, Prometheus, Datadog, Sentry |
+
+## Docker em 30 segundos
+
+O Docker resolve o famoso **"na minha máquina funciona"**. Você descreve tudo o que a aplicação precisa num arquivo, e ela roda igual em qualquer computador:
+
+```texto
+# Dockerfile de uma API em Python
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
+```
+
+```terminal
+docker build -t api-chat .     # empacota
+docker run -p 8000:8000 api-chat   # roda
+```
+
+## Nuvem
+
+Em vez de comprar servidores, a empresa **aluga** capacidade de computação por hora, de provedores como AWS (Amazon), Azure (Microsoft) e Google Cloud. Os serviços mais comuns:
+
+- **Máquinas virtuais:** um servidor alugado.
+- **Bancos gerenciados:** o provedor cuida de backup e atualização.
+- **Funções serverless e Workers:** código que roda sob demanda, sem servidor para administrar (os sites da Unidunedev rodam em Cloudflare Workers!).
+- **Armazenamento:** arquivos, imagens, vídeos.
+
+<Nota tipo="cuidado" titulo="Cuidado com a conta">
+Na nuvem, tudo é cobrado pelo uso. Um servidor esquecido ligado ou uma chave de acesso vazada no GitHub pode virar uma conta de milhares de reais. Use os planos gratuitos com alertas de gasto, e **nunca** coloque chaves e senhas no código.
+</Nota>
+
+## Resumindo
+
+- Linux e terminal são a base.
+- Bash, Python, Go e muito YAML.
+- Git → CI/CD → Docker → nuvem → monitoramento.
+- Docker: "funciona na minha máquina" vira "funciona em qualquer máquina".
