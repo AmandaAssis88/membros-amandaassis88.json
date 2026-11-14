@@ -101,7 +101,7 @@ export function Inicio() {
           <p>Organizado igualzinho às pastas do repositório estudos no GitHub.</p>
         </div>
         <div className="cardapio-base">
-          {GRUPOS.filter((g) => g.id !== "linguagens").map((g) => (
+          {GRUPOS.filter((g) => g.id === "fundamentos" || g.id === "disciplinas").map((g) => (
             <GrupoDoCardapio key={g.id} grupo={g} concluidas={concluidas} />
           ))}
         </div>
