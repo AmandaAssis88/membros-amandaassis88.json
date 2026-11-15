@@ -1,10 +1,13 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { ArrowUpRight, Github, Heart } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { MiniPlayer } from "./mini-player";
 import { CRIADOR } from "@/config";
 import { ESTUDOS_REPO_URL, ONBOARDING_URL } from "../catalogo";
 
 export function Cabecalho() {
+  const naHome = useLocation({ select: (location) => location.pathname === "/" });
+
   return (
     <header className="cabecalho">
       <Link to="/" className="cabecalho-marca" aria-label="Estudos Unidunedev, início">
@@ -12,6 +15,7 @@ export function Cabecalho() {
         <span className="cabecalho-selo">estudos</span>
       </Link>
       <nav className="cabecalho-nav">
+        {!naHome && <MiniPlayer compacto />}
         <Link to="/" activeOptions={{ exact: true }} className="nav-inicio">
           Cardápio
         </Link>
