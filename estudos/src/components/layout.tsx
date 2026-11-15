@@ -15,10 +15,10 @@ export function Cabecalho() {
         <span className="cabecalho-selo">estudos</span>
       </Link>
       <nav className="cabecalho-nav">
+        {!naHome && <MiniPlayer compacto />}
         <Link to="/" activeOptions={{ exact: true }} className="nav-inicio">
           Cardápio
         </Link>
-        {!naHome && <MiniPlayer compacto />}
         <a href={ESTUDOS_REPO_URL} target="_blank" rel="noreferrer">
           <Github size={15} /> <span>Desafios</span>
         </a>
