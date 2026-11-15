@@ -207,7 +207,7 @@ export function MiniPlayer() {
         </div>
       )}
       <div className="cafe-player-topo">
-        <span><Coffee size={13} aria-hidden="true" /> SOM DO CAFÉ</span>
+        <span><Coffee size={13} aria-hidden="true" /> SOM ACOMPANHANTE</span>
         <span className={tocando ? "cafe-player-status ativo" : "cafe-player-status"}>
           <i aria-hidden="true" /> {tocando ? "tocando" : "pausado"}
         </span>

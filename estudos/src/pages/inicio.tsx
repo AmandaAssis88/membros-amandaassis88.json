@@ -79,7 +79,7 @@ export function Inicio() {
         <div className="home-hero-texto">
           <p className="kicker">☕ CAFÉ DE ESTUDOS DA UNIDUNEDEV</p>
           <h1>
-            Aprenda do zero, com calma e <em>pegando na mão</em>.
+            Aprenda do zero, com calma e <em>sem cobranças</em>.
           </h1>
           <p>
             Escolha uma bebida do cardápio. Cada trilha é uma introdução com exemplos para copiar e
