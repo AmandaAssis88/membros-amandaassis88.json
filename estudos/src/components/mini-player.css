@@ -232,6 +232,7 @@
     right: auto;
     width: min(100%, 306px);
     margin-top: 28px;
+    margin-bottom: 32px;
     align-self: flex-start;
   }
 }
