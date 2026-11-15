@@ -75,6 +75,7 @@ export function Inicio() {
     <main>
       <section className="home-hero">
         <CenaLofi />
+        <MiniPlayer />
         <div className="home-hero-texto">
           <p className="kicker">☕ CAFÉ DE ESTUDOS DA UNIDUNEDEV</p>
           <h1>
@@ -84,7 +85,6 @@ export function Inicio() {
             Escolha uma bebida do cardápio. Cada trilha é uma introdução com exemplos para copiar e
             testar. Quando quiser praticar de verdade, os desafios esperam por você no GitHub.
           </p>
-          <MiniPlayer />
           <div className="home-hero-botoes">
             <Link to="/$trilha" params={{ trilha: "fundamentos" }} className="botao botao-claro">
               Começar pelos fundamentos <ArrowRight size={16} />
