@@ -23,6 +23,8 @@ jobs:
       - name: Formatar componentes do Pomodoro na branch de testes
         if: github.head_ref == 'pomodoro'
         run: |
+          git fetch origin pomodoro
+          git checkout -B pomodoro origin/pomodoro
           npx prettier --write estudos/src/components/mini-player.tsx estudos/src/components/pomodoro.tsx estudos/src/components/pomodoro-logica.ts estudos/src/components/pomodoro-logica.test.ts
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
