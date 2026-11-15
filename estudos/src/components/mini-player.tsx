@@ -1,5 +1,14 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { Coffee, Pause, Play, Repeat2, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
+import {
+  Coffee,
+  Pause,
+  Play,
+  Repeat2,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 
 type Faixa = { nome: string; arquivo: string };
 type Preferencias = { faixa: number; volume: number };
@@ -21,7 +30,9 @@ const ContextoAudio = createContext<ControleAudio | null>(null);
 
 function carregarPreferencias(): Preferencias {
   try {
-    const salvo = JSON.parse(window.localStorage.getItem(CHAVE) ?? "null") as Partial<Preferencias> | null;
+    const salvo = JSON.parse(
+      window.localStorage.getItem(CHAVE) ?? "null",
+    ) as Partial<Preferencias> | null;
     if (!salvo) return PADRAO;
 
     return {
@@ -67,15 +78,16 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
         const lista = (dados as { faixas: unknown }).faixas;
         if (!Array.isArray(lista)) throw new Error("Catálogo inválido");
 
-        const validas = lista.filter((item): item is Faixa => (
-          item !== null &&
-          typeof item === "object" &&
-          "nome" in item &&
-          "arquivo" in item &&
-          typeof item.nome === "string" &&
-          typeof item.arquivo === "string" &&
-          item.arquivo.startsWith("/audio/musics/")
-        ));
+        const validas = lista.filter(
+          (item): item is Faixa =>
+            item !== null &&
+            typeof item === "object" &&
+            "nome" in item &&
+            "arquivo" in item &&
+            typeof item.nome === "string" &&
+            typeof item.arquivo === "string" &&
+            item.arquivo.startsWith("/audio/musics/"),
+        );
         if (abort.signal.aborted) return;
         if (validas.length === 0) {
           setErro("Nenhuma música encontrada no R2.");
@@ -136,16 +148,19 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
     function tentarTocar() {
       if (!ativo || !audio || !audio.paused) return;
 
-      void audio.play().then(() => {
-        cancelarAutoplay();
-      }).catch((erro: unknown) => {
-        if (!ativo) return;
-        // A maioria dos navegadores exige uma interação antes de liberar áudio.
-        if (erro instanceof DOMException && erro.name === "NotAllowedError") return;
-        if (erro instanceof DOMException && erro.name === "AbortError") return;
-        cancelarAutoplay();
-        setErro("Faixa indisponível no R2.");
-      });
+      void audio
+        .play()
+        .then(() => {
+          cancelarAutoplay();
+        })
+        .catch((erro: unknown) => {
+          if (!ativo) return;
+          // A maioria dos navegadores exige uma interação antes de liberar áudio.
+          if (erro instanceof DOMException && erro.name === "NotAllowedError") return;
+          if (erro instanceof DOMException && erro.name === "AbortError") return;
+          cancelarAutoplay();
+          setErro("Faixa indisponível no R2.");
+        });
     }
 
     cancelarAutoplayRef.current = cancelarAutoplay;
@@ -244,69 +259,123 @@ export function MiniPlayer({ compacto = false }: { compacto?: boolean }) {
   const controle = useContext(ContextoAudio);
   if (!controle) throw new Error("MiniPlayer precisa estar dentro de ProvedorAudio.");
   const {
-    faixa, faixas, volume, tocando, repetirFaixa, erro,
-    alternar, pular, alternarMudo, alternarRepeticao, ajustarVolume,
+    faixa,
+    faixas,
+    volume,
+    tocando,
+    repetirFaixa,
+    erro,
+    alternar,
+    pular,
+    alternarMudo,
+    alternarRepeticao,
+    ajustarVolume,
   } = controle;
 
   return (
-    <section className={compacto ? "cafe-player cafe-player--header" : "cafe-player"} aria-label="Player de música do café de estudos">
+    <section
+      className={compacto ? "cafe-player cafe-player--header" : "cafe-player"}
+      aria-label="Player de música do café de estudos"
+    >
       {tocando && (
         <div className="cafe-player-particulas" aria-hidden="true">
-          <span>♪</span><span>•</span><span>♫</span><span>•</span><span>♪</span>
+          <span>♪</span>
+          <span>•</span>
+          <span>♫</span>
+          <span>•</span>
+          <span>♪</span>
         </div>
       )}
       <div className="cafe-player-topo">
-        <span><Coffee size={13} aria-hidden="true" /> SOM ACOMPANHANTE</span>
+        <span>
+          <Coffee size={13} aria-hidden="true" /> SOM ACOMPANHANTE
+        </span>
         <span className={tocando ? "cafe-player-status ativo" : "cafe-player-status"}>
           <i aria-hidden="true" /> {tocando ? "tocando" : "pausado"}
         </span>
       </div>
 
       <div className="cafe-player-navegacao">
-        <button type="button" className="cafe-player-salto" onClick={() => pular(-1)}
-          title="Música anterior" aria-label="Música anterior">
+        <button
+          type="button"
+          className="cafe-player-salto"
+          onClick={() => pular(-1)}
+          title="Música anterior"
+          aria-label="Música anterior"
+        >
           <SkipBack size={16} fill="currentColor" />
         </button>
         <div className="cafe-player-nome" title={faixas[faixa]?.nome ?? "Carregando"}>
           <strong>{faixas[faixa]?.nome ?? "Carregando músicas..."}</strong>
           <small>playlist de estudos</small>
         </div>
-        <button type="button" className="cafe-player-salto" onClick={() => pular(1)}
-          title="Próxima música" aria-label="Próxima música">
+        <button
+          type="button"
+          className="cafe-player-salto"
+          onClick={() => pular(1)}
+          title="Próxima música"
+          aria-label="Próxima música"
+        >
           <SkipForward size={16} fill="currentColor" />
         </button>
       </div>
 
       <div className="cafe-player-acoes" aria-label="Controles de reprodução">
         <div className="cafe-player-volume">
-          <button type="button" className="cafe-player-icone"
+          <button
+            type="button"
+            className="cafe-player-icone"
             onClick={alternarMudo}
             title={volume === 0 ? "Restaurar volume" : "Silenciar (passe o mouse para ajustar)"}
-            aria-label={volume === 0 ? "Restaurar volume" : "Silenciar áudio"}>
+            aria-label={volume === 0 ? "Restaurar volume" : "Silenciar áudio"}
+          >
             {volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
           </button>
           <div className="cafe-player-ajuste">
-            <input type="range" min={0} max={100} value={volume}
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={volume}
               onChange={(event) => ajustarVolume(Number(event.target.value))}
-              aria-label="Ajustar volume" />
+              aria-label="Ajustar volume"
+            />
             <span>{volume}%</span>
           </div>
         </div>
-        <button type="button" className="cafe-player-tocar" onClick={alternar}
+        <button
+          type="button"
+          className="cafe-player-tocar"
+          onClick={alternar}
           title={tocando ? "Pausar música" : "Reproduzir música"}
-          aria-label={tocando ? "Pausar música" : "Reproduzir música"}>
-          {tocando ? <Pause size={19} fill="currentColor" /> : <Play size={19} fill="currentColor" />}
+          aria-label={tocando ? "Pausar música" : "Reproduzir música"}
+        >
+          {tocando ? (
+            <Pause size={19} fill="currentColor" />
+          ) : (
+            <Play size={19} fill="currentColor" />
+          )}
         </button>
-        <button type="button"
+        <button
+          type="button"
           className={repetirFaixa ? "cafe-player-icone selecionado" : "cafe-player-icone"}
           onClick={alternarRepeticao}
           title={repetirFaixa ? "Repetição ativada" : "Repetir esta música"}
           aria-label={repetirFaixa ? "Desativar repetição" : "Repetir música"}
-          aria-pressed={repetirFaixa}>
+          aria-pressed={repetirFaixa}
+        >
           <Repeat2 size={17} />
         </button>
       </div>
-      {erro && <p className="cafe-player-erro" role="status" title="Confira unidunedev-musicas/musics/ no Cloudflare R2">{erro}</p>}
+      {erro && (
+        <p
+          className="cafe-player-erro"
+          role="status"
+          title="Confira unidunedev-musicas/musics/ no Cloudflare R2"
+        >
+          {erro}
+        </p>
+      )}
     </section>
   );
 }

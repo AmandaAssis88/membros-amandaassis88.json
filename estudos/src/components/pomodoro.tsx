@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Coffee, Moon, Pause, Play, RotateCcw, Settings2, X } from "lucide-react";
 import {
   avancarSessao,
@@ -40,7 +35,8 @@ function carregarEstado(): Estado {
       (etapa !== "foco" && etapa !== "pausa" && etapa !== "pronto") ||
       typeof restante !== "number" ||
       !Number.isFinite(restante) ||
-      restante < 0 || restante > 180 * MS_MINUTO ||
+      restante < 0 ||
+      restante > 180 * MS_MINUTO ||
       (fim !== null && (typeof fim !== "number" || !Number.isFinite(fim) || fim <= 0))
     ) {
       return { config, sessao: novaSessao(config) };
@@ -56,7 +52,10 @@ function carregarEstado(): Estado {
 function avisoDaEtapa(fase: "pausa" | "pronto") {
   return fase === "pausa"
     ? { titulo: "Hora de descansar ☕", mensagem: "Seu tempo de foco terminou. Aproveite a pausa!" }
-    : { titulo: "Pronto para estudar novamente?", mensagem: "Não se cobre! Comece quando se sentir pronto." };
+    : {
+        titulo: "Pronto para estudar novamente?",
+        mensagem: "Não se cobre! Comece quando se sentir pronto.",
+      };
 }
 
 export function Pomodoro() {
@@ -96,7 +95,10 @@ export function Pomodoro() {
       }
     };
     if (contexto.state === "suspended") {
-      void contexto.resume().then(executar).catch(() => {});
+      void contexto
+        .resume()
+        .then(executar)
+        .catch(() => {});
     } else {
       executar();
     }
@@ -153,7 +155,11 @@ export function Pomodoro() {
       if (sessao.fase === "pronto") setAberto(true);
 
       // Notificação do sistema é opcional e só aparece se já houver permissão.
-      if (typeof Notification !== "undefined" && Notification.permission === "granted" && document.hidden) {
+      if (
+        typeof Notification !== "undefined" &&
+        Notification.permission === "granted" &&
+        document.hidden
+      ) {
         try {
           new Notification(aviso.titulo, { body: aviso.mensagem });
         } catch {
@@ -241,9 +247,10 @@ export function Pomodoro() {
       }
       // O ciclo em andamento não é interrompido por alterações na configuração.
       // Quando está parado, permite começar com a nova duração.
-      const sessaoNova = antes.sessao.fimEm === null && antes.sessao.fase === "foco"
-        ? novaSessao(novo)
-        : antes.sessao;
+      const sessaoNova =
+        antes.sessao.fimEm === null && antes.sessao.fase === "foco"
+          ? novaSessao(novo)
+          : antes.sessao;
       return { config: novo, sessao: sessaoNova };
     });
   }
@@ -253,28 +260,52 @@ export function Pomodoro() {
   const legenda = pronto ? "Prontinho" : foco ? "Foco" : "Descanso";
   const botaoRotulo = pronto
     ? "Começar outro ciclo de estudos"
-    : rodando ? "Pausar Pomodoro" : "Iniciar ou retomar Pomodoro";
+    : rodando
+      ? "Pausar Pomodoro"
+      : "Iniciar ou retomar Pomodoro";
 
   return (
     <div className="pomo-ancora" ref={caixaRef}>
-      <section className={`pomo-bolha pomo-${sessao.fase}${rodando ? " pomo-ativo" : ""}`}
-        aria-label={`Pomodoro, ${legenda}: ${formatarTempo(restante)}`}>
+      <section
+        className={`pomo-bolha pomo-${sessao.fase}${rodando ? " pomo-ativo" : ""}`}
+        aria-label={`Pomodoro, ${legenda}: ${formatarTempo(restante)}`}
+      >
         <span className="pomo-simbolo" aria-hidden="true">
           {sessao.fase === "pausa" ? <Moon size={19} /> : <Coffee size={19} />}
-          {rodando && foco && <span className="pomo-vapor"><i /><i /><i /></span>}
+          {rodando && foco && (
+            <span className="pomo-vapor">
+              <i />
+              <i />
+              <i />
+            </span>
+          )}
           {rodando && sessao.fase === "pausa" && <span className="pomo-estrela">✦</span>}
         </span>
         <span className="pomo-display">
           <small>{legenda}</small>
           <strong role="timer">{formatarTempo(restante)}</strong>
         </span>
-        <button type="button" className="pomo-botao pomo-play"
-          aria-label={botaoRotulo} title={botaoRotulo} onClick={alternarContagem}>
-          {rodando ? <Pause size={15} fill="currentColor" /> : <Play size={15} fill="currentColor" />}
+        <button
+          type="button"
+          className="pomo-botao pomo-play"
+          aria-label={botaoRotulo}
+          title={botaoRotulo}
+          onClick={alternarContagem}
+        >
+          {rodando ? (
+            <Pause size={15} fill="currentColor" />
+          ) : (
+            <Play size={15} fill="currentColor" />
+          )}
         </button>
-        <button type="button" className="pomo-botao pomo-config"
-          aria-label="Configurar Pomodoro" title="Configurar Pomodoro"
-          aria-expanded={aberto} onClick={() => setAberto((valor) => !valor)}>
+        <button
+          type="button"
+          className="pomo-botao pomo-config"
+          aria-label="Configurar Pomodoro"
+          title="Configurar Pomodoro"
+          aria-expanded={aberto}
+          onClick={() => setAberto((valor) => !valor)}
+        >
           <Settings2 size={15} />
         </button>
       </section>
@@ -282,14 +313,24 @@ export function Pomodoro() {
       {aberto && (
         <section className="pomo-painel" aria-label="Configurações do Pomodoro">
           <div className="pomo-painel-topo">
-            <span className="pomo-painel-titulo"><Coffee size={16} /> Seu tempo, no seu ritmo</span>
-            <button type="button" className="pomo-fechar" aria-label="Fechar Pomodoro"
-              onClick={() => setAberto(false)}><X size={16} /></button>
+            <span className="pomo-painel-titulo">
+              <Coffee size={16} /> Seu tempo, no seu ritmo
+            </span>
+            <button
+              type="button"
+              className="pomo-fechar"
+              aria-label="Fechar Pomodoro"
+              onClick={() => setAberto(false)}
+            >
+              <X size={16} />
+            </button>
           </div>
 
           {pronto && (
             <div className="pomo-final" role="status">
-              <span className="pomo-final-icone" aria-hidden="true">☕</span>
+              <span className="pomo-final-icone" aria-hidden="true">
+                ☕
+              </span>
               <strong>Pronto para estudar novamente?</strong>
               <p>Não se cobre! Comece quando se sentir pronto.</p>
               <button type="button" className="pomo-comecar" onClick={alternarContagem}>
@@ -309,37 +350,56 @@ export function Pomodoro() {
           <div className="pomo-campos">
             <label>
               <span>☕ Estudo (min)</span>
-              <input type="number" min={1} max={180} step={1}
+              <input
+                type="number"
+                min={1}
+                max={180}
+                step={1}
                 value={config.foco}
-                onChange={(evento) => atualizarConfig("foco", Number(evento.target.value))} />
+                onChange={(evento) => atualizarConfig("foco", Number(evento.target.value))}
+              />
             </label>
             <label>
               <span>🌙 Descanso (min)</span>
-              <input type="number" min={1} max={60} step={1}
+              <input
+                type="number"
+                min={1}
+                max={60}
+                step={1}
                 value={config.descanso}
                 disabled={!config.usarDescanso}
-                onChange={(evento) => atualizarConfig("descanso", Number(evento.target.value))} />
+                onChange={(evento) => atualizarConfig("descanso", Number(evento.target.value))}
+              />
             </label>
           </div>
           <label className="pomo-descanso-opt">
-            <input type="checkbox" checked={config.usarDescanso}
-              onChange={(evento) => atualizarConfig("usarDescanso", evento.target.checked)} />
+            <input
+              type="checkbox"
+              checked={config.usarDescanso}
+              onChange={(evento) => atualizarConfig("usarDescanso", evento.target.checked)}
+            />
             Descanso automático
           </label>
-          <p className="pomo-ajuda">As durações são salvas neste navegador. Durante a contagem, as alterações valem para o próximo ciclo.</p>
+          <p className="pomo-ajuda">
+            As durações são salvas neste navegador. Durante a contagem, as alterações valem para o
+            próximo ciclo.
+          </p>
           <div className="pomo-painel-acoes">
             <button type="button" className="pomo-reset" onClick={reiniciar}>
               <RotateCcw size={14} /> Reiniciar
             </button>
             {!rodando && !pronto && (
               <button type="button" className="pomo-comecar" onClick={alternarContagem}>
-                <Play size={14} fill="currentColor" /> {sessao.fase === "pausa" ? "Retomar pausa" : "Começar foco"}
+                <Play size={14} fill="currentColor" />{" "}
+                {sessao.fase === "pausa" ? "Retomar pausa" : "Começar foco"}
               </button>
             )}
           </div>
         </section>
       )}
-      <span className="pomo-leitor" role="status" aria-live="polite">{mensagem}</span>
+      <span className="pomo-leitor" role="status" aria-live="polite">
+        {mensagem}
+      </span>
     </div>
   );
 }

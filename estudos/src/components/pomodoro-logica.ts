@@ -41,7 +41,7 @@ export function tempoRestante(sessao: SessaoPomodoro, agora: number): number {
   return Math.max(0, sessao.fimEm === null ? sessao.restanteMs : sessao.fimEm - agora);
 }
 
-/** 
+/**
  * Atualiza o estado usando timestamps absolutos: a pausa começa no instante real
  * em que o foco terminou, mesmo que o navegador tenha suspendido o intervalo.
  */
