@@ -17,6 +17,7 @@ import { NaoEncontrada } from "./pages/nao-encontrada";
 import { buscarTrilha } from "./catalogo";
 import "./estudos.css";
 import "./components/mini-player.css";
+import "./components/pomodoro.css";
 
 const raiz = createRootRoute({
   component: () => (
