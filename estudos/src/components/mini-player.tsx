@@ -144,7 +144,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
         if (erro instanceof DOMException && erro.name === "NotAllowedError") return;
         if (erro instanceof DOMException && erro.name === "AbortError") return;
         cancelarAutoplay();
-        setErro("Faixa indisponível. Confira os MP3.");
+        setErro("Faixa indisponível no R2.");
       });
     }
 
@@ -161,7 +161,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
     tocarDepoisDaTroca.current = false;
     void audioRef.current?.play().catch(() => {
       setTocando(false);
-      setErro("Faixa indisponível. Confira os MP3.");
+      setErro("Faixa indisponível no R2.");
     });
   }, [faixa]);
 
@@ -177,7 +177,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
     // Só toca após interação: navegadores bloqueiam áudio com autoplay.
     void audio.play().catch(() => {
       setTocando(false);
-      setErro("Faixa indisponível. Confira os MP3.");
+      setErro("Faixa indisponível no R2.");
     });
   }
 
@@ -233,7 +233,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
         onEnded={() => pular(1, true)}
         onError={() => {
           setTocando(false);
-          setErro("Faixa indisponível. Confira os MP3.");
+          setErro("Faixa indisponível no R2.");
         }}
       />
     </ContextoAudio.Provider>
@@ -306,7 +306,7 @@ export function MiniPlayer({ compacto = false }: { compacto?: boolean }) {
           <Repeat2 size={17} />
         </button>
       </div>
-      {erro && <p className="cafe-player-erro" role="status" title="Coloque os áudios em estudos/public/sounds/">{erro}</p>}
+      {erro && <p className="cafe-player-erro" role="status" title="Confira unidunedev-musicas/musics/ no Cloudflare R2">{erro}</p>}
     </section>
   );
 }
