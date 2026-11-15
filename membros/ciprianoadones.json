@@ -1,12 +1,12 @@
+
 {
   "github": "ciprianoadones",
   "nome": "Cipriano Adones",
   "avatar": "https://api.dicebear.com/9.x/notionists/svg?seed=ciprianoadones",
-  "periodo": "5º semestre",
+  "periodo": "5º",
   "areas": [
-    "Desenvolvimento Web",
-    "Programação",
-    "Inteligência Artificial"
+    "Front-end",
+    "Back-end"
   ],
   "frase": "Transformando ideias em código, um commit de cada vez.",
   "entrouEm": "2026-11-15"
