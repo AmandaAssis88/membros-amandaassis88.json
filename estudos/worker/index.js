@@ -14,7 +14,10 @@ const NOMES = {
 
 function nomeDaMusica(arquivo) {
   if (Object.prototype.hasOwnProperty.call(NOMES, arquivo)) return NOMES[arquivo];
-  const base = arquivo.replace(/\.mp3$/i, "").replace(/[_-]+/g, " ").trim();
+  const base = arquivo
+    .replace(/\.mp3$/i, "")
+    .replace(/[_-]+/g, " ")
+    .trim();
   return base.charAt(0).toLocaleUpperCase("pt-BR") + base.slice(1);
 }
 
@@ -54,10 +57,10 @@ async function playlist(request, bucket) {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "public, max-age=60",
   };
-  return new Response(
-    request.method === "HEAD" ? null : JSON.stringify({ faixas }),
-    { status: 200, headers },
-  );
+  return new Response(request.method === "HEAD" ? null : JSON.stringify({ faixas }), {
+    status: 200,
+    headers,
+  });
 }
 
 function intervalo(range, tamanho) {
@@ -116,7 +119,7 @@ async function musica(request, bucket, caminho) {
     "Accept-Ranges": "bytes",
     "Content-Length": String(tamanho),
     "Cache-Control": "public, max-age=86400",
-    "ETag": objeto.httpEtag,
+    ETag: objeto.httpEtag,
     "X-Content-Type-Options": "nosniff",
   });
   if (parcial) {
