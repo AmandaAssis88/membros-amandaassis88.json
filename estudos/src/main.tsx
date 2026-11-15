@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Cabecalho, Rodape } from "./components/layout";
+import { ProvedorAudio } from "./components/mini-player";
 import { Inicio } from "./pages/inicio";
 import { PaginaTrilha } from "./pages/trilha";
 import { PaginaAula } from "./pages/aula";
@@ -18,11 +19,13 @@ import "./estudos.css";
 
 const raiz = createRootRoute({
   component: () => (
-    <div className="casca">
-      <Cabecalho />
-      <Outlet />
-      <Rodape />
-    </div>
+    <ProvedorAudio>
+      <div className="casca">
+        <Cabecalho />
+        <Outlet />
+        <Rodape />
+      </div>
+    </ProvedorAudio>
   ),
   notFoundComponent: NaoEncontrada,
 });
