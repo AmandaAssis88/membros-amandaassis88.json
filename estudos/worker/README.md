@@ -6,8 +6,8 @@ O site de estudos usa o bucket **`unidunedev-musicas`**, com os MP3s dentro de *
 
 | Objeto R2 | Nome exibido |
 | --- | --- |
-| `musics/trilha-1.mp3` | Trilha 1 |
-| `musics/trilha-2.mp3` | Trilha 2 |
+| `musics/trilha-1.mp3` | Ocarina |
+| `musics/trilha-2.mp3` | Loost wood |
 | `musics/cyberpunk.mp3` | Cyberpunk |
 | `musics/ninja_focado.mp3` | Ninja focado |
 | `musics/noite_solitaria.mp3` | Noite solitária |
