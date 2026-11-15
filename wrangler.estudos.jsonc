@@ -8,8 +8,18 @@
   "workers_dev": true,
   "preview_urls": true,
   "previews": {},
+  "main": "./estudos/worker/index.js",
+  "r2_buckets": [
+    {
+      "binding": "MUSICAS",
+      "bucket_name": "unidunedev-musicas",
+      "remote": true,
+    },
+  ],
   "assets": {
     "directory": "./dist-estudos",
+    "binding": "ASSETS",
+    "run_worker_first": ["/audio/*"],
     "not_found_handling": "single-page-application",
   },
 }
