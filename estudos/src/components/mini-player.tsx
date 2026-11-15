@@ -191,7 +191,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   );
 }
 
-export function MiniPlayer() {
+export function MiniPlayer({ compacto = false }: { compacto?: boolean }) {
   const controle = useContext(ContextoAudio);
   if (!controle) throw new Error("MiniPlayer precisa estar dentro de ProvedorAudio.");
   const {
@@ -200,7 +200,7 @@ export function MiniPlayer() {
   } = controle;
 
   return (
-    <section className="cafe-player" aria-label="Player de música do café de estudos">
+    <section className={compacto ? "cafe-player cafe-player--header" : "cafe-player"} aria-label="Player de música do café de estudos">
       {tocando && (
         <div className="cafe-player-particulas" aria-hidden="true">
           <span>♪</span><span>•</span><span>♫</span><span>•</span><span>♪</span>
