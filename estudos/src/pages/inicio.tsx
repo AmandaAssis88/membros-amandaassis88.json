@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight } from "lucide-react";
 import { useEffect } from "react";
 import { Bebida } from "../components/bebida";
 import { CenaLofi } from "../components/lofi";
+import { MiniPlayer } from "../components/mini-player";
 import { CRIADOR } from "@/config";
 import { GRUPOS, PESOS, TRILHAS, duracao, minutosDaTrilha, type Trilha } from "../catalogo";
 import { idDaAula, useConcluidas } from "../progresso";
@@ -83,6 +84,7 @@ export function Inicio() {
             Escolha uma bebida do cardápio. Cada trilha é uma introdução com exemplos para copiar e
             testar. Quando quiser praticar de verdade, os desafios esperam por você no GitHub.
           </p>
+          <MiniPlayer />
           <div className="home-hero-botoes">
             <Link to="/$trilha" params={{ trilha: "fundamentos" }} className="botao botao-claro">
               Começar pelos fundamentos <ArrowRight size={16} />
