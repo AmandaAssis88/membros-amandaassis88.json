@@ -29,7 +29,8 @@ function carregarPreferencias(): Preferencias {
     if (!salvo) return PADRAO;
 
     return {
-      faixa: salvo.faixa === 1 ? 1 : 0,
+      // Cada nova visita começa pela primeira música.
+      faixa: 0,
       volume:
         typeof salvo.volume === "number" && Number.isFinite(salvo.volume)
           ? Math.max(0, Math.min(100, salvo.volume))
@@ -49,6 +50,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const tocarDepoisDaTroca = useRef(false);
   const volumeAnterior = useRef(preferencias.volume > 0 ? preferencias.volume : 100);
+  const cancelarAutoplayRef = useRef<() => void>(() => {});
   const { faixa, volume } = preferencias;
 
   useEffect(() => {
@@ -61,6 +63,53 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   }, [preferencias, volume]);
 
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    let ativo = true;
+
+    function retomarNaInteracao(event: Event) {
+      // Os controles do player já gerenciam a reprodução manualmente.
+      if (event.target instanceof Element && event.target.closest(".cafe-player")) return;
+      tentarTocar();
+    }
+
+    function retomarNoTeclado(event: KeyboardEvent) {
+      if (event.repeat || event.ctrlKey || event.altKey || event.metaKey) return;
+      retomarNaInteracao(event);
+    }
+
+    function cancelarAutoplay() {
+      ativo = false;
+      document.removeEventListener("pointerdown", retomarNaInteracao);
+      document.removeEventListener("keydown", retomarNoTeclado);
+      cancelarAutoplayRef.current = () => {};
+    }
+
+    function tentarTocar() {
+      if (!ativo || !audio || !audio.paused) return;
+
+      void audio.play().then(() => {
+        cancelarAutoplay();
+      }).catch((erro: unknown) => {
+        if (!ativo) return;
+        // A maioria dos navegadores exige uma interação antes de liberar áudio.
+        if (erro instanceof DOMException && erro.name === "NotAllowedError") return;
+        if (erro instanceof DOMException && erro.name === "AbortError") return;
+        cancelarAutoplay();
+        setErro("Faixa indisponível. Confira os MP3.");
+      });
+    }
+
+    cancelarAutoplayRef.current = cancelarAutoplay;
+    document.addEventListener("pointerdown", retomarNaInteracao);
+    document.addEventListener("keydown", retomarNoTeclado);
+    tentarTocar();
+
+    return cancelarAutoplay;
+  }, []);
+
+  useEffect(() => {
     if (!tocarDepoisDaTroca.current) return;
     tocarDepoisDaTroca.current = false;
     void audioRef.current?.play().catch(() => {
@@ -70,6 +119,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   }, [faixa]);
 
   function alternar() {
+    cancelarAutoplayRef.current();
     const audio = audioRef.current;
     if (!audio) return;
     if (!audio.paused) {
@@ -85,6 +135,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   }
 
   function pular(direcao: -1 | 1, continuar = false) {
+    cancelarAutoplayRef.current();
     const audio = audioRef.current;
     tocarDepoisDaTroca.current = continuar || Boolean(audio && !audio.paused);
     setErro(null);
@@ -125,7 +176,10 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
         src={FAIXAS[faixa].arquivo}
         preload="none"
         loop={repetirFaixa}
-        onPlay={() => setTocando(true)}
+        onPlay={() => {
+          cancelarAutoplayRef.current();
+          setTocando(true);
+        }}
         onPause={() => setTocando(false)}
         onEnded={() => pular(1, true)}
         onError={() => {
