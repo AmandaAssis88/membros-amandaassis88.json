@@ -231,12 +231,14 @@ export function Pomodoro() {
 
   function atualizarConfig(chave: "foco" | "descanso" | "usarDescanso", valor: number | boolean) {
     setEstado((antes) => {
-      const novo: ConfigPomodoro = {
-        ...antes.config,
-        [chave]: chave === "usarDescanso"
-          ? Boolean(valor)
-          : minutosValidos(valor, chave === "foco" ? 180 : 60, antes.config[chave]),
-      };
+      const novo: ConfigPomodoro = { ...antes.config };
+      if (chave === "usarDescanso") {
+        novo.usarDescanso = Boolean(valor);
+      } else if (chave === "foco") {
+        novo.foco = minutosValidos(valor, 180, antes.config.foco);
+      } else {
+        novo.descanso = minutosValidos(valor, 60, antes.config.descanso);
+      }
       // O ciclo em andamento não é interrompido por alterações na configuração.
       // Quando está parado, permite começar com a nova duração.
       const sessaoNova = antes.sessao.fimEm === null && antes.sessao.fase === "foco"
