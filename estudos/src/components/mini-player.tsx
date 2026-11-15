@@ -18,7 +18,7 @@ type ControleAudio = Preferencias & {
 };
 
 const CHAVE = "unidunedev:estudos:musica";
-const PADRAO: Preferencias = { faixa: 0, volume: 15 };
+const PADRAO: Preferencias = { faixa: 0, volume: 50 };
 const ContextoAudio = createContext<ControleAudio | null>(null);
 const MENSAGEM_ERRO = "Não foi possível tocar esta faixa. Confira os arquivos em estudos/public/sounds.";
 
