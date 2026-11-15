@@ -16,6 +16,7 @@ import { PaginaAula } from "./pages/aula";
 import { NaoEncontrada } from "./pages/nao-encontrada";
 import { buscarTrilha } from "./catalogo";
 import "./estudos.css";
+import "./components/mini-player.css";
 
 const raiz = createRootRoute({
   component: () => (
