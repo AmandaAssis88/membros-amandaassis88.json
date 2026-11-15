@@ -1,0 +1,241 @@
+/* Player compacto do Café de Estudos — carregado após estudos.css. */
+.home-hero > .cafe-player {
+  position: absolute;
+  top: 44px;
+  right: clamp(16px, 5vw, 72px);
+  z-index: 3;
+}
+.cafe-player {
+  --cp-creme: #f3e6d3;
+  --cp-dourado: #e8b47a;
+  position: relative;
+  width: 306px;
+  max-width: calc(100vw - 32px);
+  padding: 15px 18px 13px;
+  border: 1px solid rgba(232, 180, 122, 0.32);
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(34, 26, 44, 0.97), rgba(62, 41, 52, 0.93));
+  box-shadow: 0 14px 38px rgba(17, 13, 22, 0.24), inset 0 1px rgba(255, 247, 231, 0.10);
+  color: var(--cp-creme);
+  isolation: isolate;
+  font-family: "DM Sans", sans-serif;
+}
+.cafe-player button {
+  appearance: none;
+  font: inherit;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid rgba(243, 230, 211, 0.22);
+  border-radius: 50%;
+  background: rgba(243, 230, 211, 0.075);
+  color: var(--cp-creme);
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+.cafe-player button:hover {
+  background: rgba(232, 180, 122, 0.17);
+  border-color: rgba(232, 180, 122, 0.52);
+  transform: translateY(-1px);
+}
+.cafe-player button:focus-visible,
+.cafe-player input:focus-visible {
+  outline: 2px solid var(--cp-dourado);
+  outline-offset: 3px;
+}
+.cafe-player-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 13px;
+  font-size: 10px;
+  line-height: 1.2;
+}
+.cafe-player-topo > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--cp-dourado);
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}
+.cafe-player-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #c8b9bb;
+}
+.cafe-player-status i {
+  width: 6px;
+  height: 6px;
+  background: #85747e;
+  border-radius: 50%;
+}
+.cafe-player-status.ativo i {
+  background: #9bdda8;
+  box-shadow: 0 0 9px rgba(155, 221, 168, 0.7);
+}
+.cafe-player-navegacao {
+  display: grid;
+  grid-template-columns: 35px minmax(0, 1fr) 35px;
+  align-items: center;
+  gap: 9px;
+}
+.cafe-player .cafe-player-salto {
+  width: 35px;
+  height: 35px;
+}
+.cafe-player-nome {
+  min-width: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+.cafe-player-nome strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--cp-creme);
+}
+.cafe-player-nome small {
+  color: #cbb8b5;
+  font-size: 10px;
+  line-height: 1.2;
+}
+.cafe-player-acoes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 13px;
+}
+.cafe-player .cafe-player-tocar {
+  width: 43px;
+  height: 43px;
+  background: var(--cp-creme);
+  color: #382838;
+  border-color: var(--cp-creme);
+  box-shadow: 0 4px 14px rgba(232, 180, 122, 0.11);
+}
+.cafe-player .cafe-player-tocar:hover {
+  background: var(--cp-dourado);
+  border-color: var(--cp-dourado);
+}
+.cafe-player .cafe-player-icone {
+  width: 33px;
+  height: 33px;
+}
+.cafe-player .cafe-player-icone.selecionado {
+  color: var(--cp-dourado);
+  border-color: rgba(232, 180, 122, 0.5);
+  background: rgba(232, 180, 122, 0.16);
+}
+.cafe-player-volume {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cafe-player-ajuste {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translate(-50%, 5px);
+  width: 135px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 12px 13px;
+  border: 1px solid rgba(232, 180, 122, 0.3);
+  border-radius: 17px;
+  background: #2b2035;
+  box-shadow: 0 10px 28px rgba(17, 13, 22, 0.32);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease, visibility 150ms;
+}
+.cafe-player-volume:hover .cafe-player-ajuste,
+.cafe-player-volume:focus-within .cafe-player-ajuste {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+.cafe-player-ajuste input {
+  min-width: 0;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--cp-dourado);
+}
+.cafe-player-ajuste span {
+  min-width: 28px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--cp-creme);
+}
+.cafe-player-erro {
+  margin: 10px 0 0 !important;
+  color: #ffd59a !important;
+  font-size: 11px !important;
+  line-height: 1.3;
+  text-align: center;
+}
+.cafe-player-particulas {
+  position: absolute;
+  inset: -33px 0 auto;
+  height: 38px;
+  pointer-events: none;
+}
+.cafe-player-particulas span {
+  position: absolute;
+  bottom: 0;
+  color: #e8b47a;
+  opacity: 0;
+  font-size: 15px;
+  animation: cafe-particula 2.7s ease-out infinite;
+}
+.cafe-player-particulas span:nth-child(1) { left: 29%; animation-delay: 0s; }
+.cafe-player-particulas span:nth-child(2) { left: 42%; animation-delay: 0.5s; font-size: 10px; }
+.cafe-player-particulas span:nth-child(3) { left: 55%; animation-delay: 1.1s; color: #f2a7b8; }
+.cafe-player-particulas span:nth-child(4) { left: 66%; animation-delay: 1.6s; font-size: 9px; }
+.cafe-player-particulas span:nth-child(5) { left: 76%; animation-delay: 2s; color: #8fbfec; }
+@keyframes cafe-particula {
+  0% { transform: translateY(6px) scale(0.65) rotate(-8deg); opacity: 0; }
+  20% { opacity: 0.78; }
+  70% { opacity: 0.48; }
+  100% { transform: translateY(-32px) scale(1.15) rotate(10deg); opacity: 0; }
+}
+@media (min-width: 761px) and (max-width: 980px) {
+  .home-hero > .cafe-player { right: 20px; top: 28px; }
+  .cafe-player { width: 280px; }
+}
+@media (max-width: 760px) {
+  .home-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .home-hero > .cafe-player {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: min(100%, 306px);
+    margin-top: 28px;
+    align-self: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cafe-player-particulas { display: none; }
+  .cafe-player button, .cafe-player-ajuste { transition: none; }
+}
