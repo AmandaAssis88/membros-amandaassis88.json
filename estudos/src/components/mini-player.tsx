@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { Coffee, Music2, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Coffee, Pause, Play, Repeat2, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 
 const FAIXAS = [
   { nome: "Chuva no café", arquivo: "/sounds/trilha-1.mp3" },
@@ -8,19 +8,20 @@ const FAIXAS = [
 
 type IndiceFaixa = 0 | 1;
 type Preferencias = { faixa: IndiceFaixa; volume: number };
-
 type ControleAudio = Preferencias & {
   tocando: boolean;
+  repetirFaixa: boolean;
   erro: string | null;
   alternar: () => void;
-  escolherFaixa: (faixa: IndiceFaixa) => void;
+  pular: (direcao: -1 | 1, continuar?: boolean) => void;
+  alternarMudo: () => void;
+  alternarRepeticao: () => void;
   ajustarVolume: (volume: number) => void;
 };
 
-const CHAVE = "unidunedev:estudos:musica";
-const PADRAO: Preferencias = { faixa: 0, volume: 50 };
+const CHAVE = "unidunedev:estudos:musica:v2";
+const PADRAO: Preferencias = { faixa: 0, volume: 100 };
 const ContextoAudio = createContext<ControleAudio | null>(null);
-const MENSAGEM_ERRO = "Não foi possível tocar esta faixa. Confira os arquivos em estudos/public/sounds.";
 
 function carregarPreferencias(): Preferencias {
   try {
@@ -39,82 +40,97 @@ function carregarPreferencias(): Preferencias {
   }
 }
 
-/** Mantém o áudio vivo enquanto o aluno navega entre as páginas das trilhas. */
+/** Fica montado entre as rotas para a música não reiniciar ao trocar de aula. */
 export function ProvedorAudio({ children }: { children: ReactNode }) {
   const [preferencias, setPreferencias] = useState<Preferencias>(carregarPreferencias);
   const [tocando, setTocando] = useState(false);
+  const [repetirFaixa, setRepetirFaixa] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const retomarAoTrocar = useRef(false);
-
+  const tocarDepoisDaTroca = useRef(false);
+  const volumeAnterior = useRef(preferencias.volume > 0 ? preferencias.volume : 100);
   const { faixa, volume } = preferencias;
 
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume / 100;
-
     try {
       window.localStorage.setItem(CHAVE, JSON.stringify(preferencias));
     } catch {
-      // A música continua funcionando mesmo se o navegador bloquear o armazenamento.
+      // Armazenamento opcional: o áudio também funciona em modo privado.
     }
   }, [preferencias, volume]);
 
   useEffect(() => {
-    if (!retomarAoTrocar.current) return;
-    retomarAoTrocar.current = false;
-
+    if (!tocarDepoisDaTroca.current) return;
+    tocarDepoisDaTroca.current = false;
     void audioRef.current?.play().catch(() => {
       setTocando(false);
-      setErro(MENSAGEM_ERRO);
+      setErro("Faixa indisponível. Confira os MP3.");
     });
   }, [faixa]);
 
   function alternar() {
     const audio = audioRef.current;
     if (!audio) return;
-
     if (!audio.paused) {
       audio.pause();
       return;
     }
-
     setErro(null);
-    // O play acontece somente após o clique: navegadores bloqueiam autoplay com som.
+    // Só toca após interação: navegadores bloqueiam áudio com autoplay.
     void audio.play().catch(() => {
       setTocando(false);
-      setErro(MENSAGEM_ERRO);
+      setErro("Faixa indisponível. Confira os MP3.");
     });
   }
 
-  function escolherFaixa(novaFaixa: IndiceFaixa) {
-    if (novaFaixa === faixa) return;
-    retomarAoTrocar.current = !audioRef.current?.paused;
+  function pular(direcao: -1 | 1, continuar = false) {
+    const audio = audioRef.current;
+    tocarDepoisDaTroca.current = continuar || Boolean(audio && !audio.paused);
     setErro(null);
-    setPreferencias((atual) => ({ ...atual, faixa: novaFaixa }));
-  }
-
-  function ajustarVolume(novoVolume: number) {
     setPreferencias((atual) => ({
       ...atual,
-      volume: Math.max(0, Math.min(100, novoVolume)),
+      faixa: ((atual.faixa + direcao + FAIXAS.length) % FAIXAS.length) as IndiceFaixa,
     }));
+  }
+
+  function ajustarVolume(novo: number) {
+    const valor = Math.max(0, Math.min(100, novo));
+    if (valor > 0) volumeAnterior.current = valor;
+    setPreferencias((atual) => ({ ...atual, volume: valor }));
+  }
+
+  function alternarMudo() {
+    ajustarVolume(volume === 0 ? volumeAnterior.current : 0);
   }
 
   return (
     <ContextoAudio.Provider
-      value={{ faixa, volume, tocando, erro, alternar, escolherFaixa, ajustarVolume }}
+      value={{
+        faixa,
+        volume,
+        tocando,
+        repetirFaixa,
+        erro,
+        alternar,
+        pular,
+        alternarMudo,
+        alternarRepeticao: () => setRepetirFaixa((atual) => !atual),
+        ajustarVolume,
+      }}
     >
       {children}
       <audio
         ref={audioRef}
         src={FAIXAS[faixa].arquivo}
         preload="none"
-        loop
+        loop={repetirFaixa}
         onPlay={() => setTocando(true)}
         onPause={() => setTocando(false)}
+        onEnded={() => pular(1, true)}
         onError={() => {
           setTocando(false);
-          setErro(MENSAGEM_ERRO);
+          setErro("Faixa indisponível. Confira os MP3.");
         }}
       />
     </ContextoAudio.Provider>
@@ -122,79 +138,72 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
 }
 
 export function MiniPlayer() {
-  const audio = useContext(ContextoAudio);
-  if (!audio) throw new Error("MiniPlayer deve estar dentro de ProvedorAudio.");
-
-  const { faixa, volume, tocando, erro, alternar, escolherFaixa, ajustarVolume } = audio;
+  const controle = useContext(ContextoAudio);
+  if (!controle) throw new Error("MiniPlayer precisa estar dentro de ProvedorAudio.");
+  const {
+    faixa, volume, tocando, repetirFaixa, erro,
+    alternar, pular, alternarMudo, alternarRepeticao, ajustarVolume,
+  } = controle;
 
   return (
-    <section className="mini-player" aria-label="Música ambiente do café de estudos">
-      <div className="mini-player-cabecalho">
-        <span className="mini-player-kicker">
-          <Coffee size={14} aria-hidden="true" /> SOM DO CAFÉ
-        </span>
-        <span className="mini-player-estado">
-          <span className={tocando ? "mini-player-luz ativa" : "mini-player-luz"} aria-hidden="true" />
-          {tocando ? "tocando" : "no seu ritmo"}
-        </span>
-      </div>
-
-      <div className="mini-player-principal">
-        <button
-          className="mini-player-play"
-          type="button"
-          onClick={alternar}
-          aria-label={tocando ? "Pausar música" : "Reproduzir música"}
-          title={tocando ? "Pausar" : "Reproduzir"}
-        >
-          {tocando ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
-        </button>
-        <div className="mini-player-faixa-atual">
-          <strong>{FAIXAS[faixa].nome}</strong>
-          <span>
-            <Music2 size={12} aria-hidden="true" /> Música para estudar
-          </span>
+    <section className="cafe-player" aria-label="Player de música do café de estudos">
+      {tocando && (
+        <div className="cafe-player-particulas" aria-hidden="true">
+          <span>♪</span><span>•</span><span>♫</span><span>•</span><span>♪</span>
         </div>
-      </div>
-
-      <div className="mini-player-controles">
-        <div className="mini-player-faixas" role="group" aria-label="Selecionar música">
-          <button
-            type="button"
-            className={faixa === 0 ? "selecionada" : ""}
-            onClick={() => escolherFaixa(0)}
-            aria-pressed={faixa === 0}
-          >
-            Faixa 1
-          </button>
-          <button
-            type="button"
-            className={faixa === 1 ? "selecionada" : ""}
-            onClick={() => escolherFaixa(1)}
-            aria-pressed={faixa === 1}
-          >
-            Faixa 2
-          </button>
-        </div>
-        <label className="mini-player-volume">
-          {volume === 0 ? <VolumeX size={15} aria-hidden="true" /> : <Volume2 size={15} aria-hidden="true" />}
-          <span className="mini-player-sr-only">Volume da música</span>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={volume}
-            onChange={(event) => ajustarVolume(Number(event.target.value))}
-            aria-label="Volume da música"
-          />
-          <span className="mini-player-numero">{volume}%</span>
-        </label>
-      </div>
-      {erro && (
-        <p className="mini-player-erro" role="status">
-          {erro}
-        </p>
       )}
+      <div className="cafe-player-topo">
+        <span><Coffee size={13} aria-hidden="true" /> SOM DO CAFÉ</span>
+        <span className={tocando ? "cafe-player-status ativo" : "cafe-player-status"}>
+          <i aria-hidden="true" /> {tocando ? "tocando" : "pausado"}
+        </span>
+      </div>
+
+      <div className="cafe-player-navegacao">
+        <button type="button" className="cafe-player-salto" onClick={() => pular(-1)}
+          title="Música anterior" aria-label="Música anterior">
+          <SkipBack size={16} fill="currentColor" />
+        </button>
+        <div className="cafe-player-nome" title={FAIXAS[faixa].nome}>
+          <strong>{FAIXAS[faixa].nome}</strong>
+          <small>playlist de estudos</small>
+        </div>
+        <button type="button" className="cafe-player-salto" onClick={() => pular(1)}
+          title="Próxima música" aria-label="Próxima música">
+          <SkipForward size={16} fill="currentColor" />
+        </button>
+      </div>
+
+      <div className="cafe-player-acoes" aria-label="Controles de reprodução">
+        <div className="cafe-player-volume">
+          <button type="button" className="cafe-player-icone"
+            onClick={alternarMudo}
+            title={volume === 0 ? "Restaurar volume" : "Silenciar (passe o mouse para ajustar)"}
+            aria-label={volume === 0 ? "Restaurar volume" : "Silenciar áudio"}>
+            {volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
+          </button>
+          <div className="cafe-player-ajuste">
+            <input type="range" min={0} max={100} value={volume}
+              onChange={(event) => ajustarVolume(Number(event.target.value))}
+              aria-label="Ajustar volume" />
+            <span>{volume}%</span>
+          </div>
+        </div>
+        <button type="button" className="cafe-player-tocar" onClick={alternar}
+          title={tocando ? "Pausar música" : "Reproduzir música"}
+          aria-label={tocando ? "Pausar música" : "Reproduzir música"}>
+          {tocando ? <Pause size={19} fill="currentColor" /> : <Play size={19} fill="currentColor" />}
+        </button>
+        <button type="button"
+          className={repetirFaixa ? "cafe-player-icone selecionado" : "cafe-player-icone"}
+          onClick={alternarRepeticao}
+          title={repetirFaixa ? "Repetição ativada" : "Repetir esta música"}
+          aria-label={repetirFaixa ? "Desativar repetição" : "Repetir música"}
+          aria-pressed={repetirFaixa}>
+          <Repeat2 size={17} />
+        </button>
+      </div>
+      {erro && <p className="cafe-player-erro" role="status" title="Coloque os áudios em estudos/public/sounds/">{erro}</p>}
     </section>
   );
 }
