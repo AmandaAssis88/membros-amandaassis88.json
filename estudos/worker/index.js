@@ -5,8 +5,8 @@ const CAMINHO_AUDIO = "/audio/musics/";
 const NOME_VALIDO = /^[a-zA-Z0-9_-]+\.mp3$/i;
 
 const NOMES = {
-  "trilha-1.mp3": "Trilha 1",
-  "trilha-2.mp3": "Trilha 2",
+  "trilha-1.mp3": "Ocarina",
+  "trilha-2.mp3": "Loost wood",
   "cyberpunk.mp3": "Cyberpunk",
   "ninja_focado.mp3": "Ninja focado",
   "noite_solitaria.mp3": "Noite solitária",
