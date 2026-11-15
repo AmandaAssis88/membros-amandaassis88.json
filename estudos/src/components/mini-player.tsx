@@ -1,15 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Coffee, Pause, Play, Repeat2, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 
-const FAIXAS = [
-  { nome: "Chuva no café", arquivo: "/sounds/trilha-1.mp3" },
-  { nome: "Noite de código", arquivo: "/sounds/trilha-2.mp3" },
-] as const;
-
-type IndiceFaixa = 0 | 1;
-type Preferencias = { faixa: IndiceFaixa; volume: number };
+type Faixa = { nome: string; arquivo: string };
+type Preferencias = { faixa: number; volume: number };
 type ControleAudio = Preferencias & {
   tocando: boolean;
+  faixas: Faixa[];
   repetirFaixa: boolean;
   erro: string | null;
   alternar: () => void;
@@ -29,7 +25,7 @@ function carregarPreferencias(): Preferencias {
     if (!salvo) return PADRAO;
 
     return {
-      // Cada nova visita começa pela primeira música.
+      // O índice inicial é substituído pelo sorteio após carregar a playlist.
       faixa: 0,
       volume:
         typeof salvo.volume === "number" && Number.isFinite(salvo.volume)
@@ -44,6 +40,7 @@ function carregarPreferencias(): Preferencias {
 /** Fica montado entre as rotas para a música não reiniciar ao trocar de aula. */
 export function ProvedorAudio({ children }: { children: ReactNode }) {
   const [preferencias, setPreferencias] = useState<Preferencias>(carregarPreferencias);
+  const [faixas, setFaixas] = useState<Faixa[]>([]);
   const [tocando, setTocando] = useState(false);
   const [repetirFaixa, setRepetirFaixa] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -52,6 +49,56 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   const volumeAnterior = useRef(preferencias.volume > 0 ? preferencias.volume : 100);
   const cancelarAutoplayRef = useRef<() => void>(() => {});
   const { faixa, volume } = preferencias;
+
+  useEffect(() => {
+    const abort = new AbortController();
+
+    async function carregarCatalogo() {
+      try {
+        const resposta = await fetch("/audio/playlist.json", {
+          signal: abort.signal,
+          cache: "no-store",
+        });
+        if (!resposta.ok) throw new Error("Catálogo indisponível");
+        const dados: unknown = await resposta.json();
+        if (!dados || typeof dados !== "object" || !("faixas" in dados)) {
+          throw new Error("Catálogo inválido");
+        }
+        const lista = (dados as { faixas: unknown }).faixas;
+        if (!Array.isArray(lista)) throw new Error("Catálogo inválido");
+
+        const validas = lista.filter((item): item is Faixa => (
+          item !== null &&
+          typeof item === "object" &&
+          "nome" in item &&
+          "arquivo" in item &&
+          typeof item.nome === "string" &&
+          typeof item.arquivo === "string" &&
+          item.arquivo.startsWith("/audio/musics/")
+        ));
+        if (abort.signal.aborted) return;
+        if (validas.length === 0) {
+          setErro("Nenhuma música encontrada no R2.");
+          return;
+        }
+
+        // Uma faixa aleatória a cada visita, sem baixar todas as músicas.
+        setPreferencias((atual) => ({
+          ...atual,
+          faixa: Math.floor(Math.random() * validas.length),
+        }));
+        setFaixas(validas);
+        setErro(null);
+      } catch {
+        if (!abort.signal.aborted) {
+          setErro("Não foi possível carregar a playlist.");
+        }
+      }
+    }
+
+    void carregarCatalogo();
+    return () => abort.abort();
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume / 100;
@@ -64,7 +111,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || faixas.length === 0) return;
 
     let ativo = true;
 
@@ -107,7 +154,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
     tentarTocar();
 
     return cancelarAutoplay;
-  }, []);
+  }, [faixas.length]);
 
   useEffect(() => {
     if (!tocarDepoisDaTroca.current) return;
@@ -121,7 +168,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   function alternar() {
     cancelarAutoplayRef.current();
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || faixas.length === 0) return;
     if (!audio.paused) {
       audio.pause();
       return;
@@ -137,11 +184,12 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
   function pular(direcao: -1 | 1, continuar = false) {
     cancelarAutoplayRef.current();
     const audio = audioRef.current;
+    if (faixas.length === 0) return;
     tocarDepoisDaTroca.current = continuar || Boolean(audio && !audio.paused);
     setErro(null);
     setPreferencias((atual) => ({
       ...atual,
-      faixa: ((atual.faixa + direcao + FAIXAS.length) % FAIXAS.length) as IndiceFaixa,
+      faixa: (atual.faixa + direcao + faixas.length) % faixas.length,
     }));
   }
 
@@ -161,6 +209,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
         faixa,
         volume,
         tocando,
+        faixas,
         repetirFaixa,
         erro,
         alternar,
@@ -173,7 +222,7 @@ export function ProvedorAudio({ children }: { children: ReactNode }) {
       {children}
       <audio
         ref={audioRef}
-        src={FAIXAS[faixa].arquivo}
+        src={faixas[faixa]?.arquivo}
         preload="none"
         loop={repetirFaixa}
         onPlay={() => {
@@ -195,7 +244,7 @@ export function MiniPlayer({ compacto = false }: { compacto?: boolean }) {
   const controle = useContext(ContextoAudio);
   if (!controle) throw new Error("MiniPlayer precisa estar dentro de ProvedorAudio.");
   const {
-    faixa, volume, tocando, repetirFaixa, erro,
+    faixa, faixas, volume, tocando, repetirFaixa, erro,
     alternar, pular, alternarMudo, alternarRepeticao, ajustarVolume,
   } = controle;
 
@@ -218,8 +267,8 @@ export function MiniPlayer({ compacto = false }: { compacto?: boolean }) {
           title="Música anterior" aria-label="Música anterior">
           <SkipBack size={16} fill="currentColor" />
         </button>
-        <div className="cafe-player-nome" title={FAIXAS[faixa].nome}>
-          <strong>{FAIXAS[faixa].nome}</strong>
+        <div className="cafe-player-nome" title={faixas[faixa]?.nome ?? "Carregando"}>
+          <strong>{faixas[faixa]?.nome ?? "Carregando músicas..."}</strong>
           <small>playlist de estudos</small>
         </div>
         <button type="button" className="cafe-player-salto" onClick={() => pular(1)}
