@@ -2,6 +2,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { ArrowUpRight, Github, Heart } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { MiniPlayer } from "./mini-player";
+import { Pomodoro } from "./pomodoro";
 import { CRIADOR } from "@/config";
 import { ESTUDOS_REPO_URL, ONBOARDING_URL } from "../catalogo";
 
@@ -15,6 +16,7 @@ export function Cabecalho() {
         <span className="cabecalho-selo">estudos</span>
       </Link>
       <nav className="cabecalho-nav">
+        <Pomodoro />
         {!naHome && <MiniPlayer compacto />}
         <Link to="/" activeOptions={{ exact: true }} className="nav-inicio">
           Cardápio
