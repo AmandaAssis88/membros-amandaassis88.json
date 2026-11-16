@@ -113,7 +113,7 @@ function Ilustracao({ id }: { id: string }) {
             <Olhinhos x={173} y={143} />
             <ellipse cx="185" cy="157" rx="6" ry="4" fill="#60475b" />
           </g>
-          <g transform="translate(249 125)" className="missao-anim-cauda">
+          <g className="missao-anim-cauda" transform="translate(249 125)">
             <path d="M0 28q48-51 50 0" fill="none" stroke="#dca7b5" strokeWidth="11" strokeLinecap="round" />
             <ellipse cx="12" cy="37" rx="22" ry="20" fill="#f3d7b3" />
             <Olhinhos x={4} y={35} />
@@ -193,7 +193,7 @@ function Ilustracao({ id }: { id: string }) {
           <rect x="164" y="77" width="33" height="26" fill="#ffe6a1" stroke="#5d7088" strokeWidth="4" />
           <path className="missao-anim-farol" d="M197 90L314 39l-21 101z" fill="#ffecad" opacity=".6" />
           <path d="M116 185h147" stroke="#7286a0" strokeWidth="8" strokeLinecap="round" />
-          <g transform="translate(60 140)" className="missao-anim-balanco">
+          <g className="missao-anim-barco" transform="translate(60 140)">
             <path d="M0 26h74l-11 23H15z" fill="#bd7b9a" stroke="#5d7088" strokeWidth="5" />
             <path d="M37 25V-13l24 17-24 7" fill="#fff0d4" stroke="#5d7088" strokeWidth="4" />
           </g>
@@ -210,7 +210,7 @@ function Ilustracao({ id }: { id: string }) {
             const y = i < 8 ? 75 : 135;
             return <rect key={i} x={x} y={y} width={15} height={i % 3 === 0 ? 43 : 36} rx="3" fill={["#eab4b4", "#e4c784", "#a5c5b2", "#b5b0d9"][i % 4]} />;
           })}
-          <g className="missao-anim-flutuar" transform="translate(181 16)">
+          <g className="missao-anim-coruja" transform="translate(181 16)">
             <ellipse cx="0" cy="53" rx="37" ry="39" fill="#c59b78" stroke="#71516c" strokeWidth="5" />
             <path d="M-27 28l-15-17 22 7m46 10 15-17-22 7" fill="#c59b78" stroke="#71516c" strokeWidth="5" />
             <circle cx="-13" cy="46" r="13" fill="#fff1cf" />
@@ -256,7 +256,7 @@ function Ilustracao({ id }: { id: string }) {
               <circle cx={x} cy="90" r="10" fill="#f7e9ae" />
             </g>
           ))}
-          <g className="missao-anim-agua" transform="translate(262 99)">
+          <g className="missao-anim-regador" transform="translate(262 99)">
             <path d="M0 25l22-18 12 11-18 24" fill="#8eb9c3" stroke="#617a8f" strokeWidth="5" />
             <path d="M22 9q21-7 32 9" stroke="#77c8e4" strokeWidth="6" strokeDasharray="4 8" fill="none" />
           </g>
