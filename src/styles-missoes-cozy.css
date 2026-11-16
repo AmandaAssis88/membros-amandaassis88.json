@@ -10,6 +10,23 @@
 }
 
 /* Os dois níveis do card (cena e conteúdo) são independentes: sem texto nas imagens. */
+/* O catálogo escuro dá continuidade ao ambiente lo-fi;
+   as escolhas e explicações acima permanecem claras. */
+.mis-catalogo {
+  padding: clamp(20px, 3vw, 34px);
+  background: #2c2131;
+  border: 1px solid #655063;
+  border-radius: 28px;
+  box-shadow: 0 14px 35px rgba(35, 19, 36, 0.1);
+}
+.mis-catalogo .mis-titulo-secao h2 { color: #fce8d1; }
+.mis-catalogo .mis-titulo-secao .mis-eyebrow { color: #f4c59d; }
+.mis-catalogo .mis-titulo-secao p:last-child { color: #ded0db; }
+.mis-catalogo-topo > strong {
+  color: #f8e7d3;
+  background: #503954;
+  border: 1px solid #795c75;
+}
 .mis-grid {
   gap: 23px;
 }
@@ -455,6 +472,9 @@
   }
 }
 @media (max-width: 740px) {
+  .mis-catalogo { padding: 17px 13px 22px; border-radius: 21px; }
+  .mis-catalogo-topo { gap: 10px; }
+  .mis-catalogo-topo > strong { font-size: 11px; }
   .mis-grid {
     gap: 16px;
   }
