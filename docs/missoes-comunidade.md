@@ -16,7 +16,7 @@ O objetivo é despertar curiosidade, não criar competição ou pressão por pro
 - critérios para verificar o próprio programa;
 - desafio extra opcional.
 
-**Identidade atual:** voltou ao jeito da votação do onboarding e ao Café de Estudos. A escolha acontece num **palco de história por vez**, com SVG próprio, vapor, pequenas luzes e movimento delicado. As antigas capas WebP estão preservadas apenas como material de estudo da branch, não são utilizadas no fluxo cinematográfico. O visual respeita `prefers-reduced-motion`.
+**Identidade atual:** voltou ao jeito da votação do onboarding e ao Café de Estudos. A escolha acontece num **palco de história por vez**, com SVG próprio, vapor, pequenas luzes e movimento delicado. As antigas capas WebP foram removidas do pacote da branch para manter o site leve; o protótipo anterior permanece no histórico do Git. O visual respeita `prefers-reduced-motion`.
 
 ## Temporada de estreia
 
@@ -67,7 +67,7 @@ C não possui classes/herança nativas. Para modelagem com C, ensinaremos `struc
 - Etapas de seleção: `src/routes/missoes/index.tsx`.
 - Estilos do palco, microanimações e responsividade: `src/styles-missoes-cinema.css`.
 - `src/styles-missoes.css` mantém os blocos didáticos das páginas de detalhe.
-- Capas WebP antigas em `public/missoes/capas/`: arquivo de prototipagem, **não usadas na seleção**.
+- Capas WebP e componentes anteriores foram retirados da versão atual; a seleção agora depende apenas de SVG/CSS.
 - Persistência local: `unidunedev:missoes:escolhas:v1`.
 - **Não existe registro de inscrição, entrega automática nem reserva de vaga no servidor** nesta fase.
 - A seleção não depende de perfil cadastrado; o Desafio 1 permanece acessível pelo link superior para quem quiser aparecer no mural.
