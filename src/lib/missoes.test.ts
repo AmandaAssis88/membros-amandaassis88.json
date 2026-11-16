@@ -21,7 +21,7 @@ import {
 describe("Missões da Comunidade — Desafio 2", () => {
   it("preserva as missões antigas e adiciona o resgate do gatinho", () => {
     expect(MISSOES).toHaveLength(13);
-    expect(new Set(MISSOES.map((m) => m.id)).size).toBe(12);
+    expect(new Set(MISSOES.map((m) => m.id)).size).toBe(13);
     for (const missao of MISSOES) {
       expect(missao.titulo.length).toBeGreaterThan(8);
       expect(missao.historia.length).toBeGreaterThan(60);
