@@ -10,14 +10,16 @@ export function Cabecalho() {
   const naHome = useLocation({ select: (location) => location.pathname === "/" });
 
   return (
-    <header className="cabecalho">
+    <header className={naHome ? "cabecalho cabecalho--home" : "cabecalho"}>
       <Link to="/" className="cabecalho-marca" aria-label="Estudos Unidunedev, início">
         <Logo size={36} />
         <span className="cabecalho-selo">estudos</span>
       </Link>
-      <nav className="cabecalho-nav">
+      <div className="cabecalho-ferramentas" role="group" aria-label="Ferramentas de estudo">
         <Pomodoro />
-        {!naHome && <MiniPlayer compacto />}
+        <MiniPlayer compacto />
+      </div>
+      <nav className="cabecalho-nav" aria-label="Navegação principal">
         <Link to="/" activeOptions={{ exact: true }} className="nav-inicio">
           Cardápio
         </Link>
