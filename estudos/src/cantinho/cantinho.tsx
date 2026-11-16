@@ -245,7 +245,7 @@ export function CantinhoEstudos({
               <Coffee size={15} /> FAÇA PARTE DA MESA
             </span>
             <h2 id="cantinho-titulo">
-              {github ? "Seu cantinho está quase pronto!" : "E aí, estudante! Qual é seu GitHub?"}
+              {github ? "Seu cantinho está quase pronto!" : "Oi Esforçado, Qual é seu GitHub?"}
             </h2>
             <p>
               {github
@@ -291,7 +291,7 @@ export function CantinhoEstudos({
             )}
             {!github && (
               <p className="cantinho-ajuda">
-                Ainda não tem perfil?{" "}
+                Ainda não tem perfil?{"  "}
                 <a href={ONBOARDING_URL} target="_blank" rel="noreferrer">
                   Conheça a comunidade <ArrowRight size={13} />
                 </a>
