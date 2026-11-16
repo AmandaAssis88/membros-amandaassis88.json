@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, BookOpen, Coffee, Compass, GitPullRequest, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Compass, GitPullRequest, Sparkles, Users } from "lucide-react";
 
 import { CartaoMissao } from "@/components/cartao-missao";
 import { CenaMissao } from "@/components/cena-missao";
