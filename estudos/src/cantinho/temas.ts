@@ -84,7 +84,7 @@ export function fraseDoDia(github: string, dataLocal: string): string {
     hash ^= letra.charCodeAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return MENSAGENS[(hash >>> 0) % MENSAGENS.length];
+  return MENSAGENS[(hash >>> 0) % MENSAGENS.length] ?? MENSAGENS[0];
 }
 
 export function dataLocalHoje(agora = new Date()): string {
