@@ -50,9 +50,9 @@ function MissoesDaComunidade() {
             <em>Seu código pode ajudar.</em>
           </h1>
           <p>
-            Tem um castelo sem suprimentos, uma cafeteria com pedidos bagunçados e até
-            bombeirinhos precisando de uma calculadora. Escolha o que chama sua atenção,
-            aprenda no seu ritmo e construa algo para resolver a situação.
+            Tem um castelo sem suprimentos, uma cafeteria com pedidos bagunçados e até bombeirinhos
+            precisando de uma calculadora. Escolha o que chama sua atenção, aprenda no seu ritmo e
+            construa algo para resolver a situação.
           </p>
           <div className="mis-hero-acoes">
             <a className="mis-botao-primario" href="#catalogo-missoes">
@@ -70,31 +70,35 @@ function MissoesDaComunidade() {
           <p className="mis-eyebrow">POR ONDE COMEÇAR?</p>
           <h2 id="mis-desafios-titulo">Dois desafios. Você escolhe seu caminho.</h2>
           <p>
-            Chegou agora? O primeiro desafio continua disponível para colocar seu perfil
-            no mural. Quer começar a programar? Explore as missões do segundo desafio.
-            Você pode conhecer os dois sem precisar seguir uma ordem rígida.
+            Chegou agora? O primeiro desafio continua disponível para colocar seu perfil no mural.
+            Quer começar a programar? Explore as missões do segundo desafio. Você pode conhecer os
+            dois sem precisar seguir uma ordem rígida.
           </p>
         </div>
         <div className="mis-jornada-grid">
           <article className="mis-etapa">
-            <span className="mis-etapa-icone"><GitPullRequest size={22} /></span>
+            <span className="mis-etapa-icone">
+              <GitPullRequest size={22} />
+            </span>
             <p className="mis-eyebrow">DESAFIO 01 · SEU PRIMEIRO PR</p>
             <h3>Seu lugar no mural</h3>
             <p>
-              Crie seu perfil, aprenda a abrir um Pull Request e apareça com a galera.
-              É um ótimo primeiro contato com o GitHub.
+              Crie seu perfil, aprenda a abrir um Pull Request e apareça com a galera. É um ótimo
+              primeiro contato com o GitHub.
             </p>
             <Link to="/desafio-pr" search={{ nivel: "1" }} className="mis-botao-secundario">
               Conhecer o Desafio 1 <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </article>
           <article className="mis-etapa mis-etapa-principal">
-            <span className="mis-etapa-icone"><Sparkles size={22} /></span>
+            <span className="mis-etapa-icone">
+              <Sparkles size={22} />
+            </span>
             <p className="mis-eyebrow">DESAFIO 02 · MEU PRIMEIRO PROJETO</p>
             <h3>Uma missão para chamar de sua</h3>
             <p>
-              Escolha uma linguagem, encontre um problema divertido e publique um pequeno
-              projeto no GitHub. Pode começar individualmente, sem precisar formar equipe.
+              Escolha uma linguagem, encontre um problema divertido e publique um pequeno projeto no
+              GitHub. Pode começar individualmente, sem precisar formar equipe.
             </p>
             <a href="#catalogo-missoes" className="mis-botao-primario">
               Escolher uma missão <ArrowRight size={16} aria-hidden="true" />
@@ -108,11 +112,13 @@ function MissoesDaComunidade() {
           <div>
             <p className="mis-eyebrow">MONTE SEU CAMINHO</p>
             <h2 id="mis-escolha-titulo">
-              {passaporte?.nome ? `O que vamos explorar, ${passaporte.nome.split(" ")[0]}?` : "O que você quer explorar?"}
+              {passaporte?.nome
+                ? `O que vamos explorar, ${passaporte.nome.split(" ")[0]}?`
+                : "O que você quer explorar?"}
             </h2>
             <p>
-              A carreira é só um interesse por enquanto. Você continua livre para escolher
-              qualquer projeto, mesmo que ainda não saiba sua área.
+              A carreira é só um interesse por enquanto. Você continua livre para escolher qualquer
+              projeto, mesmo que ainda não saiba sua área.
             </p>
           </div>
           <span className="mis-escolha-detalhe">
@@ -132,7 +138,11 @@ function MissoesDaComunidade() {
               }}
             >
               <option value="">Quero conhecer todas</option>
-              {AREAS.map((area) => <option key={area} value={area}>{area}</option>)}
+              {AREAS.map((area) => (
+                <option key={area} value={area}>
+                  {area}
+                </option>
+              ))}
             </select>
           </div>
           <div className="mis-filtro">
@@ -157,7 +167,9 @@ function MissoesDaComunidade() {
         </div>
         {selecionada && (
           <div className="mis-selecao-atual" role="status">
-            <span>☕ Sua missão escolhida: <strong>{selecionada.titulo}</strong></span>
+            <span>
+              ☕ Sua missão escolhida: <strong>{selecionada.titulo}</strong>
+            </span>
             <Link to="/missoes/$slug" params={{ slug: selecionada.id }}>
               Continuar lendo a missão
             </Link>
@@ -171,11 +183,13 @@ function MissoesDaComunidade() {
             <p className="mis-eyebrow">CARDÁPIO DE MISSÕES</p>
             <h2 id="mis-catalogo-titulo">Qual história você vai resolver?</h2>
             <p>
-              Cada missão conta uma história, ensina conceitos e traz um roteiro para você
-              construir a solução com suas próprias ideias.
+              Cada missão conta uma história, ensina conceitos e traz um roteiro para você construir
+              a solução com suas próprias ideias.
             </p>
           </div>
-          <strong>{total} {total === 1 ? "missão disponível" : "missões disponíveis"}</strong>
+          <strong>
+            {total} {total === 1 ? "missão disponível" : "missões disponíveis"}
+          </strong>
         </div>
         <div className="mis-grid">
           {encontradas.map((missao) => (
@@ -185,7 +199,7 @@ function MissoesDaComunidade() {
               recomendada={Boolean(
                 escolhas.area &&
                 escolhas.area !== "Ainda não sei" &&
-                missao.areas.includes(escolhas.area)
+                missao.areas.includes(escolhas.area),
               )}
               escolhida={missao.id === escolhas.missaoId}
             />
@@ -194,14 +208,16 @@ function MissoesDaComunidade() {
       </section>
 
       <aside className="mis-proxima-fase" aria-labelledby="mis-esquadroes-titulo">
-        <span className="mis-proxima-icone"><Users size={30} aria-hidden="true" /></span>
+        <span className="mis-proxima-icone">
+          <Users size={30} aria-hidden="true" />
+        </span>
         <div>
           <p className="mis-eyebrow">PRÓXIMAS MISSÕES</p>
           <h2 id="mis-esquadroes-titulo">E se a próxima aventura for em equipe?</h2>
           <p>
-            Estamos planejando esquadrões pequenos, com nomes como Fox e Zeus, para
-            projetos futuros. As vagas, os colegas e os convites de WhatsApp só aparecerão
-            quando houver inscrições reais e grupos organizados pela comunidade.
+            Estamos planejando esquadrões pequenos, com nomes como Fox e Zeus, para projetos
+            futuros. As vagas, os colegas e os convites de WhatsApp só aparecerão quando houver
+            inscrições reais e grupos organizados pela comunidade.
           </p>
         </div>
       </aside>

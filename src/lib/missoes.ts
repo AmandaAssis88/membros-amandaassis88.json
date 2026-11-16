@@ -35,8 +35,10 @@ export const MISSOES: Missao[] = [
     id: "incendio",
     titulo: "Apague o incêndio",
     chamada: "Os bombeirinhos precisam calcular a reserva de água!",
-    historia: "Uma vila de brinquedo está em apuros: o painel da estação de bombeiros parou de calcular o consumo de água. A equipe precisa saber quantos litros vai utilizar antes de começar o resgate.",
-    objetivo: "Crie uma calculadora de consumo que receba a vazão de água por minuto e o tempo de uso, mostrando o total de litros utilizados.",
+    historia:
+      "Uma vila de brinquedo está em apuros: o painel da estação de bombeiros parou de calcular o consumo de água. A equipe precisa saber quantos litros vai utilizar antes de começar o resgate.",
+    objetivo:
+      "Crie uma calculadora de consumo que receba a vazão de água por minuto e o tempo de uso, mostrando o total de litros utilizados.",
     linguagem: "c",
     areas: ["Back-end", "QA/Testes", "Ainda não sei"],
     nivel: "Primeiros passos",
@@ -58,7 +60,8 @@ export const MISSOES: Missao[] = [
     id: "cafeteria",
     titulo: "Salve a cafeteria",
     chamada: "Os pedidos estão voando pelo balcão!",
-    historia: "A cafeteria da cidade ficou lotada. Ninguém sabe quantos cafés foram pedidos nem quanto cada mesa deve pagar. O gatinho barista pediu uma ajudinha.",
+    historia:
+      "A cafeteria da cidade ficou lotada. Ninguém sabe quantos cafés foram pedidos nem quanto cada mesa deve pagar. O gatinho barista pediu uma ajudinha.",
     objetivo: "Monte um programa de pedidos com um pequeno cardápio, quantidades e total a pagar.",
     linguagem: "python",
     areas: ["Back-end", "PO/Produto", "Ainda não sei"],
@@ -81,7 +84,8 @@ export const MISSOES: Missao[] = [
     id: "abrigo",
     titulo: "Ajude o abrigo",
     chamada: "Os bichinhos precisam encontrar seus nomes na lista.",
-    historia: "O abrigo Patinhas Felizes recebeu novos moradores. As fichas estão misturadas, e ninguém consegue encontrar rapidamente um animal para adoção.",
+    historia:
+      "O abrigo Patinhas Felizes recebeu novos moradores. As fichas estão misturadas, e ninguém consegue encontrar rapidamente um animal para adoção.",
     objetivo: "Crie um cadastro de animais em memória usando uma classe com nome, espécie e idade.",
     linguagem: "java",
     areas: ["Back-end", "Mobile", "Banco de Dados"],
@@ -104,8 +108,10 @@ export const MISSOES: Missao[] = [
     id: "nave",
     titulo: "Lance a nave",
     chamada: "Faltam poucos cálculos para a decolagem!",
-    historia: "Uma pequena nave está pronta para visitar a Lua, mas o computador de bordo perdeu a estimativa de combustível. A astronauta aguarda sua ajuda.",
-    objetivo: "Crie um simulador que calcule quantos litros de combustível uma viagem vai consumir.",
+    historia:
+      "Uma pequena nave está pronta para visitar a Lua, mas o computador de bordo perdeu a estimativa de combustível. A astronauta aguarda sua ajuda.",
+    objetivo:
+      "Crie um simulador que calcule quantos litros de combustível uma viagem vai consumir.",
     linguagem: "c",
     areas: ["DevOps", "Back-end", "Ainda não sei"],
     nivel: "Primeiros passos",
@@ -127,8 +133,10 @@ export const MISSOES: Missao[] = [
     id: "laboratorio",
     titulo: "Organize o laboratório",
     chamada: "Um experimento bagunçou todos os registros!",
-    historia: "O laboratório das poções trocou as etiquetas de lugar. A cientista precisa registrar seus experimentos antes que os frascos coloridos sejam confundidos.",
-    objetivo: "Crie um cadastro simples de experimentos que seja salvo e carregado de um arquivo JSON local.",
+    historia:
+      "O laboratório das poções trocou as etiquetas de lugar. A cientista precisa registrar seus experimentos antes que os frascos coloridos sejam confundidos.",
+    objetivo:
+      "Crie um cadastro simples de experimentos que seja salvo e carregado de um arquivo JSON local.",
     linguagem: "python",
     areas: ["Banco de Dados", "Back-end", "QA/Testes"],
     nivel: "Próximo passo",
@@ -150,8 +158,10 @@ export const MISSOES: Missao[] = [
     id: "castelo",
     titulo: "Proteja o castelo",
     chamada: "O estoque de poções está acabando!",
-    historia: "Um castelo amigável vai receber uma festa, mas o inventário está completamente desorganizado. A guardiã precisa contar os suprimentos.",
-    objetivo: "Crie um inventário com itens, quantidades e métodos para adicionar e retirar unidades.",
+    historia:
+      "Um castelo amigável vai receber uma festa, mas o inventário está completamente desorganizado. A guardiã precisa contar os suprimentos.",
+    objetivo:
+      "Crie um inventário com itens, quantidades e métodos para adicionar e retirar unidades.",
     linguagem: "java",
     areas: ["Back-end", "Banco de Dados", "PO/Produto"],
     nivel: "Próximo passo",
@@ -173,8 +183,10 @@ export const MISSOES: Missao[] = [
     id: "farol",
     titulo: "Acenda o farol",
     chamada: "Os barcos não conseguem enxergar a costa!",
-    historia: "O farol de uma ilha de papel apagou. O operador precisa de um painel que mostre se a bateria conseguirá manter a luz acesa durante a noite.",
-    objetivo: "Crie uma página com formulário para calcular quantas horas a bateria do farol consegue durar.",
+    historia:
+      "O farol de uma ilha de papel apagou. O operador precisa de um painel que mostre se a bateria conseguirá manter a luz acesa durante a noite.",
+    objetivo:
+      "Crie uma página com formulário para calcular quantas horas a bateria do farol consegue durar.",
     linguagem: "javascript",
     areas: ["Front-end", "UI/UX Design", "DevOps"],
     nivel: "Primeiros passos",
@@ -196,8 +208,10 @@ export const MISSOES: Missao[] = [
     id: "biblioteca",
     titulo: "A biblioteca encantada",
     chamada: "Os livros perderam suas prateleiras!",
-    historia: "Uma coruja bibliotecária precisa organizar dezenas de livros encantados. Ela quer saber quais estão disponíveis e quais foram emprestados.",
-    objetivo: "Desenvolva um catálogo de livros com cadastro, empréstimo e devolução usando dados locais.",
+    historia:
+      "Uma coruja bibliotecária precisa organizar dezenas de livros encantados. Ela quer saber quais estão disponíveis e quais foram emprestados.",
+    objetivo:
+      "Desenvolva um catálogo de livros com cadastro, empréstimo e devolução usando dados locais.",
     linguagem: "python",
     areas: ["Back-end", "Banco de Dados", "Ainda não sei"],
     nivel: "Próximo passo",
@@ -219,7 +233,8 @@ export const MISSOES: Missao[] = [
     id: "robo",
     titulo: "Conserte o robô",
     chamada: "O robô entregador esqueceu a lista de tarefas!",
-    historia: "Um robô simpático precisa entregar caixinhas na cidade, mas seu painel perdeu a memória das entregas. Você foi chamado para reorganizar sua rotina.",
+    historia:
+      "Um robô simpático precisa entregar caixinhas na cidade, mas seu painel perdeu a memória das entregas. Você foi chamado para reorganizar sua rotina.",
     objetivo: "Modele entregas e um robô que registra tarefas pendentes e concluídas.",
     linguagem: "java",
     areas: ["Mobile", "Back-end", "QA/Testes"],
@@ -242,8 +257,10 @@ export const MISSOES: Missao[] = [
     id: "jardim",
     titulo: "Cuide do jardim da Lua",
     chamada: "As plantinhas estão pedindo gotinhas d'água!",
-    historia: "No jardim lunar, flores que brilham à noite dependem de um painel de irrigação. Algumas recebem água demais; outras, quase nenhuma.",
-    objetivo: "Crie uma página interativa para registrar plantas e calcular a água necessária para todas elas.",
+    historia:
+      "No jardim lunar, flores que brilham à noite dependem de um painel de irrigação. Algumas recebem água demais; outras, quase nenhuma.",
+    objetivo:
+      "Crie uma página interativa para registrar plantas e calcular a água necessária para todas elas.",
     linguagem: "javascript",
     areas: ["Front-end", "UI/UX Design", "Mobile"],
     nivel: "Primeiros passos",
@@ -265,7 +282,8 @@ export const MISSOES: Missao[] = [
     id: "feira",
     titulo: "A feira das estrelas",
     chamada: "Os preços das barracas estão todos misturados!",
-    historia: "Uma feira espacial abriu suas portas, mas os vendedores não conseguem fechar o caixa. Um comerciante oferece descontos e precisa calcular o troco corretamente.",
+    historia:
+      "Uma feira espacial abriu suas portas, mas os vendedores não conseguem fechar o caixa. Um comerciante oferece descontos e precisa calcular o troco corretamente.",
     objetivo: "Faça um programa de caixa que soma uma compra, aplica desconto e informa o troco.",
     linguagem: "c",
     areas: ["Back-end", "PO/Produto", "QA/Testes"],
@@ -288,7 +306,8 @@ export const MISSOES: Missao[] = [
     id: "pinguim",
     titulo: "Encontre o pinguim",
     chamada: "Um pinguim explorador se perdeu no mapa de gelo!",
-    historia: "O pinguim Pipo esqueceu o caminho de casa. Cada resposta correta ajuda a encontrar uma nova pista no mapa. Ele precisa de um pequeno jogo de perguntas.",
+    historia:
+      "O pinguim Pipo esqueceu o caminho de casa. Cada resposta correta ajuda a encontrar uma nova pista no mapa. Ele precisa de um pequeno jogo de perguntas.",
     objetivo: "Crie um quiz na página com perguntas, alternativas e pontuação final.",
     linguagem: "javascript",
     areas: ["Front-end", "UI/UX Design", "QA/Testes"],

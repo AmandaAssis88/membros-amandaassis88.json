@@ -102,8 +102,8 @@ function DetalhesDaMissao() {
               ))}
             </ol>
             <p className="mis-alerta">
-              Não existe código pronto aqui: a ideia é tentar, consultar suas anotações,
-              testar e descobrir como resolver. Você pode dividir o projeto em pequenas partes.
+              Não existe código pronto aqui: a ideia é tentar, consultar suas anotações, testar e
+              descobrir como resolver. Você pode dividir o projeto em pequenas partes.
             </p>
           </section>
           <section className="mis-bloco">
@@ -124,11 +124,13 @@ function DetalhesDaMissao() {
 
         <aside className="mis-detalhe-lado">
           <section className="mis-bloco mis-bloco-escuro">
-            <p className="mis-eyebrow" style={{ color: "#f1c59e" }}>SEU PRÓXIMO PASSO</p>
+            <p className="mis-eyebrow" style={{ color: "#f1c59e" }}>
+              SEU PRÓXIMO PASSO
+            </p>
             <h2>Quer ajudar nessa missão?</h2>
             <p>
-              Escolher não exige cadastro nem entrar em grupo. A missão ficará marcada
-              neste navegador, e você poderá voltar a ela quando quiser.
+              Escolher não exige cadastro nem entrar em grupo. A missão ficará marcada neste
+              navegador, e você poderá voltar a ela quando quiser.
             </p>
             <button type="button" className="mis-botao-primario" onClick={aceitar}>
               {escolhida ? <CheckCircle2 size={17} /> : <HeartHandshake size={17} />}
@@ -141,17 +143,21 @@ function DetalhesDaMissao() {
             )}
             <a className="mis-botao-secundario" href={linkEstudos} target="_blank" rel="noreferrer">
               <BookOpen size={17} aria-hidden="true" />
-              {linguagem?.trilha ? `Revisar ${linguagem.nome} no Café` : "Revisar fundamentos no Café"}
+              {linguagem?.trilha
+                ? `Revisar ${linguagem.nome} no Café`
+                : "Revisar fundamentos no Café"}
               <ExternalLink size={13} aria-hidden="true" />
             </a>
           </section>
 
           <section className="mis-bloco">
-            <p className="mis-eyebrow"><ListChecks size={14} style={{ display: "inline" }} /> ENTREGA DO DESAFIO 02</p>
+            <p className="mis-eyebrow">
+              <ListChecks size={14} style={{ display: "inline" }} /> ENTREGA DO DESAFIO 02
+            </p>
             <h2>Compartilhe seu projeto</h2>
             <p>
-              Quando terminar, crie um repositório no seu GitHub, envie o código e escreva
-              um README com o que a missão faz, como executar e o que você aprendeu.
+              Quando terminar, crie um repositório no seu GitHub, envie o código e escreva um README
+              com o que a missão faz, como executar e o que você aprendeu.
             </p>
             <ol>
               <li>Crie um repositório público para o projeto.</li>
@@ -160,24 +166,32 @@ function DetalhesDaMissao() {
               <li>Guarde o link para compartilhar com a comunidade.</li>
             </ol>
             <div className="mis-entrega-acoes">
-              <a className="mis-botao-secundario" href="https://github.com/new" target="_blank" rel="noreferrer">
-                <Github size={16} aria-hidden="true" /> Criar repositório <ExternalLink size={13} aria-hidden="true" />
+              <a
+                className="mis-botao-secundario"
+                href="https://github.com/new"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Github size={16} aria-hidden="true" /> Criar repositório{" "}
+                <ExternalLink size={13} aria-hidden="true" />
               </a>
               <a className="mis-botao-sutil" href={REPO_URL} target="_blank" rel="noreferrer">
                 Conhecer a Unidunedev <ExternalLink size={13} aria-hidden="true" />
               </a>
             </div>
             <p style={{ marginTop: 14 }}>
-              Por enquanto, a escolha é local e não envia a atividade automaticamente.
-              A entrega e a formação de equipes serão organizadas pela comunidade.
+              Por enquanto, a escolha é local e não envia a atividade automaticamente. A entrega e a
+              formação de equipes serão organizadas pela comunidade.
             </p>
           </section>
           <section className="mis-bloco">
-            <p className="mis-eyebrow"><Lightbulb size={14} style={{ display: "inline" }} /> LEMBRETE</p>
+            <p className="mis-eyebrow">
+              <Lightbulb size={14} style={{ display: "inline" }} /> LEMBRETE
+            </p>
             <h2>Não precisa resolver tudo hoje</h2>
             <p>
-              Você pode começar pelo programa mais simples possível e melhorar um pouco
-              depois. Aprender é testar, errar, ajustar e tentar de novo.
+              Você pode começar pelo programa mais simples possível e melhorar um pouco depois.
+              Aprender é testar, errar, ajustar e tentar de novo.
             </p>
             <Link to="/missoes" className="mis-botao-sutil" style={{ marginTop: 19 }}>
               Ver outras missões <ArrowRight size={15} aria-hidden="true" />

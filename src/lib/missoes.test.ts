@@ -26,9 +26,7 @@ describe("Missões da Comunidade — Desafio 2", () => {
       expect(missao.passos.length).toBeGreaterThanOrEqual(3);
       expect(missao.criterios.length).toBeGreaterThanOrEqual(3);
       expect(missao.conceitos.length).toBeGreaterThanOrEqual(3);
-      expect(LINGUAGENS_MISSAO.some((linguagem) => linguagem.id === missao.linguagem)).toBe(
-        true,
-      );
+      expect(LINGUAGENS_MISSAO.some((linguagem) => linguagem.id === missao.linguagem)).toBe(true);
       expect(missao.areas.every((area) => AREAS.includes(area))).toBe(true);
     }
   });
@@ -61,7 +59,11 @@ describe("Missões da Comunidade — Desafio 2", () => {
   });
 
   it("guarda só opções validadas e sabe recuperar um rascunho local", () => {
-    const escolhas = { area: "Front-end" as const, linguagem: "javascript" as const, missaoId: "pinguim" };
+    const escolhas = {
+      area: "Front-end" as const,
+      linguagem: "javascript" as const,
+      missaoId: "pinguim",
+    };
     localStorage.removeItem(CHAVE_ESCOLHAS_MISSOES);
     salvarEscolhasMissoes(escolhas);
     expect(lerEscolhasMissoes()).toEqual(escolhas);

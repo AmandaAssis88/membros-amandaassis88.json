@@ -160,27 +160,37 @@ function Welcome({ onStart }: { onStart: () => void }) {
           <p className="mis-eyebrow">DESAFIOS DA COMUNIDADE</p>
           <h2 id="mis-home-titulo">Tem sempre um próximo passo esperando por você.</h2>
           <p>
-            Quer aparecer no mural? Comece pelo primeiro PR. Quer praticar programação?
-            As missões do segundo desafio estão no cardápio. Você pode explorar os dois.
+            Quer aparecer no mural? Comece pelo primeiro PR. Quer praticar programação? As missões
+            do segundo desafio estão no cardápio. Você pode explorar os dois.
           </p>
         </div>
         <div className="mis-jornada-grid">
           <article className="mis-etapa">
-            <span className="mis-etapa-icone"><GitPullRequest size={21} /></span>
+            <span className="mis-etapa-icone">
+              <GitPullRequest size={21} />
+            </span>
             <p className="mis-eyebrow">DESAFIO 01</p>
             <h3>Meu primeiro PR</h3>
             <p>Crie seu perfil, aprenda a contribuir com GitHub e faça parte do mural da galera.</p>
             <Button asChild variant="outline">
-              <Link to="/desafio-pr" search={{ nivel: "1" }}>Conhecer o desafio <ArrowRight size={15} /></Link>
+              <Link to="/desafio-pr" search={{ nivel: "1" }}>
+                Conhecer o desafio <ArrowRight size={15} />
+              </Link>
             </Button>
           </article>
           <article className="mis-etapa mis-etapa-principal">
-            <span className="mis-etapa-icone"><Sparkles size={21} /></span>
+            <span className="mis-etapa-icone">
+              <Sparkles size={21} />
+            </span>
             <p className="mis-eyebrow">DESAFIO 02</p>
             <h3>Missões para criar</h3>
-            <p>Escolha uma linguagem, entre numa história divertida e resolva o problema com código.</p>
+            <p>
+              Escolha uma linguagem, entre numa história divertida e resolva o problema com código.
+            </p>
             <Button asChild className="coffee-cta">
-              <Link to="/missoes">Explorar as 12 missões <ArrowRight size={15} /></Link>
+              <Link to="/missoes">
+                Explorar as 12 missões <ArrowRight size={15} />
+              </Link>
             </Button>
           </article>
         </div>

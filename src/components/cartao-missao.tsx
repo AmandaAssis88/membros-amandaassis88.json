@@ -15,9 +15,7 @@ export function CartaoMissao({
 }) {
   const linguagem = LINGUAGENS_MISSAO.find((opcao) => opcao.id === missao.linguagem);
   return (
-    <article
-      className={`mis-card mis-tom-${missao.id}${escolhida ? " mis-card--escolhida" : ""}`}
-    >
+    <article className={`mis-card mis-tom-${missao.id}${escolhida ? " mis-card--escolhida" : ""}`}>
       <div className="mis-card-capa">
         <div className="mis-card-topicos">
           <span className="mis-capa-selo">{linguagem?.nome ?? "Código"}</span>
@@ -40,11 +38,13 @@ export function CartaoMissao({
           </Link>
           {escolhida ? (
             <span className="mis-card-recomendado">
-              <CheckCircle2 size={12} style={{ display: "inline", verticalAlign: "middle" }} /> Minha escolha
+              <CheckCircle2 size={12} style={{ display: "inline", verticalAlign: "middle" }} />{" "}
+              Minha escolha
             </span>
           ) : recomendada ? (
             <span className="mis-card-recomendado">
-              <Sparkles size={12} style={{ display: "inline", verticalAlign: "middle" }} /> Combina com você
+              <Sparkles size={12} style={{ display: "inline", verticalAlign: "middle" }} /> Combina
+              com você
             </span>
           ) : null}
         </div>
