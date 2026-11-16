@@ -5,7 +5,6 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import "./styles-missoes.css";
-import "./styles-missoes-cozy.css";
 import "./styles-missoes-cinema.css";
 
 const router = createRouter({ routeTree, scrollRestoration: true });
