@@ -16,11 +16,15 @@ O objetivo é despertar curiosidade, não criar competição ou pressão por pro
 - critérios para verificar o próprio programa;
 - desafio extra opcional.
 
-As cenas agora têm **capas ilustradas Lo-fi / Cozy Study Art em WebP**, acompanhadas por partículas, vapor, água e luzes discretas feitas em CSS/SVG. Os SVGs originais seguem disponíveis como alternativa caso uma imagem não carregue. A preferência do sistema por reduzir movimento é respeitada.
+**Identidade atual:** voltou ao jeito da votação do onboarding e ao Café de Estudos. A escolha acontece num **palco de história por vez**, com SVG próprio, vapor, pequenas luzes e movimento delicado. As antigas capas WebP estão preservadas apenas como material de estudo da branch, não são utilizadas no fluxo cinematográfico. O visual respeita `prefers-reduced-motion`.
 
-## Catálogo inicial
+## Temporada de estreia
 
-Todas as **12 missões aceitam C, Python e Java**. A linguagem é escolhida na página de detalhes, e as pistas mudam de acordo com ela. Cada problema tem um núcleo básico verificável e uma evolução opcional.
+A vitrine inicial mostra **cinco histórias**, com mais cuidado visual e pedagógico. O restante do catálogo está preservado para temporadas futuras; não é exibido na seleção principal. Todas aceitam C, Python e Java, e as pistas mudam conforme a linguagem.
+
+**Em cartaz:** Salve o gatinho, Salve a cafeteria, Apague o incêndio, Lance a nave e Proteja o castelo.
+
+**Nova missão — Salve o gatinho:** Mingau está numa árvore; o aluno ajuda a equipe de resgate a comparar a altura do galho com o alcance da escada, praticando variáveis, condições e operações.
 
 | Missão                    | Projeto central          | Progressão sugerida         |
 | ------------------------- | ------------------------ | --------------------------- |
@@ -46,32 +50,34 @@ C não possui classes/herança nativas. Para modelagem com C, ensinaremos `struc
 1. O visitante vê **Desafio 1** (primeiro PR, perfil no mural) e **Desafio 2** (projetos de programação) no mesmo lugar.
 2. A participação no Desafio 2 não exige concluir o Desafio 1: o primeiro continua disponível para quem quiser entrar no mural.
 3. O visitante escolhe uma área de interesse (Front-end, Back-end, Mobile etc.). Isso **não restringe** os projetos; apenas prioriza recomendações.
-4. O aluno escolhe uma das 12 histórias e, na página da missão, escolhe C, Python ou Java. A linguagem altera as orientações e as pistas, não quais missões estão disponíveis.
-5. O aluno abre uma missão, entende a história, as etapas e os critérios.
-6. Ele pode marcar **Quero ajudar nesta missão**, salvando somente sua escolha no `localStorage`.
-7. Constrói por conta própria um projeto pequeno, cria um arquivo na pasta de soluções do repositório `Unidunedev/estudos` e envia um PR. A liderança revisa o código.
+4. Em `/missoes` o aluno navega por cinco histórias numa única cena cinematográfica, sem catálogo longo de cards; pode usar setas ou escolher uma miniatura.
+5. Escolhe C, Python ou Java em **outra etapa**, podendo informar uma carreira de interesse opcional.
+6. Confirma a missão para gravar a escolha no navegador, sem marcar conclusão.
+7. Abre o enunciado individual, com história, etapas, pistas progressivas e critérios de entrega.
+8. Quando a temporada for oficialmente aberta para entregas, o aluno constrói um projeto pequeno, cria um arquivo na pasta de soluções do repositório `Unidunedev/estudos` e envia um PR. A liderança revisa o código.
 
 ### Estado atual da implementação
 
 - Hub de missões: `/missoes`.
 - Página compartilhável de cada projeto: `/missoes/<id>`.
 - Catálogo: `src/lib/missoes.ts`.
-- Orientações por linguagem: `src/lib/orientacoes-missoes.ts` (36 combinações com três pistas graduais).
+- Orientações por linguagem: `src/lib/orientacoes-missoes.ts` (39 combinações de 13 histórias com três pistas graduais).
 - Hub permite somente C, Python e Java; outras linguagens aparecerão depois de terem trilhas disponíveis.
-- Capas WebP: `public/missoes/capas/` (12 arquivos incluídos na branch).
-- Componente de capa + efeitos: `src/components/cena-de-fundo-missao.tsx`.
-- SVGs de reserva: `src/components/cena-missao.tsx`.
-- Estilos gerais: `src/styles-missoes.css`; visual lo-fi e animações: `src/styles-missoes-cozy.css`.
+- Palco SVG: `src/components/cena-palco-missao.tsx` com cena inédita do gatinho; outras quatro reutilizam os SVGs do projeto.
+- Etapas de seleção: `src/routes/missoes/index.tsx`.
+- Estilos do palco, microanimações e responsividade: `src/styles-missoes-cinema.css`.
+- `src/styles-missoes.css` mantém os blocos didáticos das páginas de detalhe.
+- Capas WebP antigas em `public/missoes/capas/`: arquivo de prototipagem, **não usadas na seleção**.
 - Persistência local: `unidunedev:missoes:escolhas:v1`.
 - **Não existe registro de inscrição, entrega automática nem reserva de vaga no servidor** nesta fase.
-- O perfil da comunidade é utilizado apenas para uma saudação local quando já há um passaporte salvo no navegador.
+- A seleção não depende de perfil cadastrado; o Desafio 1 permanece acessível pelo link superior para quem quiser aparecer no mural.
 - Não há integração com o WhatsApp nesta versão porque os links ainda serão fornecidos.
 
 ## Entrega no repositório de estudos
 
-Estrutura em preparação na branch [`feat/desafio-2-missoes`](https://github.com/Unidunedev/estudos/tree/feat/desafio-2-missoes) do repositório **Unidunedev/estudos**.
+As 12 missões originais já estão na `main` do repositório **Unidunedev/estudos**. A missão nova do gatinho foi preparada **separadamente**, em [`feat/missao-gatinho-desafio-2`](https://github.com/Unidunedev/estudos/tree/feat/missao-gatinho-desafio-2), sem PR ou merge.
 
-- Cada uma das 12 missões tem uma pasta em `disciplinas/missoes/desafios/NN-identificador/`.
+- As 12 missões anteriores mantêm seus caminhos originais em `disciplinas/missoes/desafios/NN-identificador/`; o gatinho entra como `13-gatinho`, sem renumerar ou quebrar as anteriores.
 - Cada pasta possui `README.md`, três pares `testes/entradaN.txt` + `testes/saidaN.txt` e `solucoes/.gitkeep`.
 - O aluno faz fork e clone do repositório de estudos, cria uma branch, coloca seu arquivo `seu-username.c`, `seu-username.py` ou `seu-username.java` em `solucoes/`, testa localmente e envia PR.
 - O workflow de correção existente em `Unidunedev/estudos` já reconhece `.c`, `.py` e `.java` em disciplinas, valida o username do arquivo e compara as saídas.
