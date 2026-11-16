@@ -106,7 +106,7 @@
 .mis-palco-estrela { animation: mis-cinema-flutuar 5s ease-in-out infinite; }
 @keyframes mis-cinema-flutuar { 0%,100%{ transform:translateY(0);opacity:.3; } 50% {transform:translateY(-12px); opacity:.9;} }
 @keyframes mis-cinema-vapor {0%,100%{opacity:.1; transform:translateY(10px) scale(.93);} 55%{opacity:.5;transform:translateY(-18px) scale(1.06);}}
-@keyframes mis-cinema-respirar {0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@keyframes mis-cinema-respirar {0%,100%{transform:translate(188px,99px);}50%{transform:translate(188px,94px);}}
 @keyframes mis-cinema-folhas {from{transform:rotate(-1.5deg);}to{transform:rotate(1.5deg);}}
 
 .mis-cinema-direcao { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 17px 2px; color: #746474; font: 400 12px/1.6 "DM Sans",sans-serif; }
@@ -208,4 +208,18 @@
 @media (prefers-reduced-motion: reduce) {
   .mis-cinema *, .mis-cinema *::before, .mis-cinema *::after {animation:none!important;transition:none!important;scroll-behavior:auto!important;}
   .mis-cinema-botao:hover {transform:none;}
+}
+
+/* Detalhes da missão: o mesmo universo tranquilo, sem as antigas capas geradas. */
+.mis-detalhe-hero { background: #3c3043; min-height: 290px; }
+.mis-detalhe-hero::before {content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,#392c40 0%,#392c40ef 38%,#392c4050 70%,transparent);pointer-events:none;}
+.mis-detalhe-hero > div:first-child {position:relative;z-index:3;max-width: min(60%,650px);}
+.mis-detalhe-hero > .mis-palco-cenario {position:absolute;inset:0 0 0 auto;width:52%;height:100%;min-height:0;opacity:.9;z-index:0;}
+.mis-detalhe-hero .mis-palco-svg {max-height:92%;width:100%;right:0;bottom:0;}
+.mis-detalhe-hero .mis-palco-cenario::before {width:210px;height:210px;}
+@media (max-width:740px) {
+  .mis-detalhe-hero {min-height:250px;}
+  .mis-detalhe-hero::before {background:linear-gradient(90deg,#392c40f7 0%,#392c40e6 70%,#392c40a8);}
+  .mis-detalhe-hero > div:first-child {max-width:100%;}
+  .mis-detalhe-hero > .mis-palco-cenario {width:80%;right:-27%;opacity:.26;}
 }
