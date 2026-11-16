@@ -21,9 +21,9 @@ export function Header() {
         <a className="nav-estudos" href={ESTUDOS_URL} target="_blank" rel="noreferrer">
           <BookOpen size={15} /> Estudos
         </a>
-        <Link to="/desafio-pr" search={{ nivel: "1" }}>
-          <span className="nav-longo">Desafio do 1º PR</span>
-          <span className="nav-curto">1º PR</span> <ArrowUpRight size={13} />
+        <Link to="/missoes">
+          <span className="nav-longo">Missões da comunidade</span>
+          <span className="nav-curto">Missões</span> <ArrowUpRight size={13} />
         </Link>
         <a className="nav-github" href={ORG_URL} target="_blank" rel="noreferrer">
           <Github size={16} /> GitHub
