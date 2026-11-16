@@ -3,12 +3,12 @@
  * O voto original fica privado no Supabase; aqui cada aluno escolhe sua própria preferência.
  */
 export const TEMAS = [
-  { id: "lofi", nome: "Lo-fi Café", descricao: "Chuva, café quentinho e um ritmo só seu.", emoji: "☕", imagem: "/temas/lofi.svg" },
-  { id: "gamificado", nome: "Gamificado", descricao: "Mais uma missão, mais um nível alcançado.", emoji: "🎮", imagem: "/temas/gamificado.svg" },
-  { id: "floresta", nome: "Fantasia florestal", descricao: "Um cantinho encantado para novas descobertas.", emoji: "🌿", imagem: "/temas/floresta.svg" },
-  { id: "clean", nome: "Profissional clean", descricao: "Espaço leve, claro e sem distrações.", emoji: "✨", imagem: "/temas/clean.svg" },
-  { id: "terminal", nome: "Terminal hacker", descricao: "Código, terminal e foco em cada comando.", emoji: "⌨️", imagem: "/temas/terminal.svg" },
-  { id: "brutalismo", nome: "Neo-brutalismo", descricao: "Cores ousadas e criatividade sem limites.", emoji: "🎨", imagem: "/temas/brutalismo.svg" },
+  { id: "lofi", nome: "Lo-fi Café", descricao: "Chuva, café quentinho e um ritmo só seu.", emoji: "☕", imagem: "/temas/lofi.svg", miniatura: "/temas/thumbs/lofi.svg" },
+  { id: "gamificado", nome: "Gamificado", descricao: "Mais uma missão, mais um nível alcançado.", emoji: "🎮", imagem: "/temas/gamificado.svg", miniatura: "/temas/thumbs/gamificado.svg" },
+  { id: "floresta", nome: "Fantasia florestal", descricao: "Um cantinho encantado para novas descobertas.", emoji: "🌿", imagem: "/temas/floresta.svg", miniatura: "/temas/thumbs/floresta.svg" },
+  { id: "clean", nome: "Profissional clean", descricao: "Espaço leve, claro e sem distrações.", emoji: "✨", imagem: "/temas/clean.svg", miniatura: "/temas/thumbs/clean.svg" },
+  { id: "terminal", nome: "Terminal hacker", descricao: "Código, terminal e foco em cada comando.", emoji: "⌨️", imagem: "/temas/terminal.svg", miniatura: "/temas/thumbs/terminal.svg" },
+  { id: "brutalismo", nome: "Neo-brutalismo", descricao: "Cores ousadas e criatividade sem limites.", emoji: "🎨", imagem: "/temas/brutalismo.svg", miniatura: "/temas/thumbs/brutalismo.svg" },
 ] as const;
 
 export type TemaId = (typeof TEMAS)[number]["id"];
