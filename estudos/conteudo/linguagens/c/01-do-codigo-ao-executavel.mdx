@@ -35,6 +35,37 @@ Parece pouco, mas tem muita coisa acontecendo aí. Vamos com calma:
 Em C, quase toda instrução termina com `;`. Esquecer dele é o erro número 1 de quem está começando. Se o compilador reclamar de algo na linha 5, olhe se faltou `;` na linha 4!
 </Nota>
 
+## E se eu não usar o `\n`?
+
+O `printf` **não pula uma linha sozinho**. Ele mostra exatamente o texto que você pediu. Veja o que acontece com dois `printf` seguidos:
+
+```c
+#include <stdio.h>
+
+int main() {
+    printf("Olá");
+    printf("Mundo");
+    return 0;
+}
+```
+
+```saida
+OláMundo
+```
+
+Mesmo usando dois comandos, os textos ficaram grudados! Agora, se você trocar a primeira chamada por `printf("Olá\n");`, a saída passa a ser:
+
+```saida
+Olá
+Mundo
+```
+
+O `\n` é uma **sequência de escape** que significa *nova linha*. Também funciona no meio de um texto: `printf("Olá\nMundo");`. Se usar dois (`\n\n`), você deixa uma linha em branco entre as palavras.
+
+<Nota tipo="dica" titulo="Experimente antes de continuar">
+Volte ao seu primeiro programa, tire o `\n`, rode de novo e depois coloque-o no meio da mensagem. Observe o que muda na saída.
+</Nota>
+
 ## Do texto ao programa: o que o compilador faz
 
 O computador não entende `printf`. Ele só entende instruções de máquina, que são números. Quem traduz o seu texto para essa linguagem é o **compilador** (no C, o mais famoso é o `gcc`). Quando você clica em Run, o OnlineGDB faz tudo isto por baixo dos panos:
