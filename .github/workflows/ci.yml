@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: write
+
 on:
   pull_request:
     paths-ignore:
@@ -17,6 +20,19 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Formatar arquivos novos do cantinho na branch
+        if: github.head_ref == 'cantinho' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git fetch origin cantinho
+          git checkout -B cantinho origin/cantinho
+          npx prettier --write estudos/src/cantinho/*.ts estudos/src/cantinho/*.tsx estudos/src/pages/inicio.tsx
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add estudos/src/cantinho/ estudos/src/pages/inicio.tsx
+          if ! git diff --cached --quiet; then
+            git commit -m "style(estudos): formatar arquivos de personalização"
+            git push origin HEAD:cantinho
+          fi
       - run: npm run lint
       - run: npm test
       - run: npm run build
