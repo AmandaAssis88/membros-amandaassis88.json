@@ -8,12 +8,7 @@ import {
   normalizarGitHub,
   PADRAO_GITHUB,
 } from "./perfil";
-import {
-  dataLocalHoje,
-  fraseDoDia,
-  TEMAS,
-  type TemaId,
-} from "./temas";
+import { dataLocalHoje, fraseDoDia, TEMAS, type TemaId } from "./temas";
 
 function EscolherTema({
   tema,
@@ -83,9 +78,13 @@ function EscolherTema({
       >
         <header className="temas-cabecalho">
           <div>
-            <span className="cantinho-kicker"><Palette size={15} /> SEU AMBIENTE</span>
+            <span className="cantinho-kicker">
+              <Palette size={15} /> SEU AMBIENTE
+            </span>
             <h2 id="temas-titulo">Escolher meu tema de estudos</h2>
-            <p id="temas-descricao">Um cantinho que combina com você. As trilhas e ferramentas continuam iguais.</p>
+            <p id="temas-descricao">
+              Um cantinho que combina com você. As trilhas e ferramentas continuam iguais.
+            </p>
           </div>
           <button
             ref={fecharRef}
@@ -109,10 +108,14 @@ function EscolherTema({
             >
               <img src={opcao.miniatura} alt="" loading="lazy" width={148} height={90} />
               <span className="temas-opcao-texto">
-                <strong>{opcao.emoji} {opcao.nome}</strong>
+                <strong>
+                  {opcao.emoji} {opcao.nome}
+                </strong>
                 <small>{opcao.descricao}</small>
               </span>
-              {selecionado === opcao.id && <Check className="temas-check" size={19} aria-hidden="true" />}
+              {selecionado === opcao.id && (
+                <Check className="temas-check" size={19} aria-hidden="true" />
+              )}
             </button>
           ))}
         </div>
@@ -120,10 +123,15 @@ function EscolherTema({
         <div className="temas-rodape">
           <div className="temas-selecionado">
             <img src={temaAtual.miniatura} alt="" width={58} height={45} />
-            <span><small>Seu próximo ambiente</small><strong>{temaAtual.nome}</strong></span>
+            <span>
+              <small>Seu próximo ambiente</small>
+              <strong>{temaAtual.nome}</strong>
+            </span>
           </div>
           <div className="temas-botoes">
-            <button type="button" className="temas-cancelar" onClick={onFechar}>Cancelar</button>
+            <button type="button" className="temas-cancelar" onClick={onFechar}>
+              Cancelar
+            </button>
             <button
               type="button"
               className="temas-aplicar"
@@ -204,7 +212,8 @@ export function CantinhoEstudos({
                 loading="lazy"
                 onError={(evento) => {
                   evento.currentTarget.onerror = null;
-                  evento.currentTarget.src = "https://github.com/" + perfil.github + ".png?size=160";
+                  evento.currentTarget.src =
+                    "https://github.com/" + perfil.github + ".png?size=160";
                 }}
               />
               <span aria-hidden="true">✦</span>
@@ -221,7 +230,9 @@ export function CantinhoEstudos({
                 <Github size={14} /> @{perfil.github} <ArrowRight size={12} />
               </a>
               <div className="cantinho-areas" aria-label="Áreas de interesse">
-                {perfil.areas.map((area) => <span key={area}>{area}</span>)}
+                {perfil.areas.map((area) => (
+                  <span key={area}>{area}</span>
+                ))}
               </div>
               <button type="button" className="cantinho-trocar" onClick={trocarUsuario}>
                 Não é você? Trocar perfil
@@ -230,7 +241,9 @@ export function CantinhoEstudos({
           </div>
         ) : (
           <div className="cantinho-convite">
-            <span className="cantinho-kicker"><Coffee size={15} /> FAÇA PARTE DA MESA</span>
+            <span className="cantinho-kicker">
+              <Coffee size={15} /> FAÇA PARTE DA MESA
+            </span>
             <h2 id="cantinho-titulo">
               {github ? "Seu cantinho está quase pronto!" : "E aí, estudante! Qual é seu GitHub?"}
             </h2>
@@ -257,34 +270,53 @@ export function CantinhoEstudos({
                   aria-invalid={Boolean(erro)}
                   aria-describedby={erro ? "cantinho-erro" : undefined}
                 />
-                <button type="submit"><Search size={16} /> Encontrar</button>
+                <button type="submit">
+                  <Search size={16} /> Encontrar
+                </button>
               </div>
-              {erro && <p id="cantinho-erro" className="cantinho-erro" role="alert">{erro}</p>}
+              {erro && (
+                <p id="cantinho-erro" className="cantinho-erro" role="alert">
+                  {erro}
+                </p>
+              )}
             </form>
             {github && (
               <p className="cantinho-ajuda">
-                Se ainda não criou seu perfil, <a href={ONBOARDING_URL} target="_blank" rel="noreferrer">venha para a comunidade <ArrowRight size={13} /></a> e faça seu primeiro desafio. Depois de aprovado, seu card aparecerá aqui.
+                Se ainda não criou seu perfil,{" "}
+                <a href={ONBOARDING_URL} target="_blank" rel="noreferrer">
+                  venha para a comunidade <ArrowRight size={13} />
+                </a>{" "}
+                e faça seu primeiro desafio. Depois de aprovado, seu card aparecerá aqui.
               </p>
             )}
             {!github && (
               <p className="cantinho-ajuda">
-                Ainda não tem perfil? <a href={ONBOARDING_URL} target="_blank" rel="noreferrer">Conheça a comunidade <ArrowRight size={13} /></a>
+                Ainda não tem perfil?{" "}
+                <a href={ONBOARDING_URL} target="_blank" rel="noreferrer">
+                  Conheça a comunidade <ArrowRight size={13} />
+                </a>
               </p>
             )}
           </div>
         )}
 
         <div className="cantinho-frase" aria-label="Mensagem de incentivo do dia">
-          <span className="cantinho-aspas" aria-hidden="true">“</span>
+          <span className="cantinho-aspas" aria-hidden="true">
+            “
+          </span>
           <div>
-            <span className="cantinho-kicker"><Sparkles size={14} /> UMA MENSAGEM PARA HOJE</span>
+            <span className="cantinho-kicker">
+              <Sparkles size={14} /> UMA MENSAGEM PARA HOJE
+            </span>
             <blockquote>{frase}</blockquote>
           </div>
           <span className="cantinho-frase-dia">Uma coisa de cada vez. ♡</span>
         </div>
 
         <div className="cantinho-tema">
-          <span className="cantinho-kicker"><Palette size={15} /> SEU ESTILO DE ESTUDO</span>
+          <span className="cantinho-kicker">
+            <Palette size={15} /> SEU ESTILO DE ESTUDO
+          </span>
           <div className="cantinho-tema-atual">
             <img src={temaAtual.miniatura} alt="" width={80} height={58} loading="lazy" />
             <div>

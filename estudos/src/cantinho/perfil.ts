@@ -26,13 +26,18 @@ const avatares = import.meta.glob("../../../public/avatares/**/*.svg", {
 function ePerfilPublico(valor: unknown): valor is PerfilPublico {
   if (!valor || typeof valor !== "object") return false;
   const p = valor as Partial<PerfilPublico>;
-  return typeof p.github === "string" && PADRAO_GITHUB.test(p.github) &&
-    typeof p.nome === "string" && p.nome.length > 0 &&
+  return (
+    typeof p.github === "string" &&
+    PADRAO_GITHUB.test(p.github) &&
+    typeof p.nome === "string" &&
+    p.nome.length > 0 &&
     typeof p.avatar === "string" &&
     typeof p.periodo === "string" &&
     typeof p.frase === "string" &&
     typeof p.entrouEm === "string" &&
-    Array.isArray(p.areas) && p.areas.every((a) => typeof a === "string");
+    Array.isArray(p.areas) &&
+    p.areas.every((a) => typeof a === "string")
+  );
 }
 
 const PERFIS = new Map<string, PerfilPublico>();
@@ -52,7 +57,10 @@ export function normalizarGitHub(valor: string): string {
 export function avatarDoPerfil(perfil: PerfilPublico): string {
   if (perfil.avatar.startsWith("/avatares/")) {
     // Avatares da comunidade são importados como assets do build de estudos.
-    return avatares[`../../../public${perfil.avatar}`] || `https://github.com/${perfil.github}.png?size=160`;
+    return (
+      avatares[`../../../public${perfil.avatar}`] ||
+      `https://github.com/${perfil.github}.png?size=160`
+    );
   }
   return /^https:\/\/\S+$/.test(perfil.avatar)
     ? perfil.avatar

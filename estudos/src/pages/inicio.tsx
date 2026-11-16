@@ -93,7 +93,11 @@ export function Inicio() {
     <main className="home-personalizada" data-tema={tema}>
       <section className="home-hero">
         <div className="home-capa-imagem" aria-hidden="true" />
-        <div className="home-capa-efeitos" aria-hidden="true"><span /><span /><span /></div>
+        <div className="home-capa-efeitos" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
         <MiniPlayer />
         <div className="home-hero-texto">
           <p className="kicker">☕ CAFÉ DE ESTUDOS DA UNIDUNEDEV</p>
