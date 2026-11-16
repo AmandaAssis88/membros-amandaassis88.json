@@ -1,24 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
 
-import { LINGUAGENS_MISSAO, type Missao } from "@/lib/missoes";
+import { LINGUAGENS_MISSAO, type LinguagemMissao, type Missao } from "@/lib/missoes";
 import { CenaMissao } from "./cena-missao";
 
 export function CartaoMissao({
   missao,
   recomendada,
   escolhida,
+  linguagem,
 }: {
   missao: Missao;
   recomendada: boolean;
   escolhida: boolean;
+  linguagem: LinguagemMissao | "";
 }) {
-  const linguagem = LINGUAGENS_MISSAO.find((opcao) => opcao.id === missao.linguagem);
+  const nomeLinguagem = LINGUAGENS_MISSAO.find((opcao) => opcao.id === linguagem)?.nome;
   return (
     <article className={`mis-card mis-tom-${missao.id}${escolhida ? " mis-card--escolhida" : ""}`}>
       <div className="mis-card-capa">
         <div className="mis-card-topicos">
-          <span className="mis-capa-selo">{linguagem?.nome ?? "Código"}</span>
+          <span className="mis-capa-selo">{nomeLinguagem ?? "C · Python · Java"}</span>
           <span className="mis-capa-selo">{missao.nivel}</span>
         </div>
         <CenaMissao id={missao.id} />
