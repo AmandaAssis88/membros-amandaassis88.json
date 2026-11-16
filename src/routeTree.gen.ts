@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DesafioPrRouteImport } from './routes/desafio-pr'
 import { Route as MuralRouteImport } from './routes/mural'
+import { Route as MissoesIndexRouteImport } from './routes/missoes/index'
+import { Route as MissoesSlugRouteImport } from './routes/missoes/$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +30,54 @@ const MuralRoute = MuralRouteImport.update({
   path: '/mural',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MissoesIndexRoute = MissoesIndexRouteImport.update({
+  id: '/missoes/',
+  path: '/missoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MissoesSlugRoute = MissoesSlugRouteImport.update({
+  id: '/missoes/$slug',
+  path: '/missoes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/desafio-pr': typeof DesafioPrRoute
   '/mural': typeof MuralRoute
+  '/missoes/$slug': typeof MissoesSlugRoute
+  '/missoes/': typeof MissoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/desafio-pr': typeof DesafioPrRoute
   '/mural': typeof MuralRoute
+  '/missoes/$slug': typeof MissoesSlugRoute
+  '/missoes': typeof MissoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/desafio-pr': typeof DesafioPrRoute
   '/mural': typeof MuralRoute
+  '/missoes/$slug': typeof MissoesSlugRoute
+  '/missoes/': typeof MissoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/desafio-pr' | '/mural'
+  fullPaths: '/' | '/desafio-pr' | '/mural' | '/missoes/$slug' | '/missoes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/desafio-pr' | '/mural'
-  id: '__root__' | '/' | '/desafio-pr' | '/mural'
+  to: '/' | '/desafio-pr' | '/mural' | '/missoes/$slug' | '/missoes'
+  id:
+    '__root__' | '/' | '/desafio-pr' | '/mural' | '/missoes/$slug' | '/missoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DesafioPrRoute: typeof DesafioPrRoute
   MuralRoute: typeof MuralRoute
+  MissoesSlugRoute: typeof MissoesSlugRoute
+  MissoesIndexRoute: typeof MissoesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +103,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MuralRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/missoes/': {
+      id: '/missoes/'
+      path: '/missoes'
+      fullPath: '/missoes/'
+      preLoaderRoute: typeof MissoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/missoes/$slug': {
+      id: '/missoes/$slug'
+      path: '/missoes/$slug'
+      fullPath: '/missoes/$slug'
+      preLoaderRoute: typeof MissoesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +124,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DesafioPrRoute: DesafioPrRoute,
   MuralRoute: MuralRoute,
+  MissoesSlugRoute: MissoesSlugRoute,
+  MissoesIndexRoute: MissoesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
