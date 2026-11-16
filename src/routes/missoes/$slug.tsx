@@ -73,6 +73,18 @@ function DetalhesDaMissao() {
     "/solucoes/seu-username" +
     (escolhas.linguagem ? EXTENSOES[escolhas.linguagem] : ".ext");
 
+  const nomeBranch = "solucao/missao-" + missao.id + "-seu-username";
+  const comandos = [
+    "git clone https://github.com/SEU-USERNAME/estudos.git",
+    "cd estudos",
+    "git switch -c " + nomeBranch,
+    "# Crie seu arquivo: " + arquivo,
+    "python scripts/testar.py " + arquivo,
+    "git add " + arquivo,
+    "git commit -m " + JSON.stringify("feat: resolve missao " + missao.id),
+    "git push -u origin " + nomeBranch,
+  ].join("\n");
+
   function aceitar() {
     if (!escolhas.linguagem || !missao) return;
     atualizarEscolhas({ missaoId: missao.id });
@@ -208,6 +220,12 @@ function DetalhesDaMissao() {
             <div className="mis-exemplo-arquivo">
               <span>Exemplo do caminho da solução</span>
               <code>{arquivo}</code>
+            </div>
+            <div className="mis-comandos">
+              <p className="mis-eyebrow">EXEMPLO DE COMANDOS · APÓS A LIBERAÇÃO</p>
+              <p>Troque SEU-USERNAME pelo seu usuário do GitHub e crie o arquivo no editor antes de testar.</p>
+              <pre aria-label="Comandos para preparar, testar e enviar a missão"><code>{comandos}</code></pre>
+              <p>Depois do push, abra o Pull Request pelo GitHub do seu fork. No Windows, se python não funcionar, tente py.</p>
             </div>
             <p className="mis-alerta">
               O Desafio 2 ainda não está aberto para entregas. Não envie soluções para esse caminho
