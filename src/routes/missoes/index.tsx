@@ -29,7 +29,7 @@ function MissoesDaComunidade() {
   const [escolhas, setEscolhas] = useState(lerEscolhasMissoes);
   const [passaporte] = useState(readSavedPassport);
 
-  const encontradas = listarMissoes(escolhas.linguagem, escolhas.area);
+  const encontradas = listarMissoes(escolhas.area);
   const selecionada = encontradas.find((missao) => missao.id === escolhas.missaoId);
   const total = encontradas.length;
 
@@ -117,8 +117,9 @@ function MissoesDaComunidade() {
                 : "O que você quer explorar?"}
             </h2>
             <p>
-              A carreira é só um interesse por enquanto. Você continua livre para escolher qualquer
-              projeto, mesmo que ainda não saiba sua área.
+              A carreira é só um interesse por enquanto. Todas as 12 missões podem ser feitas em
+              C, Python ou Java: a linguagem muda as dicas e a forma de organizar seu programa,
+              mas você continua livre para escolher qualquer projeto.
             </p>
           </div>
           <span className="mis-escolha-detalhe">
@@ -146,7 +147,7 @@ function MissoesDaComunidade() {
             </select>
           </div>
           <div className="mis-filtro">
-            <label htmlFor="mis-linguagem">Com qual linguagem você quer praticar?</label>
+            <label htmlFor="mis-linguagem">Em qual linguagem você quer resolver?</label>
             <select
               id="mis-linguagem"
               className="mis-select"
@@ -156,7 +157,7 @@ function MissoesDaComunidade() {
                 atualizarEscolhas({ linguagem: eLinguagemMissao(valor) ? valor : "" });
               }}
             >
-              <option value="">Quero ver todas</option>
+              <option value="">Vou escolher dentro da missão</option>
               {LINGUAGENS_MISSAO.map((linguagem) => (
                 <option key={linguagem.id} value={linguagem.id}>
                   {linguagem.nome}
@@ -183,8 +184,8 @@ function MissoesDaComunidade() {
             <p className="mis-eyebrow">CARDÁPIO DE MISSÕES</p>
             <h2 id="mis-catalogo-titulo">Qual história você vai resolver?</h2>
             <p>
-              Cada missão conta uma história, ensina conceitos e traz um roteiro para você construir
-              a solução com suas próprias ideias.
+              Escolha pela história que despertou sua curiosidade. Depois você decide se vai usar
+              C, Python ou Java e recebe pistas específicas, sem código pronto.
             </p>
           </div>
           <strong>
@@ -202,6 +203,7 @@ function MissoesDaComunidade() {
                 missao.areas.includes(escolhas.area),
               )}
               escolhida={missao.id === escolhas.missaoId}
+              linguagem={escolhas.linguagem}
             />
           ))}
         </div>
