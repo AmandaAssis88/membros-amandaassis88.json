@@ -7,6 +7,8 @@ import {
   ESCOLHAS_INICIAIS,
   LINGUAGENS_MISSAO,
   MISSOES,
+  MISSOES_EM_CARTAZ,
+  missoesEmCartaz,
   eAreaMissao,
   eLinguagemMissao,
   lerEscolhasMissoes,
@@ -17,8 +19,8 @@ import {
 } from "./missoes";
 
 describe("Missões da Comunidade — Desafio 2", () => {
-  it("mantém 12 missões com história, conceitos e critérios verificáveis", () => {
-    expect(MISSOES).toHaveLength(12);
+  it("preserva as missões antigas e adiciona o resgate do gatinho", () => {
+    expect(MISSOES).toHaveLength(13);
     expect(new Set(MISSOES.map((m) => m.id)).size).toBe(12);
     for (const missao of MISSOES) {
       expect(missao.titulo.length).toBeGreaterThan(8);
@@ -30,6 +32,22 @@ describe("Missões da Comunidade — Desafio 2", () => {
     }
   });
 
+  it("mostra só cinco histórias na estreia e preserva as outras para depois", () => {
+    expect(MISSOES_EM_CARTAZ).toEqual(["gatinho", "cafeteria", "incendio", "nave", "castelo"]);
+    expect(missoesEmCartaz()).toHaveLength(5);
+    expect(missoesEmCartaz()[0]?.titulo).toBe("Salve o gatinho");
+    expect(procurarMissao("laboratorio")).toBeDefined();
+  });
+
+  it("ensina o resgate do gatinho sem depender de JavaScript ou escalada", () => {
+    const gatinho = procurarMissao("gatinho");
+    expect(gatinho?.historia).toContain("equipe de resgate");
+    expect(gatinho?.criterios.join(" ")).toContain("Faltam:");
+    for (const linguagem of LINGUAGENS_MISSAO) {
+      expect(orientacaoDaMissao("gatinho", linguagem.id).pistas).toHaveLength(3);
+    }
+  });
+
   it("libera somente as três linguagens que estão no Café de Estudos", () => {
     expect(LINGUAGENS_MISSAO.map((linguagem) => linguagem.id)).toEqual(["c", "python", "java"]);
     expect(eLinguagemMissao("javascript")).toBe(false);
@@ -37,7 +55,7 @@ describe("Missões da Comunidade — Desafio 2", () => {
     expect(procurarMissao("missao-inexistente")).toBeUndefined();
   });
 
-  it("oferece pistas adequadas a todas as 36 combinações sem entregar código", () => {
+  it("oferece pistas para todas as missões em C Python e Java sem entregar código", () => {
     for (const missao of MISSOES) {
       for (const linguagem of LINGUAGENS_MISSAO) {
         const guia = orientacaoDaMissao(missao.id, linguagem.id);
@@ -52,12 +70,12 @@ describe("Missões da Comunidade — Desafio 2", () => {
 
   it("usa a área como sugestão sem ocultar nenhuma das missões", () => {
     const todas = listarMissoes("");
-    expect(todas).toHaveLength(12);
+    expect(todas).toHaveLength(13);
     const mobile = listarMissoes("Mobile");
-    expect(mobile).toHaveLength(12);
+    expect(mobile).toHaveLength(13);
     expect(mobile[0]?.areas).toContain("Mobile");
     const backend = listarMissoes("Back-end");
-    expect(backend).toHaveLength(12);
+    expect(backend).toHaveLength(13);
     expect(backend[0]?.areas).toContain("Back-end");
   });
 
