@@ -1,0 +1,500 @@
+/* Desafio 2 — estilos isolados; não alteram o onboarding nem os cards do mural. */
+.mis-pagina {
+  max-width: 1230px;
+  margin: 38px auto 90px;
+  color: #3e3042;
+}
+.mis-eyebrow {
+  font: 800 11px/1.4 "JetBrains Mono", monospace;
+  letter-spacing: .12em;
+  color: #aa6e67;
+  text-transform: uppercase;
+}
+.mis-pagina h1,
+.mis-pagina h2,
+.mis-pagina h3 {
+  font-family: "Lora", Georgia, serif;
+}
+.mis-pagina a:focus-visible,
+.mis-pagina button:focus-visible,
+.mis-pagina select:focus-visible {
+  outline: 3px solid #a86e89;
+  outline-offset: 4px;
+}
+.mis-hero {
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border-radius: 28px;
+  padding: clamp(28px, 5vw, 58px);
+  background: radial-gradient(ellipse at 86% 30%, #76526d 0%, transparent 49%), #38283f;
+  color: #fff6e7;
+  isolation: isolate;
+}
+.mis-hero::before,
+.mis-hero::after {
+  content: "✦";
+  position: absolute;
+  color: #f7c9a2;
+  opacity: .42;
+  font-size: 28px;
+  pointer-events: none;
+}
+.mis-hero::before { top: 27px; right: 26%; }
+.mis-hero::after { bottom: 34px; right: 4%; font-size: 18px; }
+.mis-hero-conteudo { position: relative; z-index: 2; max-width: 640px; }
+.mis-hero .mis-eyebrow { color: #f6c39e; }
+.mis-hero h1 {
+  font-size: clamp(30px, 4.6vw, 56px);
+  line-height: 1.18;
+  margin: 13px 0 19px;
+  font-weight: 600;
+}
+.mis-hero h1 em { color: #eeb790; font-style: normal; }
+.mis-hero p:not(.mis-eyebrow) {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #e8d8df;
+  max-width: 570px;
+}
+.mis-hero-deco {
+  position: absolute;
+  width: min(34vw, 380px);
+  right: -6px;
+  bottom: -37px;
+  transform: rotate(3deg);
+  filter: drop-shadow(0 22px 21px rgba(15, 9, 26, .21));
+  opacity: .97;
+}
+.mis-hero-deco .missao-cena { width: 100%; }
+.mis-botao-primario,
+.mis-botao-secundario,
+.mis-botao-sutil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 13px;
+  border: 1.5px solid transparent;
+  padding: 12px 18px;
+  font: 800 13px/1.3 "DM Sans", sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+.mis-botao-primario { color: #3f2940; background: #f1c59e; box-shadow: 0 4px #b58c7c; }
+.mis-botao-primario:hover { color: #3f2940; transform: translateY(-2px); box-shadow: 0 6px #b58c7c; }
+.mis-botao-secundario { color: #59415a; background: #fff9f0; border-color: #dacbcf; }
+.mis-botao-secundario:hover { background: #f8e9e2; }
+.mis-botao-sutil { color: #75516d; background: transparent; border-color: #d9bec6; }
+.mis-botao-sutil:hover { background: #f5eae7; }
+.mis-hero-acoes { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 23px; }
+
+.mis-jornada { margin: 42px 0 45px; }
+.mis-titulo-secao { margin-bottom: 19px; }
+.mis-titulo-secao h2 {
+  color: #3c2b3e;
+  font-weight: 600;
+  line-height: 1.25;
+  font-size: clamp(26px, 3vw, 37px);
+  margin: 6px 0;
+}
+.mis-titulo-secao p:last-child { color: #796d74; font-size: 14px; line-height: 1.7; max-width: 700px; }
+.mis-jornada-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.mis-etapa {
+  border: 1.5px solid #ddcfc8;
+  border-radius: 23px;
+  background: #fffcf5;
+  padding: 26px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  overflow: hidden;
+  min-height: 235px;
+}
+.mis-etapa::before {
+  content: "";
+  width: 180px;
+  height: 180px;
+  position: absolute;
+  right: -55px;
+  top: -69px;
+  border-radius: 50%;
+  background: #f7eee4;
+}
+.mis-etapa-principal {
+  border-color: #bfa2b7;
+  background: #f9eff6;
+  box-shadow: 0 8px 0 rgba(111, 79, 110, .07);
+}
+.mis-etapa-principal::before { background: #eedde9; }
+.mis-etapa-icone {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #ecdad5;
+  color: #6c4d5b;
+}
+.mis-etapa-principal .mis-etapa-icone { color: #624568; background: #e6cde2; }
+.mis-etapa h3 { font-size: 23px; font-weight: 600; z-index: 1; }
+.mis-etapa > p { font-size: 14px; line-height: 1.7; color: #6c606c; max-width: 410px; z-index: 1; }
+.mis-etapa .mis-botao-secundario { margin-top: auto; align-self: flex-start; z-index: 1; }
+.mis-etapa .mis-botao-primario { margin-top: auto; align-self: flex-start; z-index: 1; }
+
+.mis-escolha {
+  border-radius: 24px;
+  padding: 26px;
+  border: 1px solid #e4d0d1;
+  background: linear-gradient(135deg, #fff5e9, #f8eff2);
+  margin: 10px 0 28px;
+}
+.mis-escolha-topo {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: space-between;
+  margin-bottom: 21px;
+}
+.mis-escolha h2 { font-size: 28px; margin: 4px 0; }
+.mis-escolha p { font-size: 13px; color: #776472; line-height: 1.6; }
+.mis-escolha-detalhe {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 100px;
+  background: #f0e5e4;
+  padding: 9px 13px;
+  color: #77596a;
+  font: 700 11px "DM Sans", sans-serif;
+}
+.mis-filtros { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mis-filtro { display: grid; gap: 8px; }
+.mis-filtro label { color: #594457; font: 800 12px "DM Sans", sans-serif; }
+.mis-select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 38px 10px 15px;
+  border: 1.5px solid #d7c2c6;
+  border-radius: 12px;
+  background: #fffefa;
+  color: #44374c;
+  font: 700 14px "DM Sans", sans-serif;
+  cursor: pointer;
+}
+.mis-selecao-atual {
+  margin: 20px 0 0;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: #e7dbe9;
+  color: #584561;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.mis-selecao-atual a { font-weight: 800; color: #67466e; text-decoration: underline; }
+
+.mis-catalogo { margin: 35px 0 52px; scroll-margin-top: 24px; }
+.mis-catalogo-topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.mis-catalogo-topo strong {
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #e9dbe2;
+  color: #73526a;
+  font: 800 12px "JetBrains Mono", monospace;
+}
+.mis-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 19px; margin-top: 23px; }
+.mis-card {
+  --mis-cor: #6f5a83;
+  --mis-fundo: #f1d8d8;
+  --mis-fundo2: #f9e7d2;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border: 1px solid #dcc8d1;
+  background: #fffcf7;
+  border-radius: 23px;
+  overflow: hidden;
+  box-shadow: 0 7px 0 rgba(83, 55, 68, .06);
+  transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+}
+.mis-card:hover { transform: translateY(-4px); box-shadow: 0 12px 0 rgba(83, 55, 68, .065); border-color: #ab849a; }
+.mis-card:focus-within { border-color: #906786; }
+.mis-card-capa {
+  position: relative;
+  height: 154px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 73% 50%, var(--mis-fundo2), transparent 64%),
+    var(--mis-fundo);
+}
+.mis-card-capa::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 24px;
+  background: linear-gradient(transparent, rgba(255, 248, 234, .2));
+  pointer-events: none;
+}
+.mis-card-capa .missao-cena {
+  position: absolute;
+  width: min(87%, 290px);
+  height: auto;
+  right: -3px;
+  bottom: -12px;
+  filter: drop-shadow(0 9px 8px rgba(60, 41, 59, .13));
+}
+.mis-card-topicos {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 2;
+}
+.mis-capa-selo {
+  background: rgba(255, 253, 249, .94);
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #64455d;
+  border: 1px solid rgba(99, 69, 95, .13);
+  font: 800 10px "JetBrains Mono", monospace;
+}
+.mis-card-corpo { padding: 20px; display: flex; flex-direction: column; gap: 11px; flex: 1; }
+.mis-card-meta { color: var(--mis-cor); font: 800 11px "JetBrains Mono", monospace; }
+.mis-card h3 { font-size: 23px; color: #47334a; font-weight: 600; line-height: 1.23; }
+.mis-card p { font-size: 13px; line-height: 1.63; color: #766877; }
+.mis-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.mis-tags span {
+  padding: 5px 8px;
+  border-radius: 100px;
+  font: 700 10px "DM Sans", sans-serif;
+  color: #66586d;
+  background: #f3ece9;
+}
+.mis-card-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0e5e8;
+  padding-top: 14px;
+  gap: 9px;
+  margin-top: auto;
+}
+.mis-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 800 13px "DM Sans", sans-serif;
+  text-decoration: none;
+  color: #77517e;
+  border-bottom: 1px solid transparent;
+}
+.mis-card-link:hover { border-bottom-color: #77517e; }
+.mis-card-recomendado { color: #a67464; font: 700 10px "DM Sans", sans-serif; }
+.mis-card--escolhida { border-color: #b48db9; box-shadow: 0 7px 0 rgba(123, 77, 127, .12); }
+
+/* O tema altera cada cenário sem interferir no site de estudos. */
+.mis-tom-incendio { --mis-fundo: #f5d6cc; --mis-fundo2: #ffe5b8; --mis-cor: #c77161; }
+.mis-tom-cafeteria { --mis-fundo: #e4ccd9; --mis-fundo2: #f2d7b7; --mis-cor: #b16b82; }
+.mis-tom-abrigo { --mis-fundo: #f9e0e0; --mis-fundo2: #e7d1e8; --mis-cor: #b27895; }
+.mis-tom-nave { --mis-fundo: #d9d1ee; --mis-fundo2: #c5bce9; --mis-cor: #786ab4; }
+.mis-tom-laboratorio { --mis-fundo: #d3e8df; --mis-fundo2: #e9dbe9; --mis-cor: #658f89; }
+.mis-tom-castelo { --mis-fundo: #ded0e5; --mis-fundo2: #f1dcbf; --mis-cor: #9672a5; }
+.mis-tom-farol { --mis-fundo: #d1e5e8; --mis-fundo2: #f1dbcc; --mis-cor: #5b90a0; }
+.mis-tom-biblioteca { --mis-fundo: #f0d8c6; --mis-fundo2: #f5e9bc; --mis-cor: #b08c67; }
+.mis-tom-robo { --mis-fundo: #d3e0f1; --mis-fundo2: #e2d6ed; --mis-cor: #7b87b0; }
+.mis-tom-jardim { --mis-fundo: #e1eecf; --mis-fundo2: #f8e2d9; --mis-cor: #819d73; }
+.mis-tom-feira { --mis-fundo: #f1d8df; --mis-fundo2: #f8e5bb; --mis-cor: #bd8d9c; }
+.mis-tom-pinguim { --mis-fundo: #d7eaf1; --mis-fundo2: #edf5f7; --mis-cor: #6f9fb4; }
+
+.mis-proxima-fase {
+  margin-top: 43px;
+  border: 1px dashed #bc9ab4;
+  background: #f4ebf3;
+  border-radius: 23px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 23px;
+}
+.mis-proxima-icone {
+  width: 66px;
+  height: 66px;
+  flex: 0 0 66px;
+  background: #e8d7e5;
+  border-radius: 18px;
+  color: #79567c;
+  display: grid;
+  place-items: center;
+}
+.mis-proxima-fase h2 { font-size: 23px; margin: 0 0 7px; }
+.mis-proxima-fase p { color: #6e6071; font-size: 14px; line-height: 1.7; }
+
+/* Página de uma missão: história, roteiro e entrega. */
+.mis-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #765775;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  margin-bottom: 21px;
+}
+.mis-detalhe-hero {
+  border-radius: 25px;
+  min-height: 285px;
+  padding: clamp(26px, 4vw, 52px);
+  background: radial-gradient(circle at 77% 52%, var(--mis-fundo2), var(--mis-fundo));
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+}
+.mis-detalhe-hero > div:first-child { z-index: 2; position: relative; max-width: 55%; }
+.mis-detalhe-hero h1 {
+  font-size: clamp(30px, 4vw, 50px);
+  line-height: 1.17;
+  font-weight: 600;
+  margin: 14px 0;
+}
+.mis-detalhe-hero p:last-child { color: #6b5267; font-size: 15px; line-height: 1.7; }
+.mis-detalhe-hero .missao-cena {
+  position: absolute;
+  width: min(48%, 480px);
+  right: -3%;
+  bottom: -9%;
+  filter: drop-shadow(0 15px 11px rgba(75, 51, 60, .12));
+}
+.mis-detalhe-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(255px, 1fr); gap: 24px; margin: 28px 0 0; }
+.mis-detalhe-main, .mis-detalhe-lado { display: grid; gap: 22px; align-content: start; }
+.mis-bloco {
+  padding: 27px;
+  border: 1px solid #e2d3d1;
+  border-radius: 21px;
+  background: #fffdfa;
+}
+.mis-bloco h2 { font-size: 25px; line-height: 1.25; margin-bottom: 12px; }
+.mis-bloco p { color: #6f616f; font-size: 14px; line-height: 1.8; }
+.mis-bloco ul, .mis-bloco ol { display: grid; gap: 12px; padding-left: 22px; color: #594d61; font-size: 14px; line-height: 1.7; }
+.mis-bloco li::marker { color: #a77a91; font-weight: 800; }
+.mis-bloco > .mis-tags { margin-top: 16px; }
+.mis-alerta {
+  padding: 16px 18px;
+  border: 1px solid #ead1bb;
+  background: #fff4e5;
+  border-radius: 14px;
+  color: #865e4f;
+  line-height: 1.65;
+  font-size: 13px;
+}
+.mis-bloco-escuro { background: #403044; color: #fff2e5; border-color: #403044; }
+.mis-bloco-escuro h2 { color: #fff2e5; }
+.mis-bloco-escuro p { color: #e2ceda; }
+.mis-bloco-escuro .mis-botao-primario { width: 100%; margin-top: 19px; }
+.mis-bloco-escuro .mis-botao-secundario { width: 100%; margin-top: 12px; }
+.mis-aceita {
+  padding: 12px 15px;
+  border-radius: 12px;
+  background: #c6e6d2;
+  color: #356549;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.mis-entrega-acoes { display: grid; gap: 9px; margin-top: 18px; }
+.mis-entrega-acoes a { width: 100%; }
+.mis-home-atalho { margin: 0 0 32px; padding: 22px 26px; border: 1px solid #dbc8d4; border-radius: 18px; background: #f5e9f1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+.mis-home-atalho h3 { font: 600 21px "Lora", Georgia, serif; color: #533c57; }
+.mis-home-atalho p { font-size: 13px; line-height: 1.6; color: #7d657c; margin-top: 4px; }
+
+/* Pequenos movimentos, limitados ao SVG e sem bibliotecas de animação. */
+.missao-cena { overflow: visible; }
+.missao-anim-fumaca { animation: mis-fumaca 3.3s ease-in-out infinite; transform-origin: center; }
+.missao-anim-fogo { animation: mis-fogo .83s ease-in-out infinite alternate; transform-origin: center bottom; }
+.missao-anim-jato { animation: mis-jato 2.1s linear infinite; }
+.missao-anim-flutuar { animation: mis-flutuar 3s ease-in-out infinite; }
+.missao-anim-brilho { animation: mis-brilho 2.3s ease-in-out infinite alternate; }
+.missao-anim-piscar { animation: mis-piscar 4.2s steps(1) infinite; transform-origin: center; }
+.missao-anim-cauda { animation: mis-cauda 1.7s ease-in-out infinite alternate; transform-origin: 12px 37px; }
+.missao-anim-nave { animation: mis-nave 2.5s ease-in-out infinite; }
+.missao-anim-bolha { animation: mis-bolha 2.4s ease-in-out infinite; }
+.missao-anim-bandeira { animation: mis-bandeira 2.8s ease-in-out infinite alternate; transform-origin: left; }
+.missao-anim-farol { animation: mis-farol 3s ease-in-out infinite alternate; transform-origin: 196px 91px; }
+.missao-anim-balanco { animation: mis-balanco 2.6s ease-in-out infinite alternate; }
+.missao-anim-robo { animation: mis-flutuar 2s ease-in-out infinite; }
+.missao-anim-flor { animation: mis-flor 3.2s ease-in-out infinite alternate; transform-origin: center bottom; }
+.missao-anim-agua { animation: mis-balanco 2.3s ease-in-out infinite alternate; }
+.missao-anim-moedas { animation: mis-flutuar 2.2s ease-in-out infinite; }
+.missao-anim-pinguim { animation: mis-pinguim 2s ease-in-out infinite alternate; transform-origin: center bottom; }
+.missao-anim-neve { animation: mis-neve 4s ease-in-out infinite; }
+@keyframes mis-fumaca { 0%,100% { opacity: .55; transform: translateY(3px); } 50% { opacity: .9; transform: translateY(-11px); } }
+@keyframes mis-fogo { from { transform: scale(.94,.92) rotate(-3deg); } to { transform: scale(1.06,1.1) rotate(4deg); } }
+@keyframes mis-jato { to { stroke-dashoffset: -38; } }
+@keyframes mis-flutuar { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes mis-brilho { from { opacity: .48; } to { opacity: 1; } }
+@keyframes mis-piscar { 0%,95%,100% { transform: scaleY(1); } 97% { transform: scaleY(.12); } }
+@keyframes mis-cauda { from { transform: rotate(-8deg); } to { transform: rotate(12deg); } }
+@keyframes mis-nave { 0%,100% { transform: translate(154px,16px) rotate(-2deg); } 50% { transform: translate(154px,7px) rotate(3deg); } }
+@keyframes mis-bolha { 0%,100% { transform: translateY(0); opacity: .8; } 50% { transform: translateY(-17px); opacity: .35; } }
+@keyframes mis-bandeira { from { transform: skewY(-4deg); } to { transform: skewY(4deg); } }
+@keyframes mis-farol { from { opacity: .25; transform: rotate(-7deg); } to { opacity: .72; transform: rotate(7deg); } }
+@keyframes mis-balanco { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+@keyframes mis-flor { from { transform: rotate(-3deg); } to { transform: rotate(4deg); } }
+@keyframes mis-pinguim { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+@keyframes mis-neve { 0%,100% { transform: translateY(-4px); opacity: .5; } 50% { transform: translateY(14px); opacity: 1; } }
+
+@media (max-width: 1090px) {
+  .mis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mis-hero-deco { opacity: .5; right: -55px; }
+}
+@media (max-width: 740px) {
+  .mis-pagina { margin: 22px auto 50px; }
+  .mis-hero { padding: 26px 22px 39px; min-height: 0; }
+  .mis-hero h1 { font-size: clamp(29px, 8vw, 40px); }
+  .mis-hero-deco { position: absolute; width: 205px; right: -60px; bottom: -45px; opacity: .18; }
+  .mis-jornada { margin: 28px 0; }
+  .mis-jornada-grid { grid-template-columns: 1fr; }
+  .mis-etapa { min-height: 0; padding: 21px; }
+  .mis-escolha { padding: 20px 16px; }
+  .mis-filtros { grid-template-columns: 1fr; }
+  .mis-grid { grid-template-columns: 1fr; gap: 17px; }
+  .mis-card-capa { height: 150px; }
+  .mis-proxima-fase { padding: 21px; align-items: flex-start; }
+  .mis-proxima-icone { width: 45px; height: 45px; flex-basis: 45px; }
+  .mis-detalhe-hero { min-height: 265px; padding: 25px; align-items: flex-start; }
+  .mis-detalhe-hero > div:first-child { max-width: 100%; }
+  .mis-detalhe-hero .missao-cena { width: 235px; right: -64px; bottom: -62px; opacity: .23; }
+  .mis-detalhe-grid { grid-template-columns: 1fr; }
+  .mis-bloco { padding: 21px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mis-pagina .missao-cena [class^="missao-anim-"],
+  .mis-pagina .missao-cena [class*=" missao-anim-"] {
+    animation: none !important;
+  }
+  .mis-card, .mis-botao-primario, .mis-botao-secundario, .mis-botao-sutil {
+    transition: none;
+  }
+}
