@@ -189,7 +189,7 @@ function Welcome({ onStart }: { onStart: () => void }) {
             </p>
             <Button asChild className="coffee-cta">
               <Link to="/missoes">
-                Explorar as 12 missões <ArrowRight size={15} />
+                Conhecer as 5 histórias <ArrowRight size={15} />
               </Link>
             </Button>
           </article>
