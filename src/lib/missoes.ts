@@ -30,6 +30,30 @@ export type Missao = {
  */
 export const MISSOES: Missao[] = [
   {
+    id: "gatinho",
+    titulo: "Salve o gatinho",
+    chamada: "Mingau subiu na árvore e precisa voltar para casa.",
+    historia:
+      "No quintal da comunidade, o gatinho Mingau foi atrás de uma borboleta e ficou no alto de uma árvore. A equipe de resgate está chegando com uma escada, mas precisa saber se ela alcança o galho com segurança. Uma continha simples pode ajudar a planejar o resgate sem que ninguém precise subir por conta própria.",
+    objetivo:
+      "Crie um programa que receba a altura do galho e o alcance da escada. Ele deve informar se a escada alcança o gatinho ou quantos metros faltam para a equipe trazer o equipamento adequado.",
+    areas: ["Back-end", "QA/Testes", "Ainda não sei"],
+    nivel: "Primeiros passos",
+    conceitos: ["variáveis", "entrada de dados", "condicionais", "operações"],
+    passos: [
+      "Receba dois números: altura do galho e alcance da escada, em metros.",
+      "Compare a altura do galho com o alcance da escada.",
+      "Se alcançar, exiba uma mensagem de confirmação.",
+      "Se não alcançar, calcule e mostre quantos metros faltam.",
+    ],
+    criterios: [
+      "O programa lê dois valores em metros.",
+      "Quando a escada alcança, mostra Alcanca.",
+      "Quando não alcança, mostra Faltam: N.NN com duas casas decimais.",
+    ],
+    extra: "Teste galho e escada com a mesma altura e organize a comparação em uma função.",
+  },
+  {
     id: "incendio",
     titulo: "Apague o incêndio",
     chamada: "Os bombeirinhos precisam calcular a reserva de água!",
@@ -320,6 +344,15 @@ export const MISSOES: Missao[] = [
     extra: "Permita jogar novamente e mostre uma mensagem diferente para cada faixa de pontuação.",
   },
 ];
+
+/** Temporada inicial: poucas missões com histórias fortes. O catálogo completo fica guardado. */
+export const MISSOES_EM_CARTAZ = ["gatinho", "cafeteria", "incendio", "nave", "castelo"] as const;
+
+export function missoesEmCartaz(): Missao[] {
+  return MISSOES_EM_CARTAZ.map((id) => MISSOES.find((m) => m.id === id)).filter(
+    (missao): missao is Missao => Boolean(missao),
+  );
+}
 
 export const CHAVE_ESCOLHAS_MISSOES = "unidunedev:missoes:escolhas:v1";
 
