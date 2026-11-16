@@ -4,7 +4,7 @@ As capas das 12 missões são imagens **WebP 16:9**, geradas para esta versão d
 
 O componente `src/components/cena-de-fundo-missao.tsx` procura uma imagem nesta pasta usando o identificador da missão, por exemplo `/missoes/capas/incendio.webp`. Se a capa não estiver instalada, o componente mostra a ilustração SVG original como fallback.
 
-## Arquivos esperados
+## Arquivos integrados na branch
 
 - `incendio.webp`
 - `cafeteria.webp`
@@ -23,4 +23,4 @@ A arte não inclui conteúdo instrutivo. O título, as tags e o botão permanece
 
 Os efeitos leves de partículas, vapor e luz são implementados em CSS/SVG em `src/styles-missoes-cozy.css`. A preferência `prefers-reduced-motion` desliga as animações.
 
-**Importante:** as imagens WebP são entregues num pacote de assets separado da branch, para cópia nesta pasta antes da publicação final. Não faça merge/liberação sem confirmar que todas as imagens estão presentes e que a visualização no celular está correta.
+**Situação:** as 12 imagens WebP já estão versionadas nesta branch. Cada uma ocupa aproximadamente 21–74 KB. Todas têm proporção 16:9 e são reaproveitadas tanto no catálogo quanto nos detalhes de cada missão. Antes de publicar, confira o enquadramento e a leitura no celular e no desktop.
