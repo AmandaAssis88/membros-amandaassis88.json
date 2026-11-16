@@ -124,7 +124,7 @@ function MissoesDaComunidade() {
             key={`historia-${missao.id}`}
             initial={reduced ? false : { opacity: 0, y: 9 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0, y: -7 }}
+            exit={reduced ? {} : { opacity: 0, y: -7 }}
             transition={transicao}
             className="mis-cinema-conjunto"
           >
@@ -209,7 +209,7 @@ function MissoesDaComunidade() {
             key="linguagem"
             initial={reduced ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0, y: -8 }}
+            exit={reduced ? {} : { opacity: 0, y: -8 }}
             transition={transicao}
             className="mis-cinema-config"
           >
