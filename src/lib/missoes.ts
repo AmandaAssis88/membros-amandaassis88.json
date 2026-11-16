@@ -358,11 +358,11 @@ export function normalizarEscolhas(valor: unknown): EscolhasMissoes {
   if (!valor || typeof valor !== "object") return { ...ESCOLHAS_INICIAIS };
   const registro = valor as Record<string, unknown>;
   return {
-    area: eAreaMissao(registro.area) ? registro.area : "",
-    linguagem: eLinguagemMissao(registro.linguagem) ? registro.linguagem : "",
+    area: eAreaMissao(registro["area"]) ? registro["area"] : "",
+    linguagem: eLinguagemMissao(registro["linguagem"]) ? registro["linguagem"] : "",
     missaoId:
-      typeof registro.missaoId === "string" && procurarMissao(registro.missaoId)
-        ? registro.missaoId
+      typeof registro["missaoId"] === "string" && procurarMissao(registro["missaoId"])
+        ? registro["missaoId"]
         : "",
   };
 }
