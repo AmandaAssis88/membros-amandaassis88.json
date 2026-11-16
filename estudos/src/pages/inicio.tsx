@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowDown, ArrowRight } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Bebida } from "../components/bebida";
-import { CenaLofi } from "../components/lofi";
+import { CantinhoEstudos } from "../cantinho/cantinho";
+import { CHAVE_TEMA, TEMA_PADRAO, temaValido, type TemaId } from "../cantinho/temas";
 import { MiniPlayer } from "../components/mini-player";
 import { CRIADOR } from "@/config";
 import { GRUPOS, PESOS, TRILHAS, duracao, minutosDaTrilha, type Trilha } from "../catalogo";
@@ -67,14 +68,32 @@ function GrupoDoCardapio({
 
 export function Inicio() {
   const concluidas = useConcluidas();
+  const [tema, setTema] = useState<TemaId>(() => {
+    try {
+      const salvo = localStorage.getItem(CHAVE_TEMA);
+      return temaValido(salvo) ? salvo : TEMA_PADRAO;
+    } catch {
+      return TEMA_PADRAO;
+    }
+  });
+
+  function escolherTema(novo: TemaId) {
+    setTema(novo);
+    try {
+      localStorage.setItem(CHAVE_TEMA, novo);
+    } catch {
+      // A personalização funciona mesmo sem armazenamento persistente.
+    }
+  }
   useEffect(() => {
     document.title = "Estudos · Unidunedev";
   }, []);
 
   return (
-    <main>
+    <main className="home-personalizada" data-tema={tema}>
       <section className="home-hero">
-        <CenaLofi />
+        <div className="home-capa-imagem" aria-hidden="true" />
+        <div className="home-capa-efeitos" aria-hidden="true"><span /><span /><span /></div>
         <MiniPlayer />
         <div className="home-hero-texto">
           <p className="kicker">☕ CAFÉ DE ESTUDOS DA UNIDUNEDEV</p>
@@ -95,6 +114,8 @@ export function Inicio() {
           </div>
         </div>
       </section>
+
+      <CantinhoEstudos tema={tema} onTemaChange={escolherTema} />
 
       <section className="cardapio" id="cardapio">
         <div className="secao-topo">
