@@ -16,7 +16,7 @@ O objetivo é despertar curiosidade, não criar competição ou pressão por pro
 - critérios para verificar o próprio programa;
 - desafio extra opcional.
 
-As cenas são ilustrações SVG criadas dentro do projeto, com movimentos em CSS (fogo, água, vapor, estrelas, personagens), respeitando a preferência do sistema por reduzir movimento.
+As cenas agora têm **capas ilustradas Lo-fi / Cozy Study Art em WebP**, acompanhadas por partículas, vapor, água e luzes discretas feitas em CSS/SVG. Os SVGs originais seguem disponíveis como alternativa caso uma imagem não carregue. A preferência do sistema por reduzir movimento é respeitada.
 
 ## Catálogo inicial
 
@@ -58,8 +58,10 @@ C não possui classes/herança nativas. Para modelagem com C, ensinaremos `struc
 - Catálogo: `src/lib/missoes.ts`.
 - Orientações por linguagem: `src/lib/orientacoes-missoes.ts` (36 combinações com três pistas graduais).
 - Hub permite somente C, Python e Java; outras linguagens aparecerão depois de terem trilhas disponíveis.
-- Arte SVG: `src/components/cena-missao.tsx`.
-- Animações e estilos: `src/styles-missoes.css`.
+- Capas WebP: `public/missoes/capas/` (12 arquivos incluídos na branch).
+- Componente de capa + efeitos: `src/components/cena-de-fundo-missao.tsx`.
+- SVGs de reserva: `src/components/cena-missao.tsx`.
+- Estilos gerais: `src/styles-missoes.css`; visual lo-fi e animações: `src/styles-missoes-cozy.css`.
 - Persistência local: `unidunedev:missoes:escolhas:v1`.
 - **Não existe registro de inscrição, entrega automática nem reserva de vaga no servidor** nesta fase.
 - O perfil da comunidade é utilizado apenas para uma saudação local quando já há um passaporte salvo no navegador.
