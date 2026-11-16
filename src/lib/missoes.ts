@@ -4,7 +4,6 @@ export const LINGUAGENS_MISSAO = [
   { id: "c", nome: "C", trilha: "c" },
   { id: "python", nome: "Python", trilha: "python" },
   { id: "java", nome: "Java", trilha: "java" },
-  { id: "javascript", nome: "JavaScript", trilha: null },
 ] as const;
 
 export type LinguagemMissao = (typeof LINGUAGENS_MISSAO)[number]["id"];
@@ -16,9 +15,8 @@ export type Missao = {
   chamada: string;
   historia: string;
   objetivo: string;
-  linguagem: LinguagemMissao;
   areas: AreaMissao[];
-  nivel: "Primeiros passos" | "Próximo passo";
+  nivel: "Primeiros passos" | "Desenvolvendo" | "Modelando dados";
   conceitos: string[];
   passos: string[];
   criterios: string[];
@@ -39,10 +37,14 @@ export const MISSOES: Missao[] = [
       "Uma vila de brinquedo está em apuros: o painel da estação de bombeiros parou de calcular o consumo de água. A equipe precisa saber quantos litros vai utilizar antes de começar o resgate.",
     objetivo:
       "Crie uma calculadora de consumo que receba a vazão de água por minuto e o tempo de uso, mostrando o total de litros utilizados.",
-    linguagem: "c",
     areas: ["Back-end", "QA/Testes", "Ainda não sei"],
     nivel: "Primeiros passos",
-    conceitos: ["variáveis", "scanf e printf", "multiplicação", "formatação"],
+    conceitos: [
+      "variáveis",
+      "entrada e saída",
+      "operações",
+      "formatação",
+    ],
     passos: [
       "Receba a vazão de água em litros por minuto.",
       "Peça o tempo de uso, em minutos.",
@@ -54,7 +56,7 @@ export const MISSOES: Missao[] = [
       "O consumo é calculado por vazão × tempo.",
       "A saída deixa claro que o resultado está em litros.",
     ],
-    extra: "Aceite também o preço por litro e calcule o gasto total do exercício.",
+    extra: "Aceite um valor por litro e mostre o custo estimado. Use uma função para calcular.",
   },
   {
     id: "cafeteria",
@@ -63,10 +65,14 @@ export const MISSOES: Missao[] = [
     historia:
       "A cafeteria da cidade ficou lotada. Ninguém sabe quantos cafés foram pedidos nem quanto cada mesa deve pagar. O gatinho barista pediu uma ajudinha.",
     objetivo: "Monte um programa de pedidos com um pequeno cardápio, quantidades e total a pagar.",
-    linguagem: "python",
     areas: ["Back-end", "PO/Produto", "Ainda não sei"],
     nivel: "Primeiros passos",
-    conceitos: ["input", "condicionais", "listas", "repetição"],
+    conceitos: [
+      "variáveis",
+      "condicionais",
+      "repetição",
+      "listas ou vetores",
+    ],
     passos: [
       "Defina três produtos com preços fictícios.",
       "Deixe a pessoa escolher um item e informar uma quantidade.",
@@ -78,7 +84,7 @@ export const MISSOES: Missao[] = [
       "O total soma corretamente os pedidos.",
       "Existe uma opção clara para encerrar a compra.",
     ],
-    extra: "Calcule um desconto para clientes que trouxeram sua própria caneca.",
+    extra: "Separe o cálculo total em uma função e aplique desconto quando o cliente trouxer a própria caneca.",
   },
   {
     id: "abrigo",
@@ -86,23 +92,27 @@ export const MISSOES: Missao[] = [
     chamada: "Os bichinhos precisam encontrar seus nomes na lista.",
     historia:
       "O abrigo Patinhas Felizes recebeu novos moradores. As fichas estão misturadas, e ninguém consegue encontrar rapidamente um animal para adoção.",
-    objetivo: "Crie um cadastro de animais em memória usando uma classe com nome, espécie e idade.",
-    linguagem: "java",
+    objetivo: "Crie um cadastro de animais com nome, espécie e idade. Use classes em Python ou Java e structs em C para organizar os registros.",
     areas: ["Back-end", "Mobile", "Banco de Dados"],
-    nivel: "Próximo passo",
-    conceitos: ["classes", "objetos", "ArrayList", "Scanner"],
+    nivel: "Modelando dados",
+    conceitos: [
+      "registros",
+      "classes ou structs",
+      "coleções",
+      "busca",
+    ],
     passos: [
-      "Crie uma classe Animal com nome, espécie e idade.",
-      "Cadastre ao menos três animais em uma lista.",
-      "Liste os animais com informações legíveis.",
-      "Permita procurar pelo nome do animal.",
+      "Represente cada animal com nome, espécie e idade.",
+      "Cadastre pelo menos três animais em uma lista ou vetor.",
+      "Mostre a relação de animais com informações legíveis.",
+      "Permita procurar um animal pelo nome.",
     ],
     criterios: [
-      "Cada animal é representado por um objeto.",
-      "A lista mostra todos os cadastros.",
-      "Uma busca informa quando o nome não existe.",
+      "Cada animal tem os campos nome, espécie e idade.",
+      "A listagem mostra todos os cadastros.",
+      "A busca avisa quando um nome não existe.",
     ],
-    extra: "Adicione um atributo adotado e exiba apenas os animais disponíveis.",
+    extra: "Em Java ou Python, experimente uma subclasse de Animal para cães ou gatos. Em C, organize os tipos com structs e funções.",
   },
   {
     id: "nave",
@@ -112,10 +122,14 @@ export const MISSOES: Missao[] = [
       "Uma pequena nave está pronta para visitar a Lua, mas o computador de bordo perdeu a estimativa de combustível. A astronauta aguarda sua ajuda.",
     objetivo:
       "Crie um simulador que calcule quantos litros de combustível uma viagem vai consumir.",
-    linguagem: "c",
     areas: ["DevOps", "Back-end", "Ainda não sei"],
     nivel: "Primeiros passos",
-    conceitos: ["float", "operadores", "if", "printf"],
+    conceitos: [
+      "variáveis",
+      "decimais",
+      "condicionais",
+      "funções",
+    ],
     passos: [
       "Receba a distância da viagem e o consumo por quilômetro.",
       "Calcule o combustível necessário.",
@@ -127,7 +141,7 @@ export const MISSOES: Missao[] = [
       "A mensagem muda conforme a quantidade no tanque.",
       "Os valores decimais são apresentados com duas casas.",
     ],
-    extra: "Exiba também quantos litros sobram após a missão.",
+    extra: "Calcule quanto de combustível sobra. Separe o cálculo em uma função.",
   },
   {
     id: "laboratorio",
@@ -135,24 +149,27 @@ export const MISSOES: Missao[] = [
     chamada: "Um experimento bagunçou todos os registros!",
     historia:
       "O laboratório das poções trocou as etiquetas de lugar. A cientista precisa registrar seus experimentos antes que os frascos coloridos sejam confundidos.",
-    objetivo:
-      "Crie um cadastro simples de experimentos que seja salvo e carregado de um arquivo JSON local.",
-    linguagem: "python",
+    objetivo: "Crie um cadastro de experimentos, permitindo registrar, listar e salvar as informações em um arquivo local.",
     areas: ["Banco de Dados", "Back-end", "QA/Testes"],
-    nivel: "Próximo passo",
-    conceitos: ["dicionários", "listas", "funções", "JSON"],
+    nivel: "Desenvolvendo",
+    conceitos: [
+      "registros",
+      "listas ou vetores",
+      "funções",
+      "arquivos",
+    ],
     passos: [
-      "Crie um menu para cadastrar e listar experimentos.",
-      "Guarde nome, data e descrição curta em um dicionário.",
-      "Salve a lista em um arquivo JSON local.",
-      "Carregue os registros novamente quando o programa iniciar.",
+      "Crie um menu com opções de cadastrar e listar.",
+      "Guarde nome, data e uma descrição em registros.",
+      "Salve os dados em um arquivo local (o formato pode variar por linguagem).",
+      "Ao iniciar, tente carregar os registros já salvos.",
     ],
     criterios: [
-      "É possível cadastrar mais de um experimento.",
-      "Os registros permanecem após encerrar e abrir o programa.",
-      "O programa lida com a primeira execução sem arquivo.",
+      "É possível cadastrar vários experimentos.",
+      "Os registros podem ser recuperados após reiniciar.",
+      "A primeira execução funciona sem arquivo existente.",
     ],
-    extra: "Permita editar a descrição de um experimento existente.",
+    extra: "Adicione a edição da descrição. Não é obrigatório usar um banco de dados.",
   },
   {
     id: "castelo",
@@ -160,24 +177,27 @@ export const MISSOES: Missao[] = [
     chamada: "O estoque de poções está acabando!",
     historia:
       "Um castelo amigável vai receber uma festa, mas o inventário está completamente desorganizado. A guardiã precisa contar os suprimentos.",
-    objetivo:
-      "Crie um inventário com itens, quantidades e métodos para adicionar e retirar unidades.",
-    linguagem: "java",
+    objetivo: "Crie um inventário com itens, quantidades e operações para acrescentar e retirar suprimentos.",
     areas: ["Back-end", "Banco de Dados", "PO/Produto"],
-    nivel: "Próximo passo",
-    conceitos: ["classes", "métodos", "ArrayList", "validação"],
+    nivel: "Modelando dados",
+    conceitos: [
+      "modelagem de dados",
+      "classes ou structs",
+      "funções ou métodos",
+      "validações",
+    ],
     passos: [
-      "Modele um Item com nome e quantidade.",
-      "Crie métodos para adicionar e retirar unidades.",
-      "Impeça que a quantidade fique negativa.",
-      "Mostre todos os itens e seus estoques.",
+      "Modele um Item com nome e quantidade, usando classes ou structs.",
+      "Crie funções ou métodos para acrescentar e retirar unidades.",
+      "Impeça que a quantidade de um item fique negativa.",
+      "Liste o estoque atualizado.",
     ],
     criterios: [
-      "O estoque é atualizado pelos métodos.",
-      "Retiradas acima do disponível são rejeitadas.",
-      "A lista apresenta quantidades atualizadas.",
+      "É possível atualizar o estoque.",
+      "Não é permitido retirar acima do disponível.",
+      "A listagem mostra as quantidades atualizadas.",
     ],
-    extra: "Marque itens com menos de três unidades como 'estoque baixo'.",
+    extra: "Em Python/Java, crie uma classe especial para itens perecíveis. Em C, experimente campos adicionais e funções de verificação.",
   },
   {
     id: "farol",
@@ -185,24 +205,27 @@ export const MISSOES: Missao[] = [
     chamada: "Os barcos não conseguem enxergar a costa!",
     historia:
       "O farol de uma ilha de papel apagou. O operador precisa de um painel que mostre se a bateria conseguirá manter a luz acesa durante a noite.",
-    objetivo:
-      "Crie uma página com formulário para calcular quantas horas a bateria do farol consegue durar.",
-    linguagem: "javascript",
+    objetivo: "Crie um programa de terminal que calcula quantas horas a bateria do farol consegue funcionar.",
     areas: ["Front-end", "UI/UX Design", "DevOps"],
     nivel: "Primeiros passos",
-    conceitos: ["HTML", "eventos", "DOM", "operações"],
+    conceitos: [
+      "entrada de dados",
+      "decimais",
+      "operações",
+      "validação",
+    ],
     passos: [
-      "Monte dois campos: energia disponível e gasto por hora.",
-      "Ao clicar em Calcular, leia os campos com JavaScript.",
-      "Mostre quantas horas o farol poderá funcionar.",
-      "Exiba um aviso para valores vazios, zero ou negativos.",
+      "Leia a energia disponível e o gasto de energia por hora.",
+      "Confira se o gasto informado é maior que zero.",
+      "Calcule por quantas horas a luz pode ficar ligada.",
+      "Mostre a autonomia e uma mensagem clara em caso de valor inválido.",
     ],
     criterios: [
-      "O cálculo acontece sem recarregar a página.",
-      "O resultado aparece na própria interface.",
-      "Valores inválidos geram uma mensagem compreensível.",
+      "O cálculo considera a energia disponível e o gasto por hora.",
+      "A autonomia é apresentada em horas.",
+      "O programa evita divisão por zero.",
     ],
-    extra: "Mude a cor do farol na interface quando a autonomia for baixa.",
+    extra: "Peça quantas horas dura a noite e informe se a bateria será suficiente.",
   },
   {
     id: "biblioteca",
@@ -210,24 +233,27 @@ export const MISSOES: Missao[] = [
     chamada: "Os livros perderam suas prateleiras!",
     historia:
       "Uma coruja bibliotecária precisa organizar dezenas de livros encantados. Ela quer saber quais estão disponíveis e quais foram emprestados.",
-    objetivo:
-      "Desenvolva um catálogo de livros com cadastro, empréstimo e devolução usando dados locais.",
-    linguagem: "python",
+    objetivo: "Crie um catálogo de livros em memória com cadastro, empréstimo e devolução.",
     areas: ["Back-end", "Banco de Dados", "Ainda não sei"],
-    nivel: "Próximo passo",
-    conceitos: ["listas", "dicionários", "funções", "persistência"],
+    nivel: "Desenvolvendo",
+    conceitos: [
+      "coleções",
+      "registros",
+      "funções",
+      "condicionais",
+    ],
     passos: [
-      "Cadastre título e autor de cada livro.",
-      "Liste os livros com situação disponível ou emprestado.",
+      "Registre o título, autor e situação de cada livro.",
+      "Mostre todos os livros, indicando disponíveis e emprestados.",
       "Permita emprestar e devolver um livro pelo título.",
-      "Salve as alterações em JSON para a próxima execução.",
+      "Mostre o resultado das mudanças durante a execução.",
     ],
     criterios: [
-      "Não é possível emprestar um livro indisponível.",
-      "A devolução altera corretamente a situação.",
-      "Os dados continuam disponíveis depois de reiniciar.",
+      "Não é possível emprestar um livro já emprestado.",
+      "A devolução atualiza a situação corretamente.",
+      "A lista continua correta após várias operações.",
     ],
-    extra: "Adicione uma busca de livros pelo nome do autor.",
+    extra: "Experimente salvar a coleção em arquivo e recarregá-la ao iniciar.",
   },
   {
     id: "robo",
@@ -235,23 +261,27 @@ export const MISSOES: Missao[] = [
     chamada: "O robô entregador esqueceu a lista de tarefas!",
     historia:
       "Um robô simpático precisa entregar caixinhas na cidade, mas seu painel perdeu a memória das entregas. Você foi chamado para reorganizar sua rotina.",
-    objetivo: "Modele entregas e um robô que registra tarefas pendentes e concluídas.",
-    linguagem: "java",
+    objetivo: "Construa um gerenciador de entregas que registra destinos, acompanha situações e mostra o trabalho do robô.",
     areas: ["Mobile", "Back-end", "QA/Testes"],
-    nivel: "Próximo passo",
-    conceitos: ["classes", "objetos", "listas", "métodos"],
+    nivel: "Modelando dados",
+    conceitos: [
+      "classes ou structs",
+      "coleções",
+      "métodos ou funções",
+      "estado",
+    ],
     passos: [
-      "Crie uma classe Entrega com destino e situação.",
-      "Cadastre entregas em uma lista.",
-      "Crie um método para marcar uma entrega como concluída.",
-      "Liste separadamente entregas pendentes e finalizadas.",
+      "Represente cada entrega com destino e estado (pendente ou concluída).",
+      "Cadastre várias entregas em uma lista ou vetor.",
+      "Crie uma função ou método para concluir uma entrega.",
+      "Mostre pendentes e concluídas separadamente.",
     ],
     criterios: [
-      "Cada entrega possui uma situação.",
-      "O robô consegue atualizar uma entrega da lista.",
-      "A listagem diferencia pendentes e concluídas.",
+      "Cada entrega mantém sua situação.",
+      "É possível atualizar uma entrega existente.",
+      "A listagem identifica as tarefas pendentes.",
     ],
-    extra: "Mostre a porcentagem de entregas já realizadas.",
+    extra: "Em Java/Python, experimente uma classe base Tarefa e uma classe Entrega. Em C, reutilize structs e funções.",
   },
   {
     id: "jardim",
@@ -259,24 +289,27 @@ export const MISSOES: Missao[] = [
     chamada: "As plantinhas estão pedindo gotinhas d'água!",
     historia:
       "No jardim lunar, flores que brilham à noite dependem de um painel de irrigação. Algumas recebem água demais; outras, quase nenhuma.",
-    objetivo:
-      "Crie uma página interativa para registrar plantas e calcular a água necessária para todas elas.",
-    linguagem: "javascript",
+    objetivo: "Crie um sistema de terminal para registrar plantas, seus consumos diários e calcular a água necessária para o jardim.",
     areas: ["Front-end", "UI/UX Design", "Mobile"],
-    nivel: "Primeiros passos",
-    conceitos: ["arrays", "objetos", "DOM", "eventos"],
+    nivel: "Desenvolvendo",
+    conceitos: [
+      "registros",
+      "vetores ou listas",
+      "laços",
+      "operações",
+    ],
     passos: [
-      "Defina um nome e uma necessidade diária de água para cada planta.",
-      "Permita adicionar novas plantas pelo formulário.",
-      "Mostre a lista atualizada na página.",
-      "Calcule a quantidade total de água por dia.",
+      "Registre nome e consumo diário de água de uma planta.",
+      "Permita registrar várias plantas em uma lista ou vetor.",
+      "Mostre a relação de plantas e seus consumos.",
+      "Calcule a soma de água usada por dia.",
     ],
     criterios: [
-      "Novas plantas aparecem sem recarregar a página.",
-      "A lista apresenta o consumo de cada planta.",
-      "O total é atualizado ao adicionar uma planta.",
+      "O programa guarda mais de uma planta.",
+      "Cada planta aparece com seu consumo.",
+      "O total corresponde à soma dos consumos.",
     ],
-    extra: "Crie um botão para remover uma planta do jardim.",
+    extra: "Permita remover uma planta e atualizar a soma.",
   },
   {
     id: "feira",
@@ -284,11 +317,15 @@ export const MISSOES: Missao[] = [
     chamada: "Os preços das barracas estão todos misturados!",
     historia:
       "Uma feira espacial abriu suas portas, mas os vendedores não conseguem fechar o caixa. Um comerciante oferece descontos e precisa calcular o troco corretamente.",
-    objetivo: "Faça um programa de caixa que soma uma compra, aplica desconto e informa o troco.",
-    linguagem: "c",
+    objetivo: "Crie um programa de terminal para fechar uma compra, calcular desconto e informar troco.",
     areas: ["Back-end", "PO/Produto", "QA/Testes"],
     nivel: "Primeiros passos",
-    conceitos: ["float", "scanf", "if", "porcentagem"],
+    conceitos: [
+      "decimais",
+      "operadores",
+      "condicionais",
+      "formatação",
+    ],
     passos: [
       "Receba o preço de dois produtos e as quantidades.",
       "Calcule o subtotal da compra.",
@@ -300,7 +337,7 @@ export const MISSOES: Missao[] = [
       "O troco nunca é apresentado como positivo se faltou dinheiro.",
       "Valores monetários aparecem com duas casas decimais.",
     ],
-    extra: "Adicione uma opção para repetir o cálculo com outros produtos.",
+    extra: "Organize o cálculo em uma função e permita repetir uma compra.",
   },
   {
     id: "pinguim",
@@ -308,23 +345,27 @@ export const MISSOES: Missao[] = [
     chamada: "Um pinguim explorador se perdeu no mapa de gelo!",
     historia:
       "O pinguim Pipo esqueceu o caminho de casa. Cada resposta correta ajuda a encontrar uma nova pista no mapa. Ele precisa de um pequeno jogo de perguntas.",
-    objetivo: "Crie um quiz na página com perguntas, alternativas e pontuação final.",
-    linguagem: "javascript",
+    objetivo: "Crie um quiz no terminal, com perguntas, alternativas e pontuação final para ajudar Pipo a encontrar o caminho de casa.",
     areas: ["Front-end", "UI/UX Design", "QA/Testes"],
-    nivel: "Primeiros passos",
-    conceitos: ["arrays", "condicionais", "eventos", "estado"],
+    nivel: "Desenvolvendo",
+    conceitos: [
+      "listas ou vetores",
+      "laços",
+      "condicionais",
+      "funções",
+    ],
     passos: [
-      "Crie ao menos três perguntas com alternativas.",
-      "Mostre uma pergunta por vez na página.",
-      "Some pontos quando a resposta estiver correta.",
-      "Ao final, apresente a pontuação e um botão para recomeçar.",
+      "Crie pelo menos três perguntas e alternativas.",
+      "Mostre uma pergunta por vez no terminal.",
+      "Leia a resposta e some pontos quando houver acerto.",
+      "Ao final, mostre a pontuação.",
     ],
     criterios: [
-      "Cada pergunta aparece uma única vez por partida.",
+      "Cada pergunta aparece uma vez por rodada.",
       "A pontuação corresponde aos acertos.",
-      "É possível jogar novamente sem atualizar a página.",
+      "Uma mensagem final informa o resultado.",
     ],
-    extra: "Adicione uma animação de comemoração quando Pipo chegar em casa.",
+    extra: "Permita jogar novamente e mostre uma mensagem diferente para cada faixa de pontuação.",
   },
 ];
 
@@ -384,8 +425,10 @@ export function salvarEscolhasMissoes(escolhas: EscolhasMissoes): void {
   }
 }
 
-export function listarMissoes(linguagem: LinguagemMissao | "", area: AreaMissao | ""): Missao[] {
-  const lista = MISSOES.filter((missao) => !linguagem || missao.linguagem === linguagem);
-  if (!area || area === "Ainda não sei") return lista;
-  return [...lista].sort((a, b) => Number(b.areas.includes(area)) - Number(a.areas.includes(area)));
+/** As missões são independentes da linguagem; a área só ordena recomendações. */
+export function listarMissoes(area: AreaMissao | ""): Missao[] {
+  if (!area || area === "Ainda não sei") return MISSOES;
+  return [...MISSOES].sort(
+    (a, b) => Number(b.areas.includes(area)) - Number(a.areas.includes(area)),
+  );
 }
