@@ -20,7 +20,7 @@
 
 ## Chegou agora?
 
-A Unidunedev é uma comunidade de estudantes e desenvolvedores. Tem gente começando do zero, gente que já trabalha na área e gente descobrindo qual caminho seguir. A proposta é simples: aprender junto, fazer perguntas, compartilhar o que descobriu e colocar a mão no código.
+A Unidunedev é uma comunidade de estudantes e desenvolvedores. Tem gente começando do zero, gente que já trabalha na área e gente descobrindo qual caminho seguir. A proposta é simples: aprender junto, fazer perguntas, entender a tecnologia num todo, compartilhar o que descobriu e colocar a mão no código.
 
 Você não precisa conhecer tudo para participar. Só precisa ter vontade de aprender.
 
