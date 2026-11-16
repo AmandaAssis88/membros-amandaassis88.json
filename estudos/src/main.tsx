@@ -18,6 +18,7 @@ import { buscarTrilha } from "./catalogo";
 import "./estudos.css";
 import "./components/mini-player.css";
 import "./components/pomodoro.css";
+import "./cantinho/cantinho.css";
 
 const raiz = createRootRoute({
   component: () => (
