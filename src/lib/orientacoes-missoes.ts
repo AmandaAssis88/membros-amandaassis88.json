@@ -11,6 +11,23 @@ export type OrientacaoLinguagem = {
  * As três linguagens resolvem o MESMO problema; a organização do código pode variar.
  */
 const ORIENTACOES: Record<string, Record<LinguagemMissao, readonly string[]>> = {
+  gatinho: {
+    c: [
+      "Você pode guardar as alturas em variáveis do tipo double e usar scanf para receber os valores.",
+      "Uma condição compara o alcance da escada com a altura do galho; cuidado com o caso em que são iguais.",
+      "Para exibir metros com duas casas, procure como usar %.2f em printf.",
+    ],
+    python: [
+      "Comece recebendo os dois valores com input e convertendo-os em números decimais.",
+      "Pense em uma condição para quando o alcance da escada for suficiente e outra para quando faltar altura.",
+      "Experimente usar uma f-string para imprimir apenas a diferença com duas casas decimais.",
+    ],
+    java: [
+      "Scanner pode ler as duas alturas e double permite trabalhar com medidas decimais.",
+      "Uma condição pode comparar o alcance e a altura sem exigir várias classes.",
+      "Use System.out.printf com um formato de duas casas e Locale.US quando necessário.",
+    ],
+  },
   incendio: {
     c: [
       "Comece identificando quais dados o operador digita e qual valor o programa deve exibir.",
