@@ -1394,9 +1394,14 @@
   }
 }
 
-
-.mis-comandos { display: grid; gap: 12px; margin-top: 24px; }
-.mis-comandos > .mis-eyebrow { margin: 0; }
+.mis-comandos {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+.mis-comandos > .mis-eyebrow {
+  margin: 0;
+}
 .mis-comandos pre {
   margin: 0;
   max-width: 100%;
@@ -1405,13 +1410,23 @@
   background: #302739;
   color: #f7e9d9;
   border: 1px solid #514459;
-  font: 12px/1.9 "JetBrains Mono", monospace;
+  font:
+    12px/1.9 "JetBrains Mono",
+    monospace;
   overflow-x: auto;
   white-space: pre;
   scrollbar-width: thin;
 }
-.mis-comandos code { font: inherit; }
-.mis-comandos > p:last-child { color: #685c69; font-size: 13px; }
+.mis-comandos code {
+  font: inherit;
+}
+.mis-comandos > p:last-child {
+  color: #685c69;
+  font-size: 13px;
+}
 @media (max-width: 740px) {
-  .mis-comandos pre { padding: 15px 13px; font-size: 11px; }
+  .mis-comandos pre {
+    padding: 15px 13px;
+    font-size: 11px;
+  }
 }
