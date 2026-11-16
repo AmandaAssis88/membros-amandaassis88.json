@@ -1001,3 +1001,195 @@
     opacity: 0.26;
   }
 }
+
+/* Antes das histórias: escolha imersiva do Desafio 1 ou do Desafio 2.
+   As cenas continuam feitas à mão em CSS/SVG, no espírito do onboarding. */
+.mis-cinema-topo-lema {
+  color: #907782;
+  font: 600 12px/1.5 "DM Sans", sans-serif;
+}
+.mis-cinema-link-voltar {
+  background: none;
+  border: none;
+  padding: 5px 0;
+  cursor: pointer;
+}
+.mis-portal {
+  min-height: clamp(550px, calc(100svh - 210px), 830px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(24px, 3.2vw, 38px);
+}
+.mis-portal-cabecalho { text-align: center; max-width: 740px; margin: 4px auto 0; }
+.mis-portal-cabecalho .mis-cinema-sobretitulo { justify-content: center; color: #956c74; }
+.mis-portal-cabecalho h1 {
+  color: #402d43;
+  font: 600 clamp(34px, 4.2vw, 57px)/1.17 "Lora", Georgia, serif;
+  letter-spacing: -.035em;
+  margin: 12px 0 13px;
+}
+.mis-portal-cabecalho h1 em { font-style: normal; color: #b8797b; }
+.mis-portal-cabecalho > p:last-child {
+  color: #746775;
+  font: 400 15px/1.7 "DM Sans", sans-serif;
+}
+.mis-portal-opcoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(15px, 2.1vw, 25px);
+}
+.mis-portal-card {
+  min-height: clamp(380px, 35vw, 505px);
+  isolation: isolate;
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 25px;
+  padding: clamp(24px, 3vw, 42px);
+  background: #3b2b3e;
+  color: #fff0dc;
+  border: 1px solid #836177;
+  box-shadow: 0 11px 24px #38223820;
+}
+.mis-portal-card--pr {
+  background: radial-gradient(circle at 80% 14%, #72566c 0%, transparent 58%),
+    linear-gradient(140deg, #382c43, #4d3748);
+}
+.mis-portal-card--projeto {
+  background: radial-gradient(circle at 86% 16%, #54766d99 0%, transparent 55%),
+    linear-gradient(135deg, #302e41, #404b49);
+}
+.mis-portal-card-texto { position: relative; z-index: 3; width: 100%; max-width: 71%; }
+.mis-portal-numero {
+  display: inline-flex;
+  padding: 7px 0;
+  color: #f0c8a5;
+  font: 800 10px/1.5 "JetBrains Mono", monospace;
+  letter-spacing: .06em;
+}
+.mis-portal-card h2 {
+  font: 600 clamp(27px, 2.75vw, 40px)/1.18 "Lora", Georgia, serif;
+  color: #fff0dd;
+  margin: 13px 0 16px;
+  letter-spacing: -.02em;
+}
+.mis-portal-card h2 em { font-style: normal; color: #eebc99; }
+.mis-portal-card p {
+  font: 400 13px/1.75 "DM Sans", sans-serif;
+  color: #ead9df;
+}
+.mis-portal-detalhes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 20px 0 27px;
+}
+.mis-portal-detalhes span {
+  display: inline-flex;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid #bda2ae66;
+  font: 700 10px/1.3 "DM Sans",sans-serif;
+  color: #f1dfda;
+  background: #ffffff0c;
+}
+.mis-portal-card .mis-cinema-botao {
+  text-align: center;
+  font-size: 12px;
+}
+.mis-portal-deco {
+  position: absolute;
+  width: 55%;
+  right: -6%;
+  bottom: -2%;
+  height: 87%;
+  pointer-events: none;
+  opacity: .9;
+}
+.mis-portal-deco--git { display: grid; place-items: center; transform: rotate(6deg); }
+.mis-portal-janela {
+  position: relative;
+  width: min(100%, 235px);
+  min-height: 220px;
+  padding: 35px 16px 18px;
+  border: 2px solid #caa8ac;
+  border-radius: 17px;
+  background: #f8e7d9;
+  color: #6a5269;
+  box-shadow: 9px 12px 0 #211a2e5e;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 17px;
+}
+.mis-portal-janela-topo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border-radius: 15px 15px 0 0;
+  background: #a58a9e;
+}
+.mis-portal-janela-topo i { display:block; width: 6px; height: 6px; background:#f9dfc7; border-radius:50%; opacity:.9; }
+.mis-portal-linha {
+  display:flex; gap:7px; align-items:center; width:100%; padding:10px 7px;
+  border-radius:9px; background:#ead9d9;
+  font:700 10px "JetBrains Mono",monospace;
+}
+.mis-portal-linha span { flex:1; overflow-wrap:anywhere; }
+.mis-portal-linha svg:last-child { color:#618e73; }
+.mis-portal-linha-curta { width:75%; height:7px; align-self:flex-start; border-radius:30px; background:#d4b7be; }
+.mis-portal-linha-curta--segunda { width:53%; margin-top:-7px; background:#c8bac9; }
+.mis-portal-deco--gatinho { width:54%; right:-5%; bottom:-12%; height:100%; opacity:.82; }
+.mis-portal-deco--gatinho .mis-palco-cenario { min-height:100%; }
+.mis-portal-deco--gatinho .mis-palco-svg { width:115%; height:100%; max-height:100%; bottom:0; }
+.mis-portal-deco--gatinho .mis-palco-lua { opacity:.55; }
+.mis-portal-brilho {
+  position:absolute; border-radius:50%; width:4px;height:4px;
+  background:#f5d0a6;box-shadow:0 0 12px 2px #f5d0a688;
+  animation:mis-cinema-flutuar 5s ease-in-out infinite;
+}
+.mis-portal-brilho--um { left:10%; top:20%; }
+.mis-portal-brilho--dois { right:15%; top:7%; animation-delay:-2s; }
+.mis-portal-rodape {
+  margin:0;
+  color:#806e7c;
+  text-align:center;
+  font:600 12px/1.65 "DM Sans",sans-serif;
+  display:flex; align-items:center; justify-content:center; gap:9px;
+}
+.mis-portal-rodape svg { width:15px; height:15px; color:#c18b98; flex-shrink:0; }
+@media (max-width: 1040px) {
+  .mis-portal-card { min-height: 415px; }
+  .mis-portal-card-texto { max-width: 78%; }
+  .mis-portal-deco { right:-14%;opacity:.65; }
+  .mis-portal-card .mis-cinema-botao { padding-inline:12px; }
+}
+@media (max-width: 740px) {
+  .mis-portal { min-height:0; gap:23px; }
+  .mis-portal-cabecalho h1 { font-size:clamp(30px,8.6vw,40px); }
+  .mis-portal-cabecalho > p:last-child { font-size:13px; }
+  .mis-portal-opcoes { grid-template-columns:1fr; gap:14px; }
+  .mis-portal-card { min-height:300px; padding:25px 20px; border-radius:20px; }
+  .mis-portal-card-texto { max-width:80%; }
+  .mis-portal-card h2 { font-size:clamp(25px,7vw,33px); margin:7px 0 12px; }
+  .mis-portal-card p { font-size:12px; }
+  .mis-portal-detalhes {margin:14px 0 20px;}
+  .mis-portal-deco { width:52%; right:-21%; bottom:-11%; opacity:.5; }
+  .mis-portal-janela { width:210px; min-height:175px; transform:scale(.85); }
+  .mis-portal-deco--gatinho { right:-19%;bottom:-22%;height:108%;opacity:.57; }
+  .mis-portal-rodape { align-items:flex-start; font-size:11px; }
+}
+@media (max-width:390px) {
+  .mis-portal-card-texto { max-width:96%; }
+  .mis-portal-deco { opacity:.17; }
+  .mis-portal-card { min-height:285px; }
+}
