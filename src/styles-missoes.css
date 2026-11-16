@@ -425,6 +425,13 @@
 }
 .mis-entrega-acoes { display: grid; gap: 9px; margin-top: 18px; }
 .mis-entrega-acoes a { width: 100%; }
+.mis-home-preview { margin: 12px 0 68px; }
+.mis-home-preview .mis-titulo-secao { text-align: center; margin: 0 auto 25px; }
+.mis-home-preview .mis-titulo-secao p:last-child { margin: 6px auto 0; }
+.mis-home-preview .mis-etapa .coffee-cta,
+.mis-home-preview .mis-etapa > a { margin-top: auto; align-self: flex-start; }
+.hero-actions { gap: 12px; flex-wrap: wrap; align-items: center; }
+.hero-actions .mis-home-hero-cta { min-height: 50px; background: #fffaf4; border-color: #d4b9a3; }
 .mis-home-atalho { margin: 0 0 32px; padding: 22px 26px; border: 1px solid #dbc8d4; border-radius: 18px; background: #f5e9f1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
 .mis-home-atalho h3 { font: 600 21px "Lora", Georgia, serif; color: #533c57; }
 .mis-home-atalho p { font-size: 13px; line-height: 1.6; color: #7d657c; margin-top: 4px; }
@@ -438,6 +445,9 @@
 .missao-anim-brilho { animation: mis-brilho 2.3s ease-in-out infinite alternate; }
 .missao-anim-piscar { animation: mis-piscar 4.2s steps(1) infinite; transform-origin: center; }
 .missao-anim-cauda { animation: mis-cauda 1.7s ease-in-out infinite alternate; transform-origin: 12px 37px; }
+.missao-anim-coruja { animation: mis-coruja 3s ease-in-out infinite; }
+.missao-anim-barco { animation: mis-barco 2.8s ease-in-out infinite; }
+.missao-anim-regador { animation: mis-regador 2.5s ease-in-out infinite; }
 .missao-anim-nave { animation: mis-nave 2.5s ease-in-out infinite; }
 .missao-anim-bolha { animation: mis-bolha 2.4s ease-in-out infinite; }
 .missao-anim-bandeira { animation: mis-bandeira 2.8s ease-in-out infinite alternate; transform-origin: left; }
@@ -455,7 +465,10 @@
 @keyframes mis-flutuar { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes mis-brilho { from { opacity: .48; } to { opacity: 1; } }
 @keyframes mis-piscar { 0%,95%,100% { transform: scaleY(1); } 97% { transform: scaleY(.12); } }
-@keyframes mis-cauda { from { transform: rotate(-8deg); } to { transform: rotate(12deg); } }
+@keyframes mis-cauda { from { transform: translate(249px,125px) rotate(-8deg); } to { transform: translate(249px,125px) rotate(12deg); } }
+@keyframes mis-coruja { 0%,100% { transform: translate(181px,16px); } 50% { transform: translate(181px,8px); } }
+@keyframes mis-barco { 0%,100% { transform: translate(60px,140px); } 50% { transform: translate(60px,134px); } }
+@keyframes mis-regador { 0%,100% { transform: translate(262px,99px) rotate(-3deg); } 50% { transform: translate(262px,99px) rotate(4deg); } }
 @keyframes mis-nave { 0%,100% { transform: translate(154px,16px) rotate(-2deg); } 50% { transform: translate(154px,7px) rotate(3deg); } }
 @keyframes mis-bolha { 0%,100% { transform: translateY(0); opacity: .8; } 50% { transform: translateY(-17px); opacity: .35; } }
 @keyframes mis-bandeira { from { transform: skewY(-4deg); } to { transform: skewY(4deg); } }
@@ -475,6 +488,9 @@
   .mis-hero h1 { font-size: clamp(29px, 8vw, 40px); }
   .mis-hero-deco { position: absolute; width: 205px; right: -60px; bottom: -45px; opacity: .18; }
   .mis-jornada { margin: 28px 0; }
+  .mis-home-preview { margin: 8px 0 35px; }
+  .mis-home-preview .mis-titulo-secao { text-align: left; }
+  .mis-home-preview .mis-titulo-secao p:last-child { margin-left: 0; }
   .mis-jornada-grid { grid-template-columns: 1fr; }
   .mis-etapa { min-height: 0; padding: 21px; }
   .mis-escolha { padding: 20px 16px; }
@@ -490,8 +506,8 @@
   .mis-bloco { padding: 21px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mis-pagina .missao-cena [class^="missao-anim-"],
-  .mis-pagina .missao-cena [class*=" missao-anim-"] {
+  .missao-cena [class^="missao-anim-"],
+  .missao-cena [class*=" missao-anim-"] {
     animation: none !important;
   }
   .mis-card, .mis-botao-primario, .mis-botao-secundario, .mis-botao-sutil {
