@@ -1,6 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Coffee, GitPullRequest, Heart, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Coffee,
+  GitPullRequest,
+  Heart,
+  Sparkles,
+} from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 import { CenaPalcoMissao } from "@/components/cena-palco-missao";
@@ -67,12 +78,14 @@ function MissoesDaComunidade() {
     setEtapa(2);
   }
 
-  const transicao = reduced
-    ? { duration: 0 }
-    : { duration: 0.26, ease: "easeOut" as const };
+  const transicao = reduced ? { duration: 0 } : { duration: 0.26, ease: "easeOut" as const };
 
   if (!missao) {
-    return <main className="mis-cinema"><p>As novas missões estão sendo preparadas.</p></main>;
+    return (
+      <main className="mis-cinema">
+        <p>As novas missões estão sendo preparadas.</p>
+      </main>
+    );
   }
 
   return (
@@ -80,7 +93,9 @@ function MissoesDaComunidade() {
       <div className="mis-cinema-topo">
         <div className="mis-cinema-marca">
           <Coffee size={18} aria-hidden="true" />
-          <span>UNIDUNEDEV <span aria-hidden="true">·</span> DESAFIO 02</span>
+          <span>
+            UNIDUNEDEV <span aria-hidden="true">·</span> DESAFIO 02
+          </span>
         </div>
         <Link to="/desafio-pr" search={{ nivel: "1" }} className="mis-cinema-link-pr">
           <GitPullRequest size={16} aria-hidden="true" /> Quer entrar no mural? Desafio 1
@@ -117,9 +132,13 @@ function MissoesDaComunidade() {
               <div className="mis-cinema-texto">
                 <p className="mis-cinema-sobretitulo">
                   <Sparkles size={15} aria-hidden="true" />
-                  HISTÓRIA {String(indice + 1).padStart(2, "0")} DE {String(EM_CARTAZ.length).padStart(2, "0")}
+                  HISTÓRIA {String(indice + 1).padStart(2, "0")} DE{" "}
+                  {String(EM_CARTAZ.length).padStart(2, "0")}
                 </p>
-                <h1>{missao.titulo}<span className="mis-cinema-ponto">.</span></h1>
+                <h1>
+                  {missao.titulo}
+                  <span className="mis-cinema-ponto">.</span>
+                </h1>
                 <p className="mis-cinema-chamada">{missao.chamada}</p>
                 <p className="mis-cinema-historia">{missao.historia}</p>
                 <p className="mis-cinema-conceitos">
@@ -131,19 +150,32 @@ function MissoesDaComunidade() {
                   <button type="button" className="mis-cinema-botao" onClick={() => setEtapa(1)}>
                     Quero ajudar nessa história <ArrowRight size={18} aria-hidden="true" />
                   </button>
-                  <Link to="/missoes/$slug" params={{ slug: missao.id }} className="mis-cinema-link-leve">
+                  <Link
+                    to="/missoes/$slug"
+                    params={{ slug: missao.id }}
+                    className="mis-cinema-link-leve"
+                  >
                     Conhecer o problema
                   </Link>
                 </div>
               </div>
               <CenaPalcoMissao id={missao.id} />
-              <span className="mis-cinema-numeracao" aria-hidden="true">0{indice + 1}</span>
+              <span className="mis-cinema-numeracao" aria-hidden="true">
+                0{indice + 1}
+              </span>
             </section>
 
             <div className="mis-cinema-direcao">
-              <p>Escolha pela história que dá vontade de resolver. <strong>Não precisa fazer todas.</strong></p>
+              <p>
+                Escolha pela história que dá vontade de resolver.{" "}
+                <strong>Não precisa fazer todas.</strong>
+              </p>
               <div className="mis-cinema-setas">
-                <button type="button" onClick={() => proximaCena(-1)} aria-label="História anterior">
+                <button
+                  type="button"
+                  onClick={() => proximaCena(-1)}
+                  aria-label="História anterior"
+                >
                   <ChevronLeft size={23} aria-hidden="true" />
                 </button>
                 <button type="button" onClick={() => proximaCena(1)} aria-label="Próxima história">
@@ -151,7 +183,11 @@ function MissoesDaComunidade() {
                 </button>
               </div>
             </div>
-            <div className="mis-cinema-fita" role="group" aria-label="Escolha uma das cinco histórias">
+            <div
+              className="mis-cinema-fita"
+              role="group"
+              aria-label="Escolha uma das cinco histórias"
+            >
               {EM_CARTAZ.map((item, i) => (
                 <button
                   type="button"
@@ -179,10 +215,17 @@ function MissoesDaComunidade() {
           >
             <div className="mis-cinema-config-texto">
               <p className="mis-cinema-sobretitulo">SEGUNDO PASSO · SEM PRESSA</p>
-              <h1>Como você quer <em>ajudar?</em></h1>
-              <p>Você escolheu <strong>{missao.titulo}</strong>. O desafio é o mesmo; a linguagem só muda o caminho para resolver.</p>
+              <h1>
+                Como você quer <em>ajudar?</em>
+              </h1>
+              <p>
+                Você escolheu <strong>{missao.titulo}</strong>. O desafio é o mesmo; a linguagem só
+                muda o caminho para resolver.
+              </p>
               <div className="mis-cinema-escolha-area">
-                <label htmlFor="mis-area-cinema">Qual área desperta sua curiosidade? <span>Opcional</span></label>
+                <label htmlFor="mis-area-cinema">
+                  Qual área desperta sua curiosidade? <span>Opcional</span>
+                </label>
                 <select
                   id="mis-area-cinema"
                   value={escolhas.area}
@@ -192,7 +235,11 @@ function MissoesDaComunidade() {
                   }}
                 >
                   <option value="">Ainda estou descobrindo</option>
-                  {AREAS.map((area) => <option key={area} value={area}>{area}</option>)}
+                  {AREAS.map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -220,8 +267,14 @@ function MissoesDaComunidade() {
               <button type="button" className="mis-cinema-voltar" onClick={() => setEtapa(0)}>
                 <ArrowLeft size={17} aria-hidden="true" /> Voltar às histórias
               </button>
-              <button type="button" className="mis-cinema-botao" onClick={confirmar} disabled={!escolhas.linguagem}>
-                Continuar com {escolhas.linguagem ? NOMES_LINGUAGENS[escolhas.linguagem] : "a linguagem"}
+              <button
+                type="button"
+                className="mis-cinema-botao"
+                onClick={confirmar}
+                disabled={!escolhas.linguagem}
+              >
+                Continuar com{" "}
+                {escolhas.linguagem ? NOMES_LINGUAGENS[escolhas.linguagem] : "a linguagem"}
                 <ArrowRight size={17} aria-hidden="true" />
               </button>
             </div>
@@ -235,15 +288,33 @@ function MissoesDaComunidade() {
             className="mis-cinema-conclusao"
           >
             <div className="mis-cinema-conclusao-texto">
-              <span className="mis-cinema-cupom"><Heart size={18} aria-hidden="true" /> UMA MISSÃO PARA CHAMAR DE SUA</span>
-              <h1>Uma pequena ajuda. <em>Um grande começo.</em></h1>
-              <p>Você escolheu <strong>{missao.titulo}</strong> em <strong>{escolhas.linguagem ? NOMES_LINGUAGENS[escolhas.linguagem] : "sua linguagem"}</strong>.</p>
-              <p>Agora é hora de conhecer o problema, fazer tentativas e aprender com calma. Sua escolha ficou guardada neste navegador.</p>
+              <span className="mis-cinema-cupom">
+                <Heart size={18} aria-hidden="true" /> UMA MISSÃO PARA CHAMAR DE SUA
+              </span>
+              <h1>
+                Uma pequena ajuda. <em>Um grande começo.</em>
+              </h1>
+              <p>
+                Você escolheu <strong>{missao.titulo}</strong> em{" "}
+                <strong>
+                  {escolhas.linguagem ? NOMES_LINGUAGENS[escolhas.linguagem] : "sua linguagem"}
+                </strong>
+                .
+              </p>
+              <p>
+                Agora é hora de conhecer o problema, fazer tentativas e aprender com calma. Sua
+                escolha ficou guardada neste navegador.
+              </p>
               <div className="mis-cinema-acoes">
                 <Link to="/missoes/$slug" params={{ slug: missao.id }} className="mis-cinema-botao">
                   Começar a missão <ArrowRight size={18} aria-hidden="true" />
                 </Link>
-                <a className="mis-cinema-link-leve" href="https://estudos.unidunedev.workers.dev" target="_blank" rel="noreferrer">
+                <a
+                  className="mis-cinema-link-leve"
+                  href="https://estudos.unidunedev.workers.dev"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   <BookOpen size={17} aria-hidden="true" /> Revisar no Café de Estudos
                 </a>
               </div>

@@ -318,7 +318,8 @@ export const MISSOES: Missao[] = [
       "Uma mensagem final informa o resultado.",
     ],
     extra: "Permita jogar novamente e mostre uma mensagem diferente para cada faixa de pontuação.",
-  },  {
+  },
+  {
     id: "gatinho",
     titulo: "Salve o gatinho",
     chamada: "Mingau subiu na árvore e precisa voltar para casa.",
@@ -342,7 +343,6 @@ export const MISSOES: Missao[] = [
     ],
     extra: "Teste galho e escada com a mesma altura e organize a comparação em uma função.",
   },
-
 ];
 
 /** Temporada inicial: poucas missões com histórias fortes. O catálogo completo fica guardado. */
