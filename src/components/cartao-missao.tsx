@@ -1,8 +1,29 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 
 import { LINGUAGENS_MISSAO, type LinguagemMissao, type Missao } from "@/lib/missoes";
-import { CenaMissao } from "./cena-missao";
+import { CenaDeFundoMissao } from "./cena-de-fundo-missao";
+
+const SELOS_MISSAO: Record<string, string> = {
+  incendio: "🔥",
+  cafeteria: "☕",
+  abrigo: "🐾",
+  nave: "🚀",
+  laboratorio: "🧪",
+  castelo: "🏰",
+  farol: "🌊",
+  biblioteca: "📚",
+  robo: "🤖",
+  jardim: "🌙",
+  feira: "✨",
+  pinguim: "🐧",
+};
+
+const DIFICULDADE: Record<Missao["nivel"], string> = {
+  "Primeiros passos": "Iniciante",
+  Desenvolvendo: "Intermediário",
+  "Modelando dados": "Modelagem",
+};
 
 export function CartaoMissao({
   missao,
@@ -15,38 +36,45 @@ export function CartaoMissao({
   escolhida: boolean;
   linguagem: LinguagemMissao | "";
 }) {
-  const nomeLinguagem = LINGUAGENS_MISSAO.find((opcao) => opcao.id === linguagem)?.nome;
   return (
     <article className={`mis-card mis-tom-${missao.id}${escolhida ? " mis-card--escolhida" : ""}`}>
       <div className="mis-card-capa">
+        <CenaDeFundoMissao id={missao.id} />
         <div className="mis-card-topicos">
-          <span className="mis-capa-selo">{nomeLinguagem ?? "C · Python · Java"}</span>
-          <span className="mis-capa-selo">{missao.nivel}</span>
+          <span className="mis-capa-selo mis-capa-selo-missao">
+            <span aria-hidden="true">{SELOS_MISSAO[missao.id] ?? "✨"}</span>
+            Missão
+          </span>
+          <span className="mis-capa-selo mis-capa-selo-nivel">{DIFICULDADE[missao.nivel]}</span>
         </div>
-        <CenaMissao id={missao.id} />
       </div>
       <div className="mis-card-corpo">
-        <span className="mis-card-meta">DESAFIO 02 · MISSÃO</span>
         <h3>{missao.titulo}</h3>
         <p>{missao.chamada}</p>
-        <div className="mis-tags" aria-label="Conceitos trabalhados">
-          {missao.conceitos.slice(0, 3).map((conceito) => (
-            <span key={conceito}>{conceito}</span>
+        <div className="mis-card-linguagens" aria-label="Linguagens disponíveis">
+          {LINGUAGENS_MISSAO.map((opcao) => (
+            <span
+              key={opcao.id}
+              className={`mis-chip-linguagem mis-chip-${opcao.id}${linguagem === opcao.id ? " mis-chip-ativa" : ""}`}
+              aria-label={`${opcao.nome}${linguagem === opcao.id ? " - minha escolha" : ""}`}
+            >
+              {opcao.id === "python" ? "🐍" : opcao.id === "java" ? "☕" : "●"} {opcao.nome}
+            </span>
           ))}
         </div>
         <div className="mis-card-rodape">
           <Link className="mis-card-link" to="/missoes/$slug" params={{ slug: missao.id }}>
-            Ver a missão <ArrowUpRight size={15} aria-hidden="true" />
+            Ver missão <ArrowRight size={18} aria-hidden="true" />
           </Link>
           {escolhida ? (
-            <span className="mis-card-recomendado">
-              <CheckCircle2 size={12} style={{ display: "inline", verticalAlign: "middle" }} />{" "}
-              Minha escolha
+            <span className="mis-card-marcador" title="Você escolheu esta missão">
+              <CheckCircle2 size={17} aria-hidden="true" />
+              <span className="sr-only">Minha missão escolhida</span>
             </span>
           ) : recomendada ? (
-            <span className="mis-card-recomendado">
-              <Sparkles size={12} style={{ display: "inline", verticalAlign: "middle" }} /> Combina
-              com você
+            <span className="mis-card-marcador" title="Combina com seus interesses">
+              <Sparkles size={17} aria-hidden="true" />
+              <span className="sr-only">Combina com seus interesses</span>
             </span>
           ) : null}
         </div>
