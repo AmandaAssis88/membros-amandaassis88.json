@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Coffee,
   GitPullRequest,
+  Github,
   Heart,
   Sparkles,
 } from "lucide-react";
@@ -29,8 +30,8 @@ import {
 export const Route = createFileRoute("/missoes/")({
   head: () =>
     pageHead(
-      "Missões da Comunidade · Desafio 2",
-      "Cinco histórias para escolher com calma. Ajude os personagens a resolver problemas reais com C, Python ou Java.",
+      "Escolha seu desafio · Unidunedev",
+      "Do primeiro Pull Request ao primeiro projeto: escolha o desafio e aprenda programação no seu ritmo.",
     ),
   component: MissoesDaComunidade,
 });
@@ -56,7 +57,7 @@ function MissoesDaComunidade() {
     const i = EM_CARTAZ.findIndex((m) => m.id === antigas.missaoId);
     return Math.max(i, 0);
   });
-  const [etapa, setEtapa] = useState(0);
+  const [etapa, setEtapa] = useState(-1);
   const missao = EM_CARTAZ[indice] ?? EM_CARTAZ[0];
 
   function proximaCena(diferenca: number) {
@@ -94,15 +95,19 @@ function MissoesDaComunidade() {
         <div className="mis-cinema-marca">
           <Coffee size={18} aria-hidden="true" />
           <span>
-            UNIDUNEDEV <span aria-hidden="true">·</span> DESAFIO 02
+            UNIDUNEDEV <span aria-hidden="true">·</span> MISSÕES DA COMUNIDADE
           </span>
         </div>
-        <Link to="/desafio-pr" search={{ nivel: "1" }} className="mis-cinema-link-pr">
-          <GitPullRequest size={16} aria-hidden="true" /> Quer entrar no mural? Desafio 1
-        </Link>
+        {etapa < 0 ? (
+          <span className="mis-cinema-topo-lema">Um café e uma descoberta de cada vez.</span>
+        ) : (
+          <button type="button" className="mis-cinema-link-pr mis-cinema-link-voltar" onClick={() => setEtapa(-1)}>
+            <ArrowLeft size={16} aria-hidden="true" /> Escolher outro desafio
+          </button>
+        )}
       </div>
 
-      <nav className="mis-cinema-etapas" aria-label="Etapas para escolher a missão">
+      {etapa >= 0 && <nav className="mis-cinema-etapas" aria-label="Etapas para escolher a missão">
         {ETAPAS.map((nome, i) => (
           <button
             type="button"
@@ -116,10 +121,65 @@ function MissoesDaComunidade() {
             <span>{nome}</span>
           </button>
         ))}
-      </nav>
+      </nav>}
 
       <AnimatePresence mode="wait">
-        {etapa === 0 ? (
+        {etapa === -1 ? (
+          <motion.section
+            key="desafios"
+            className="mis-portal"
+            initial={reduced ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduced ? {} : { opacity: 0, y: -8 }}
+            transition={transicao}
+            aria-labelledby="mis-portal-titulo"
+          >
+            <div className="mis-portal-cabecalho">
+              <p className="mis-cinema-sobretitulo"><Coffee size={15} aria-hidden="true"/> SEU PRÓXIMO PASSO COMEÇA AQUI</p>
+              <h1 id="mis-portal-titulo">Qual aventura você quer <em>começar?</em></h1>
+              <p>Não existe caminho certo ou ordem obrigatória. Escolha o que faz sentido para você agora.</p>
+            </div>
+            <div className="mis-portal-opcoes">
+              <article className="mis-portal-card mis-portal-card--pr">
+                <div className="mis-portal-card-texto">
+                  <span className="mis-portal-numero">DESAFIO 01 · PRIMEIRO CONTATO</span>
+                  <h2>Seu primeiro <em>Pull Request.</em></h2>
+                  <p>Prepare seu perfil, conheça o GitHub e deixe seu lugar no mural da comunidade.</p>
+                  <div className="mis-portal-detalhes"><span>Sem precisar programar</span><span>Um primeiro commit</span></div>
+                  <Link to="/desafio-pr" search={{ nivel: "1" }} className="mis-cinema-botao">
+                    Começar o Desafio 1 <ArrowRight size={17} aria-hidden="true"/>
+                  </Link>
+                </div>
+                <div className="mis-portal-deco mis-portal-deco--git" aria-hidden="true">
+                  <div className="mis-portal-janela">
+                    <span className="mis-portal-janela-topo"><i/><i/><i/></span>
+                    <Github size={42} strokeWidth={1.4}/>
+                    <div className="mis-portal-linha"><GitPullRequest size={20}/><span>meu-primeiro-pr</span><Check size={18}/></div>
+                    <div className="mis-portal-linha-curta"/>
+                    <div className="mis-portal-linha-curta mis-portal-linha-curta--segunda"/>
+                  </div>
+                  <span className="mis-portal-brilho mis-portal-brilho--um"/>
+                  <span className="mis-portal-brilho mis-portal-brilho--dois"/>
+                </div>
+              </article>
+              <article className="mis-portal-card mis-portal-card--projeto">
+                <div className="mis-portal-card-texto">
+                  <span className="mis-portal-numero">DESAFIO 02 · PRIMEIRO PROJETO</span>
+                  <h2>Um pequeno código. <em>Uma grande ajuda.</em></h2>
+                  <p>Encontre uma história, conheça quem precisa da sua ajuda e resolva um problema com C, Python ou Java.</p>
+                  <div className="mis-portal-detalhes"><span>5 histórias para descobrir</span><span>No seu ritmo</span></div>
+                  <button type="button" className="mis-cinema-botao" onClick={() => setEtapa(0)}>
+                    Conhecer o Desafio 2 <ArrowRight size={17} aria-hidden="true"/>
+                  </button>
+                </div>
+                <div className="mis-portal-deco mis-portal-deco--gatinho" aria-hidden="true">
+                  <CenaPalcoMissao id="gatinho"/>
+                </div>
+              </article>
+            </div>
+            <p className="mis-portal-rodape"><Heart size={15} aria-hidden="true" /> O Desafio 1 te coloca no mural. O Desafio 2 te convida a criar. Você pode fazer os dois quando quiser.</p>
+          </motion.section>
+        ) : etapa === 0 ? (
           <motion.div
             key={`historia-${missao.id}`}
             initial={reduced ? false : { opacity: 0, y: 9 }}
