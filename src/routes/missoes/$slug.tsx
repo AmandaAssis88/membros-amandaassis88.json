@@ -12,7 +12,7 @@ import {
   Medal,
   GitPullRequest,
 } from "lucide-react";
-import { CenaMissao } from "@/components/cena-missao";
+import { CenaDeFundoMissao } from "@/components/cena-de-fundo-missao";
 import { ESTUDOS_URL } from "@/config";
 import { pageHead } from "@/lib/community";
 import { orientacaoDaMissao } from "@/lib/orientacoes-missoes";
@@ -102,7 +102,7 @@ function DetalhesDaMissao() {
           <h1>{missao.titulo}</h1>
           <p>{missao.chamada}</p>
         </div>
-        <CenaMissao id={missao.id} />
+        <CenaDeFundoMissao id={missao.id} />
       </header>
 
       <div className="mis-detalhe-grid">
