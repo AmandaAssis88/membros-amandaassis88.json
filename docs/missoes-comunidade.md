@@ -22,20 +22,20 @@ As cenas são ilustrações SVG criadas dentro do projeto, com movimentos em CSS
 
 Todas as **12 missões aceitam C, Python e Java**. A linguagem é escolhida na página de detalhes, e as pistas mudam de acordo com ela. Cada problema tem um núcleo básico verificável e uma evolução opcional.
 
-| Missão | Projeto central | Progressão sugerida |
-| --- | --- | --- |
-| 🚒 Apague o incêndio | Calculadora de água | Variáveis e operações |
-| ☕ Salve a cafeteria | Conta dos pedidos | Laços e funções |
-| 🐾 Ajude o abrigo | Cadastro de animais | Classes ou structs |
-| 🚀 Lance a nave | Combustível | Condições e decimais |
-| 🧪 Organize o laboratório | Registro e arquivo local | Coleções e arquivos |
-| 🏰 Proteja o castelo | Inventário | Classes, métodos ou structs |
-| 🌊 Acenda o farol | Autonomia de bateria | Divisão e validação |
-| 📚 Biblioteca encantada | Empréstimos e devoluções | Dados e estado |
-| 🤖 Conserte o robô | Entregas | Modelagem de dados |
-| 🌙 Jardim da Lua | Controle de irrigação | Coleções e somas |
-| ✨ Feira das estrelas | Caixa e troco | Descontos e condições |
-| 🐧 Encontre o pinguim | Quiz no terminal | Loops e pontuação |
+| Missão                    | Projeto central          | Progressão sugerida         |
+| ------------------------- | ------------------------ | --------------------------- |
+| 🚒 Apague o incêndio      | Calculadora de água      | Variáveis e operações       |
+| ☕ Salve a cafeteria      | Conta dos pedidos        | Laços e funções             |
+| 🐾 Ajude o abrigo         | Cadastro de animais      | Classes ou structs          |
+| 🚀 Lance a nave           | Combustível              | Condições e decimais        |
+| 🧪 Organize o laboratório | Registro e arquivo local | Coleções e arquivos         |
+| 🏰 Proteja o castelo      | Inventário               | Classes, métodos ou structs |
+| 🌊 Acenda o farol         | Autonomia de bateria     | Divisão e validação         |
+| 📚 Biblioteca encantada   | Empréstimos e devoluções | Dados e estado              |
+| 🤖 Conserte o robô        | Entregas                 | Modelagem de dados          |
+| 🌙 Jardim da Lua          | Controle de irrigação    | Coleções e somas            |
+| ✨ Feira das estrelas     | Caixa e troco            | Descontos e condições       |
+| 🐧 Encontre o pinguim     | Quiz no terminal         | Loops e pontuação           |
 
 Não exigir orientação a objetos para um aluno que ainda não conhece variáveis. Aulas de **POO** poderão entrar no Café de Estudos futuramente; por enquanto, os alunos podem avançar das trilhas existentes para as missões adequadas ao nível.
 
@@ -82,6 +82,7 @@ Estrutura em preparação na branch [`feat/desafio-2-missoes`](https://github.co
 Proposta: criar um álbum visual das missões, com uma imagem para cada história (cena em problema → cena resolvida) e um **selo associado a um PR aprovado e integrado**, linkável ao arquivo da solução.
 
 Princípios:
+
 1. Conquista de participação por missão concluída, **não ranking de velocidade**.
 2. Selo entregue após uma contribuição aprovada no repositório de estudos, e não após clicar em um botão.
 3. Mostrar linguagem e conceitos que a pessoa praticou e um link público para seu código.

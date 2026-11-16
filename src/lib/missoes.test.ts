@@ -64,12 +64,17 @@ describe("Missões da Comunidade — Desafio 2", () => {
   it("guarda apenas valores válidos e descarta uma linguagem ainda não lançada", () => {
     expect(eAreaMissao("Mobile")).toBe(true);
     expect(eAreaMissao("astronauta")).toBe(false);
-    expect(normalizarEscolhas({ area: "astronauta", linguagem: "javascript", missaoId: "x" }))
-      .toEqual(ESCOLHAS_INICIAIS);
+    expect(
+      normalizarEscolhas({ area: "astronauta", linguagem: "javascript", missaoId: "x" }),
+    ).toEqual(ESCOLHAS_INICIAIS);
   });
 
   it("persiste e recupera a escolha local sem servidor", () => {
-    const escolhas = { area: "Front-end" as const, linguagem: "python" as const, missaoId: "pinguim" };
+    const escolhas = {
+      area: "Front-end" as const,
+      linguagem: "python" as const,
+      missaoId: "pinguim",
+    };
     localStorage.removeItem(CHAVE_ESCOLHAS_MISSOES);
     salvarEscolhasMissoes(escolhas);
     expect(lerEscolhasMissoes()).toEqual(escolhas);

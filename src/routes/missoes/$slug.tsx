@@ -1,27 +1,40 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ArrowLeft, ArrowRight, BookOpen, CheckCircle2, ExternalLink,
-  Github, HeartHandshake, Lightbulb, Medal, GitPullRequest,
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  ExternalLink,
+  Github,
+  HeartHandshake,
+  Lightbulb,
+  Medal,
+  GitPullRequest,
 } from "lucide-react";
 import { CenaMissao } from "@/components/cena-missao";
 import { ESTUDOS_URL } from "@/config";
 import { pageHead } from "@/lib/community";
 import { orientacaoDaMissao } from "@/lib/orientacoes-missoes";
 import {
-  lerEscolhasMissoes, LINGUAGENS_MISSAO, MISSOES,
-  procurarMissao, salvarEscolhasMissoes,
-  type EscolhasMissoes, type LinguagemMissao,
+  lerEscolhasMissoes,
+  LINGUAGENS_MISSAO,
+  MISSOES,
+  procurarMissao,
+  salvarEscolhasMissoes,
+  type EscolhasMissoes,
+  type LinguagemMissao,
 } from "@/lib/missoes";
 
 const REPO_ESTUDOS = "https://github.com/Unidunedev/estudos";
 const EXTENSOES: Record<LinguagemMissao, string> = { c: ".c", python: ".py", java: ".java" };
 
 export const Route = createFileRoute("/missoes/$slug")({
-  head: () => pageHead(
-    "Uma missão para resolver",
-    "Escolha uma missão e aprenda a planejar sua solução em C, Python ou Java no Desafio 2.",
-  ),
+  head: () =>
+    pageHead(
+      "Uma missão para resolver",
+      "Escolha uma missão e aprenda a planejar sua solução em C, Python ou Java no Desafio 2.",
+    ),
   component: DetalhesDaMissao,
 });
 
@@ -50,14 +63,14 @@ function DetalhesDaMissao() {
   }
 
   const linguagem = LINGUAGENS_MISSAO.find((opcao) => opcao.id === escolhas.linguagem);
-  const orientacao = escolhas.linguagem
-    ? orientacaoDaMissao(missao.id, escolhas.linguagem)
-    : null;
+  const orientacao = escolhas.linguagem ? orientacaoDaMissao(missao.id, escolhas.linguagem) : null;
   const escolhida = escolhas.missaoId === missao.id && Boolean(escolhas.linguagem);
   const linkEstudos = linguagem ? ESTUDOS_URL + "/" + linguagem.trilha : ESTUDOS_URL;
   const numero = String(MISSOES.findIndex((item) => item.id === missao.id) + 1).padStart(2, "0");
   const pasta = "disciplinas/missoes/desafios/" + numero + "-" + missao.id;
-  const arquivo = pasta + "/solucoes/seu-username" +
+  const arquivo =
+    pasta +
+    "/solucoes/seu-username" +
     (escolhas.linguagem ? EXTENSOES[escolhas.linguagem] : ".ext");
 
   function aceitar() {
@@ -93,7 +106,9 @@ function DetalhesDaMissao() {
             <h2>O que você vai construir?</h2>
             <p>{missao.objetivo}</p>
             <div className="mis-tags" aria-label="Conceitos trabalhados">
-              {missao.conceitos.map((conceito) => <span key={conceito}>{conceito}</span>)}
+              {missao.conceitos.map((conceito) => (
+                <span key={conceito}>{conceito}</span>
+              ))}
             </div>
           </section>
 
@@ -101,16 +116,18 @@ function DetalhesDaMissao() {
             <p className="mis-eyebrow">SUA FERRAMENTA DE TRABALHO</p>
             <h2 id="mis-linguagem-titulo">Com qual linguagem você quer resolver?</h2>
             <p>
-              O problema é o mesmo. O jeito de organizar o programa muda conforme a linguagem.
-              Você pode trocar sua escolha quando quiser.
+              O problema é o mesmo. O jeito de organizar o programa muda conforme a linguagem. Você
+              pode trocar sua escolha quando quiser.
             </p>
             <div className="mis-linguagens" role="group" aria-label="Linguagem para esta missão">
               {LINGUAGENS_MISSAO.map((opcao) => (
                 <button
                   type="button"
                   key={opcao.id}
-                  className={"mis-linguagem-opcao " +
-                    (escolhas.linguagem === opcao.id ? "mis-linguagem-ativa" : "")}
+                  className={
+                    "mis-linguagem-opcao " +
+                    (escolhas.linguagem === opcao.id ? "mis-linguagem-ativa" : "")
+                  }
                   aria-pressed={escolhas.linguagem === opcao.id}
                   onClick={() => atualizarEscolhas({ linguagem: opcao.id })}
                 >
@@ -140,7 +157,8 @@ function DetalhesDaMissao() {
               </div>
             ) : (
               <p className="mis-linguagem-placeholder">
-                ☕ Escolha C, Python ou Java para descobrir como começar sem receber a solução pronta.
+                ☕ Escolha C, Python ou Java para descobrir como começar sem receber a solução
+                pronta.
               </p>
             )}
           </section>
@@ -149,17 +167,23 @@ function DetalhesDaMissao() {
             <p className="mis-eyebrow">UM PASSO DE CADA VEZ</p>
             <h2>Seu roteiro de desenvolvimento</h2>
             <ol className="mis-roteiro">
-              {missao.passos.map((passo) => <li key={passo}>{passo}</li>)}
+              {missao.passos.map((passo) => (
+                <li key={passo}>{passo}</li>
+              ))}
             </ol>
             <p className="mis-alerta">
-              Você não precisa acertar tudo na primeira tentativa. Comece pela menor parte
-              do problema, experimente entradas diferentes e melhore aos poucos.
+              Você não precisa acertar tudo na primeira tentativa. Comece pela menor parte do
+              problema, experimente entradas diferentes e melhore aos poucos.
             </p>
           </section>
           <section className="mis-bloco">
             <p className="mis-eyebrow">COMO SABER SE FUNCIONOU?</p>
             <h2>Checklist da missão</h2>
-            <ul>{missao.criterios.map((criterio) => <li key={criterio}>{criterio}</li>)}</ul>
+            <ul>
+              {missao.criterios.map((criterio) => (
+                <li key={criterio}>{criterio}</li>
+              ))}
+            </ul>
           </section>
           <section className="mis-bloco">
             <p className="mis-eyebrow">SE QUISER IR ALÉM</p>
@@ -171,8 +195,8 @@ function DetalhesDaMissao() {
             <p className="mis-eyebrow">O CÓDIGO TAMBÉM É UMA CONQUISTA</p>
             <h2 id="mis-como-entregar">Como será a entrega pelo GitHub?</h2>
             <p>
-              Vamos usar o repositório <strong>Unidunedev/estudos</strong> e seu fluxo de
-              Pull Requests. Quando as pastas oficiais estiverem liberadas, siga os passos:
+              Vamos usar o repositório <strong>Unidunedev/estudos</strong> e seu fluxo de Pull
+              Requests. Quando as pastas oficiais estiverem liberadas, siga os passos:
             </p>
             <ol className="mis-roteiro">
               <li>Faça um fork do repositório de estudos e clone o seu fork.</li>
@@ -186,10 +210,15 @@ function DetalhesDaMissao() {
               <code>{arquivo}</code>
             </div>
             <p className="mis-alerta">
-              O Desafio 2 ainda não está aberto para entregas. Não envie soluções
-              para esse caminho até anunciarmos oficialmente no grupo.
+              O Desafio 2 ainda não está aberto para entregas. Não envie soluções para esse caminho
+              até anunciarmos oficialmente no grupo.
             </p>
-            <a className="mis-botao-secundario mis-link-repo" href={REPO_ESTUDOS} target="_blank" rel="noreferrer">
+            <a
+              className="mis-botao-secundario mis-link-repo"
+              href={REPO_ESTUDOS}
+              target="_blank"
+              rel="noreferrer"
+            >
               <Github size={16} aria-hidden="true" /> Conhecer o repositório de estudos
               <ExternalLink size={13} aria-hidden="true" />
             </a>
@@ -211,7 +240,9 @@ function DetalhesDaMissao() {
               {escolhida ? "Missão escolhida!" : "Quero ajudar nesta missão"}
             </button>
             {!escolhas.linguagem && (
-              <p className="mis-passo-aguardando">Escolha C, Python ou Java nesta página para continuar.</p>
+              <p className="mis-passo-aguardando">
+                Escolha C, Python ou Java nesta página para continuar.
+              </p>
             )}
             {escolhida && (
               <p className="mis-aceita" role="status">
@@ -225,22 +256,24 @@ function DetalhesDaMissao() {
             </a>
           </section>
           <section className="mis-bloco mis-bloco-recompensa">
-            <span className="mis-recompensa-icone"><Medal size={25} aria-hidden="true" /></span>
+            <span className="mis-recompensa-icone">
+              <Medal size={25} aria-hidden="true" />
+            </span>
             <p className="mis-eyebrow">RECOMPENSA · EM PLANEJAMENTO</p>
             <h2>Um selo para lembrar dessa aventura</h2>
             <p>
-              A ideia é que um PR aprovado desbloqueie um selo ligado à história
-              que você resolveu. Por enquanto, não há certificação nem
-              comprovação automática de conclusão.
+              A ideia é que um PR aprovado desbloqueie um selo ligado à história que você resolveu.
+              Por enquanto, não há certificação nem comprovação automática de conclusão.
             </p>
           </section>
           <section className="mis-bloco">
-            <p className="mis-eyebrow"><GitPullRequest size={14} aria-hidden="true" /> PR COM CARINHO</p>
+            <p className="mis-eyebrow">
+              <GitPullRequest size={14} aria-hidden="true" /> PR COM CARINHO
+            </p>
             <h2>Seu código conta uma história</h2>
             <p>
-              Ao publicar sua solução, explique no PR como pensou no problema,
-              quais partes foram difíceis e o que aprendeu. Não precisa comparar
-              seu progresso com o de ninguém.
+              Ao publicar sua solução, explique no PR como pensou no problema, quais partes foram
+              difíceis e o que aprendeu. Não precisa comparar seu progresso com o de ninguém.
             </p>
             <Link to="/missoes" className="mis-botao-sutil mis-ver-outras">
               Ver outras missões <ArrowRight size={15} aria-hidden="true" />

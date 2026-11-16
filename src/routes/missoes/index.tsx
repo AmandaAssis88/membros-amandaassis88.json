@@ -117,9 +117,9 @@ function MissoesDaComunidade() {
                 : "O que você quer explorar?"}
             </h2>
             <p>
-              A carreira é só um interesse por enquanto. Todas as 12 missões podem ser feitas em
-              C, Python ou Java: a linguagem muda as dicas e a forma de organizar seu programa,
-              mas você continua livre para escolher qualquer projeto.
+              A carreira é só um interesse por enquanto. Todas as 12 missões podem ser feitas em C,
+              Python ou Java: a linguagem muda as dicas e a forma de organizar seu programa, mas
+              você continua livre para escolher qualquer projeto.
             </p>
           </div>
           <span className="mis-escolha-detalhe">
@@ -184,8 +184,8 @@ function MissoesDaComunidade() {
             <p className="mis-eyebrow">CARDÁPIO DE MISSÕES</p>
             <h2 id="mis-catalogo-titulo">Qual história você vai resolver?</h2>
             <p>
-              Escolha pela história que despertou sua curiosidade. Depois você decide se vai usar
-              C, Python ou Java e recebe pistas específicas, sem código pronto.
+              Escolha pela história que despertou sua curiosidade. Depois você decide se vai usar C,
+              Python ou Java e recebe pistas específicas, sem código pronto.
             </p>
           </div>
           <strong>

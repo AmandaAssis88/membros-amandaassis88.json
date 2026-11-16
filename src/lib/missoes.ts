@@ -39,12 +39,7 @@ export const MISSOES: Missao[] = [
       "Crie uma calculadora de consumo que receba a vazão de água por minuto e o tempo de uso, mostrando o total de litros utilizados.",
     areas: ["Back-end", "QA/Testes", "Ainda não sei"],
     nivel: "Primeiros passos",
-    conceitos: [
-      "variáveis",
-      "entrada e saída",
-      "operações",
-      "formatação",
-    ],
+    conceitos: ["variáveis", "entrada e saída", "operações", "formatação"],
     passos: [
       "Receba a vazão de água em litros por minuto.",
       "Peça o tempo de uso, em minutos.",
@@ -67,12 +62,7 @@ export const MISSOES: Missao[] = [
     objetivo: "Monte um programa de pedidos com um pequeno cardápio, quantidades e total a pagar.",
     areas: ["Back-end", "PO/Produto", "Ainda não sei"],
     nivel: "Primeiros passos",
-    conceitos: [
-      "variáveis",
-      "condicionais",
-      "repetição",
-      "listas ou vetores",
-    ],
+    conceitos: ["variáveis", "condicionais", "repetição", "listas ou vetores"],
     passos: [
       "Defina três produtos com preços fictícios.",
       "Deixe a pessoa escolher um item e informar uma quantidade.",
@@ -84,7 +74,8 @@ export const MISSOES: Missao[] = [
       "O total soma corretamente os pedidos.",
       "Existe uma opção clara para encerrar a compra.",
     ],
-    extra: "Separe o cálculo total em uma função e aplique desconto quando o cliente trouxer a própria caneca.",
+    extra:
+      "Separe o cálculo total em uma função e aplique desconto quando o cliente trouxer a própria caneca.",
   },
   {
     id: "abrigo",
@@ -92,15 +83,11 @@ export const MISSOES: Missao[] = [
     chamada: "Os bichinhos precisam encontrar seus nomes na lista.",
     historia:
       "O abrigo Patinhas Felizes recebeu novos moradores. As fichas estão misturadas, e ninguém consegue encontrar rapidamente um animal para adoção.",
-    objetivo: "Crie um cadastro de animais com nome, espécie e idade. Use classes em Python ou Java e structs em C para organizar os registros.",
+    objetivo:
+      "Crie um cadastro de animais com nome, espécie e idade. Use classes em Python ou Java e structs em C para organizar os registros.",
     areas: ["Back-end", "Mobile", "Banco de Dados"],
     nivel: "Modelando dados",
-    conceitos: [
-      "registros",
-      "classes ou structs",
-      "coleções",
-      "busca",
-    ],
+    conceitos: ["registros", "classes ou structs", "coleções", "busca"],
     passos: [
       "Represente cada animal com nome, espécie e idade.",
       "Cadastre pelo menos três animais em uma lista ou vetor.",
@@ -112,7 +99,8 @@ export const MISSOES: Missao[] = [
       "A listagem mostra todos os cadastros.",
       "A busca avisa quando um nome não existe.",
     ],
-    extra: "Em Java ou Python, experimente uma subclasse de Animal para cães ou gatos. Em C, organize os tipos com structs e funções.",
+    extra:
+      "Em Java ou Python, experimente uma subclasse de Animal para cães ou gatos. Em C, organize os tipos com structs e funções.",
   },
   {
     id: "nave",
@@ -124,12 +112,7 @@ export const MISSOES: Missao[] = [
       "Crie um simulador que calcule quantos litros de combustível uma viagem vai consumir.",
     areas: ["DevOps", "Back-end", "Ainda não sei"],
     nivel: "Primeiros passos",
-    conceitos: [
-      "variáveis",
-      "decimais",
-      "condicionais",
-      "funções",
-    ],
+    conceitos: ["variáveis", "decimais", "condicionais", "funções"],
     passos: [
       "Receba a distância da viagem e o consumo por quilômetro.",
       "Calcule o combustível necessário.",
@@ -149,15 +132,11 @@ export const MISSOES: Missao[] = [
     chamada: "Um experimento bagunçou todos os registros!",
     historia:
       "O laboratório das poções trocou as etiquetas de lugar. A cientista precisa registrar seus experimentos antes que os frascos coloridos sejam confundidos.",
-    objetivo: "Crie um cadastro de experimentos, permitindo registrar, listar e salvar as informações em um arquivo local.",
+    objetivo:
+      "Crie um cadastro de experimentos, permitindo registrar, listar e salvar as informações em um arquivo local.",
     areas: ["Banco de Dados", "Back-end", "QA/Testes"],
     nivel: "Desenvolvendo",
-    conceitos: [
-      "registros",
-      "listas ou vetores",
-      "funções",
-      "arquivos",
-    ],
+    conceitos: ["registros", "listas ou vetores", "funções", "arquivos"],
     passos: [
       "Crie um menu com opções de cadastrar e listar.",
       "Guarde nome, data e uma descrição em registros.",
@@ -177,15 +156,11 @@ export const MISSOES: Missao[] = [
     chamada: "O estoque de poções está acabando!",
     historia:
       "Um castelo amigável vai receber uma festa, mas o inventário está completamente desorganizado. A guardiã precisa contar os suprimentos.",
-    objetivo: "Crie um inventário com itens, quantidades e operações para acrescentar e retirar suprimentos.",
+    objetivo:
+      "Crie um inventário com itens, quantidades e operações para acrescentar e retirar suprimentos.",
     areas: ["Back-end", "Banco de Dados", "PO/Produto"],
     nivel: "Modelando dados",
-    conceitos: [
-      "modelagem de dados",
-      "classes ou structs",
-      "funções ou métodos",
-      "validações",
-    ],
+    conceitos: ["modelagem de dados", "classes ou structs", "funções ou métodos", "validações"],
     passos: [
       "Modele um Item com nome e quantidade, usando classes ou structs.",
       "Crie funções ou métodos para acrescentar e retirar unidades.",
@@ -197,7 +172,8 @@ export const MISSOES: Missao[] = [
       "Não é permitido retirar acima do disponível.",
       "A listagem mostra as quantidades atualizadas.",
     ],
-    extra: "Em Python/Java, crie uma classe especial para itens perecíveis. Em C, experimente campos adicionais e funções de verificação.",
+    extra:
+      "Em Python/Java, crie uma classe especial para itens perecíveis. Em C, experimente campos adicionais e funções de verificação.",
   },
   {
     id: "farol",
@@ -205,15 +181,11 @@ export const MISSOES: Missao[] = [
     chamada: "Os barcos não conseguem enxergar a costa!",
     historia:
       "O farol de uma ilha de papel apagou. O operador precisa de um painel que mostre se a bateria conseguirá manter a luz acesa durante a noite.",
-    objetivo: "Crie um programa de terminal que calcula quantas horas a bateria do farol consegue funcionar.",
+    objetivo:
+      "Crie um programa de terminal que calcula quantas horas a bateria do farol consegue funcionar.",
     areas: ["Front-end", "UI/UX Design", "DevOps"],
     nivel: "Primeiros passos",
-    conceitos: [
-      "entrada de dados",
-      "decimais",
-      "operações",
-      "validação",
-    ],
+    conceitos: ["entrada de dados", "decimais", "operações", "validação"],
     passos: [
       "Leia a energia disponível e o gasto de energia por hora.",
       "Confira se o gasto informado é maior que zero.",
@@ -236,12 +208,7 @@ export const MISSOES: Missao[] = [
     objetivo: "Crie um catálogo de livros em memória com cadastro, empréstimo e devolução.",
     areas: ["Back-end", "Banco de Dados", "Ainda não sei"],
     nivel: "Desenvolvendo",
-    conceitos: [
-      "coleções",
-      "registros",
-      "funções",
-      "condicionais",
-    ],
+    conceitos: ["coleções", "registros", "funções", "condicionais"],
     passos: [
       "Registre o título, autor e situação de cada livro.",
       "Mostre todos os livros, indicando disponíveis e emprestados.",
@@ -261,15 +228,11 @@ export const MISSOES: Missao[] = [
     chamada: "O robô entregador esqueceu a lista de tarefas!",
     historia:
       "Um robô simpático precisa entregar caixinhas na cidade, mas seu painel perdeu a memória das entregas. Você foi chamado para reorganizar sua rotina.",
-    objetivo: "Construa um gerenciador de entregas que registra destinos, acompanha situações e mostra o trabalho do robô.",
+    objetivo:
+      "Construa um gerenciador de entregas que registra destinos, acompanha situações e mostra o trabalho do robô.",
     areas: ["Mobile", "Back-end", "QA/Testes"],
     nivel: "Modelando dados",
-    conceitos: [
-      "classes ou structs",
-      "coleções",
-      "métodos ou funções",
-      "estado",
-    ],
+    conceitos: ["classes ou structs", "coleções", "métodos ou funções", "estado"],
     passos: [
       "Represente cada entrega com destino e estado (pendente ou concluída).",
       "Cadastre várias entregas em uma lista ou vetor.",
@@ -281,7 +244,8 @@ export const MISSOES: Missao[] = [
       "É possível atualizar uma entrega existente.",
       "A listagem identifica as tarefas pendentes.",
     ],
-    extra: "Em Java/Python, experimente uma classe base Tarefa e uma classe Entrega. Em C, reutilize structs e funções.",
+    extra:
+      "Em Java/Python, experimente uma classe base Tarefa e uma classe Entrega. Em C, reutilize structs e funções.",
   },
   {
     id: "jardim",
@@ -289,15 +253,11 @@ export const MISSOES: Missao[] = [
     chamada: "As plantinhas estão pedindo gotinhas d'água!",
     historia:
       "No jardim lunar, flores que brilham à noite dependem de um painel de irrigação. Algumas recebem água demais; outras, quase nenhuma.",
-    objetivo: "Crie um sistema de terminal para registrar plantas, seus consumos diários e calcular a água necessária para o jardim.",
+    objetivo:
+      "Crie um sistema de terminal para registrar plantas, seus consumos diários e calcular a água necessária para o jardim.",
     areas: ["Front-end", "UI/UX Design", "Mobile"],
     nivel: "Desenvolvendo",
-    conceitos: [
-      "registros",
-      "vetores ou listas",
-      "laços",
-      "operações",
-    ],
+    conceitos: ["registros", "vetores ou listas", "laços", "operações"],
     passos: [
       "Registre nome e consumo diário de água de uma planta.",
       "Permita registrar várias plantas em uma lista ou vetor.",
@@ -317,15 +277,11 @@ export const MISSOES: Missao[] = [
     chamada: "Os preços das barracas estão todos misturados!",
     historia:
       "Uma feira espacial abriu suas portas, mas os vendedores não conseguem fechar o caixa. Um comerciante oferece descontos e precisa calcular o troco corretamente.",
-    objetivo: "Crie um programa de terminal para fechar uma compra, calcular desconto e informar troco.",
+    objetivo:
+      "Crie um programa de terminal para fechar uma compra, calcular desconto e informar troco.",
     areas: ["Back-end", "PO/Produto", "QA/Testes"],
     nivel: "Primeiros passos",
-    conceitos: [
-      "decimais",
-      "operadores",
-      "condicionais",
-      "formatação",
-    ],
+    conceitos: ["decimais", "operadores", "condicionais", "formatação"],
     passos: [
       "Receba o preço de dois produtos e as quantidades.",
       "Calcule o subtotal da compra.",
@@ -345,15 +301,11 @@ export const MISSOES: Missao[] = [
     chamada: "Um pinguim explorador se perdeu no mapa de gelo!",
     historia:
       "O pinguim Pipo esqueceu o caminho de casa. Cada resposta correta ajuda a encontrar uma nova pista no mapa. Ele precisa de um pequeno jogo de perguntas.",
-    objetivo: "Crie um quiz no terminal, com perguntas, alternativas e pontuação final para ajudar Pipo a encontrar o caminho de casa.",
+    objetivo:
+      "Crie um quiz no terminal, com perguntas, alternativas e pontuação final para ajudar Pipo a encontrar o caminho de casa.",
     areas: ["Front-end", "UI/UX Design", "QA/Testes"],
     nivel: "Desenvolvendo",
-    conceitos: [
-      "listas ou vetores",
-      "laços",
-      "condicionais",
-      "funções",
-    ],
+    conceitos: ["listas ou vetores", "laços", "condicionais", "funções"],
     passos: [
       "Crie pelo menos três perguntas e alternativas.",
       "Mostre uma pergunta por vez no terminal.",
