@@ -31,9 +31,17 @@ export function CenaDeFundoMissao({ id }: { id: string }) {
         <span className="mis-luz mis-luz-4" />
         <span className="mis-luz mis-luz-5" />
         <span className="mis-luz mis-luz-6" />
-        <svg className="mis-efeito-svg" viewBox="0 0 300 190" preserveAspectRatio="none" focusable="false">
+        <svg
+          className="mis-efeito-svg"
+          viewBox="0 0 300 190"
+          preserveAspectRatio="none"
+          focusable="false"
+        >
           <path className="mis-efeito-curva" d="M202 130Q184 106 205 80T206 38" />
-          <path className="mis-efeito-curva mis-efeito-curva-2" d="M234 161Q259 128 231 97T253 47" />
+          <path
+            className="mis-efeito-curva mis-efeito-curva-2"
+            d="M234 161Q259 128 231 97T253 47"
+          />
           <path className="mis-efeito-ondinha" d="M52 138Q94 126 132 139T210 133" />
         </svg>
       </div>
