@@ -1,69 +1,75 @@
 import { describe, expect, it } from "vitest";
 
 import { AREAS } from "./community";
+import { orientacaoDaMissao } from "./orientacoes-missoes";
 import {
+  CHAVE_ESCOLHAS_MISSOES,
   ESCOLHAS_INICIAIS,
   LINGUAGENS_MISSAO,
   MISSOES,
-  CHAVE_ESCOLHAS_MISSOES,
   eAreaMissao,
   eLinguagemMissao,
+  lerEscolhasMissoes,
   listarMissoes,
   normalizarEscolhas,
   procurarMissao,
-  lerEscolhasMissoes,
   salvarEscolhasMissoes,
 } from "./missoes";
 
 describe("Missões da Comunidade — Desafio 2", () => {
-  it("tem 12 histórias diferentes, com roteiro e critérios claros", () => {
+  it("mantém 12 missões com história, conceitos e critérios verificáveis", () => {
     expect(MISSOES).toHaveLength(12);
-    expect(new Set(MISSOES.map((missao) => missao.id)).size).toBe(12);
-
+    expect(new Set(MISSOES.map((m) => m.id)).size).toBe(12);
     for (const missao of MISSOES) {
       expect(missao.titulo.length).toBeGreaterThan(8);
       expect(missao.historia.length).toBeGreaterThan(60);
       expect(missao.passos.length).toBeGreaterThanOrEqual(3);
       expect(missao.criterios.length).toBeGreaterThanOrEqual(3);
       expect(missao.conceitos.length).toBeGreaterThanOrEqual(3);
-      expect(LINGUAGENS_MISSAO.some((linguagem) => linguagem.id === missao.linguagem)).toBe(true);
       expect(missao.areas.every((area) => AREAS.includes(area))).toBe(true);
     }
   });
 
-  it("mantém a missão do incêndio entre os projetos de C", () => {
-    const incendio = procurarMissao("incendio");
-    expect(incendio?.linguagem).toBe("c");
-    expect(incendio?.objetivo.toLowerCase()).toContain("água");
+  it("libera somente as três linguagens que estão no Café de Estudos", () => {
+    expect(LINGUAGENS_MISSAO.map((linguagem) => linguagem.id)).toEqual(["c", "python", "java"]);
+    expect(eLinguagemMissao("javascript")).toBe(false);
+    expect(eLinguagemMissao("java")).toBe(true);
     expect(procurarMissao("missao-inexistente")).toBeUndefined();
   });
 
-  it("filtra por linguagem sem impedir a escolha de outras carreiras", () => {
-    const lista = listarMissoes("python", "Mobile");
-    expect(lista).toHaveLength(3);
-    expect(lista.every((missao) => missao.linguagem === "python")).toBe(true);
-
-    const todas = listarMissoes("", "Back-end");
-    expect(todas).toHaveLength(12);
-    expect(todas[0]?.areas).toContain("Back-end");
+  it("oferece pistas adequadas a todas as 36 combinações sem entregar código", () => {
+    for (const missao of MISSOES) {
+      for (const linguagem of LINGUAGENS_MISSAO) {
+        const guia = orientacaoDaMissao(missao.id, linguagem.id);
+        expect(guia.descricao.length).toBeGreaterThan(70);
+        expect(guia.pontoDePartida.length).toBeGreaterThan(40);
+        expect(guia.pistas).toHaveLength(3);
+        expect(guia.pistas.every((pista) => pista.length > 30)).toBe(true);
+      }
+    }
+    expect(orientacaoDaMissao("castelo", "c").descricao).toContain("C não tem classes");
   });
 
-  it("não aceita identificadores falsos nas preferências", () => {
+  it("usa a área como sugestão sem ocultar nenhuma das missões", () => {
+    const todas = listarMissoes("");
+    expect(todas).toHaveLength(12);
+    const mobile = listarMissoes("Mobile");
+    expect(mobile).toHaveLength(12);
+    expect(mobile[0]?.areas).toContain("Mobile");
+    const backend = listarMissoes("Back-end");
+    expect(backend).toHaveLength(12);
+    expect(backend[0]?.areas).toContain("Back-end");
+  });
+
+  it("guarda apenas valores válidos e descarta uma linguagem ainda não lançada", () => {
     expect(eAreaMissao("Mobile")).toBe(true);
     expect(eAreaMissao("astronauta")).toBe(false);
-    expect(eLinguagemMissao("c")).toBe(true);
-    expect(eLinguagemMissao("kotlin")).toBe(false);
-    expect(normalizarEscolhas({ area: "astronauta", linguagem: "dart", missaoId: "x" })).toEqual(
-      ESCOLHAS_INICIAIS,
-    );
+    expect(normalizarEscolhas({ area: "astronauta", linguagem: "javascript", missaoId: "x" }))
+      .toEqual(ESCOLHAS_INICIAIS);
   });
 
-  it("guarda só opções validadas e sabe recuperar um rascunho local", () => {
-    const escolhas = {
-      area: "Front-end" as const,
-      linguagem: "javascript" as const,
-      missaoId: "pinguim",
-    };
+  it("persiste e recupera a escolha local sem servidor", () => {
+    const escolhas = { area: "Front-end" as const, linguagem: "python" as const, missaoId: "pinguim" };
     localStorage.removeItem(CHAVE_ESCOLHAS_MISSOES);
     salvarEscolhasMissoes(escolhas);
     expect(lerEscolhasMissoes()).toEqual(escolhas);
