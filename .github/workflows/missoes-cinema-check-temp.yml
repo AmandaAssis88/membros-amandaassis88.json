@@ -1,0 +1,44 @@
+name: Verificar cinema de missões (temporário)
+
+on:
+  push:
+    branches:
+      - feat/missoes-desafio-2
+
+permissions:
+  contents: write
+
+jobs:
+  qualidade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Regenerar rotas e formatar mudanças
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+        run: |
+          npx vite build
+          npx prettier --write src/components/cena-palco-missao.tsx src/components/onboarding.tsx src/routes/missoes/index.tsx 'src/routes/missoes/$slug.tsx' src/styles-missoes-cinema.css src/lib/missoes.ts src/lib/missoes.test.ts src/lib/orientacoes-missoes.ts docs/missoes-comunidade.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/routeTree.gen.ts src/components/cena-palco-missao.tsx src/components/onboarding.tsx src/routes/missoes/ src/styles-missoes-cinema.css src/lib/missoes.ts src/lib/missoes.test.ts src/lib/orientacoes-missoes.ts docs/missoes-comunidade.md
+          if ! git diff --cached --quiet; then
+            git commit -m "style(missoes): formatar etapa cinematográfica"
+            git push origin HEAD:feat/missoes-desafio-2
+          fi
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+      - run: npm run build:estudos
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
