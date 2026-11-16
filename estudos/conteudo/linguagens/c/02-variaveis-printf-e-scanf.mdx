@@ -83,6 +83,95 @@ C tem 20 anos e 1.75 m
 | `%c` | `char` | um caractere |
 | `%s` | texto (string) | veremos na aula 5 |
 
+## O que significa o número em `%.1f`?
+
+Você já viu `%f` e `%.2f` na tabela. Não são dois comandos diferentes: **a parte depois do ponto define quantas casas decimais o `printf` deve mostrar**.
+
+```c
+#include <stdio.h>
+
+int main() {
+    double pi = 3.14159;
+
+    printf("Sem limitar: %f\n", pi);
+    printf("Uma casa: %.1f\n", pi);
+    printf("Duas casas: %.2f\n", pi);
+    printf("Tres casas: %.3f\n", pi);
+    return 0;
+}
+```
+
+```saida
+Sem limitar: 3.141590
+Uma casa: 3.1
+Duas casas: 3.14
+Tres casas: 3.142
+```
+
+O `%.1f` não muda o valor guardado na variável. Só **formata como o número aparece na tela**, arredondando quando necessário. Você escolhe quantas casas quer mostrar.
+
+## Existem outros marcadores além de `%d` e `%f`?
+
+Sim! Estes são os mais comuns de encontrar em outros códigos. **Não precisa decorar todos agora**: volte a esta tabela quando precisar.
+
+| Marcador no `printf` | Valor esperado | Exemplo de uso |
+| --- | --- | --- |
+| `%d` ou `%i` | `int` | `printf("%d", idade);` |
+| `%f`, `%.1f`, `%.2f` | `float` ou `double` | `printf("%.2f", preco);` |
+| `%c` | caractere (`char`) | `printf("%c", letra);` |
+| `%s` | texto (sequência de caracteres) | `printf("%s", nome);` |
+| `%u` | `unsigned int` (inteiro sem sinal) | `printf("%u", quantidade);` |
+| `%ld` | `long` | `printf("%ld", distancia);` |
+| `%lld` | `long long` | `printf("%lld", numeroGrande);` |
+| `%x` | inteiro sem sinal em hexadecimal | `printf("%x", cor);` |
+| `%o` | inteiro sem sinal em octal | `printf("%o", numero);` |
+| `%e` | número decimal em notação científica | `printf("%e", pi);` |
+| `%p` | endereço de memória (ponteiro) | `printf("%p", (void *)&idade);` |
+| `%zu` | `size_t`, usado com `sizeof` | `printf("%zu", sizeof(int));` |
+| `%%` | o símbolo `%` literal | `printf("50%%");` |
+
+Mais adiante você vai entender `long`, `unsigned` e ponteiros com calma. Por enquanto, concentre-se em `%d`, `%f`, `%c` e `%s`. A ideia é saber que cada marcador pede um tipo de valor.
+
+<Nota tipo="cuidado" titulo="Posso usar printf(idade) sem um marcador?">
+Não. O primeiro argumento do `printf` precisa ser um **texto de formato**. Para mostrar um inteiro, use `printf("%d", idade);`. Para mostrar apenas uma mensagem, `printf("Olá");` funciona sem nenhum marcador, porque o texto já é o que queremos imprimir.
+</Nota>
+
+## E o `\n`? Ele também é um marcador?
+
+Não. Os marcadores (`%d`, `%f`...) representam **valores que serão inseridos no texto**. Já o `\n` é uma **sequência de escape**: um comando especial dentro do próprio texto.
+
+| Sequência | O que faz |
+| --- | --- |
+| `\n` | pula para a próxima linha |
+| `\t` | insere uma tabulação |
+| `\"` | coloca aspas duplas no texto |
+| `\\` | mostra uma barra invertida (`\`) |
+
+```c
+#include <stdio.h>
+
+int main() {
+    printf("Nome\tIdade\n");
+    printf("Ana\t20\n");
+    printf("Ela disse: \"Vou aprender C!\"\n");
+    printf("Pasta: C:\\projetos\n");
+    return 0;
+}
+```
+
+```saida
+Nome    Idade
+Ana     20
+Ela disse: "Vou aprender C!"
+Pasta: C:\projetos
+```
+
+O espaço da tabulação pode variar conforme o terminal. E lembra da aula passada? Sem o `\n`, o próximo `printf` começa a escrever onde o anterior parou.
+
+<Nota tipo="dica" titulo="Um detalhe importante para as próximas aulas">
+Esta tabela é de formatos do **`printf`**. O `scanf` também usa marcadores, mas algumas regras mudam: para ler um `double`, por exemplo, você usará `%lf` no `scanf`. Vamos continuar agora com a leitura de valores.
+</Nota>
+
 ## scanf: lendo do teclado
 
 O `scanf` é o contrário do `printf`: ele **lê** o que a pessoa digitou e guarda numa variável.
