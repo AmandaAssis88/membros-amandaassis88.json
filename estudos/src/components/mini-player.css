@@ -241,19 +241,19 @@
   .cafe-player button, .cafe-player-ajuste { transition: none; }
 }
 
-/* Versão horizontal para as páginas internas das trilhas.
-   Reaproveita o mesmo contexto de áudio do player da página inicial. */
-.cabecalho-nav > .cafe-player--header {
-  width: clamp(245px, 26vw, 350px);
-  max-width: none;
+/* Player horizontal do cabeçalho. O nome define a largura natural da bolha:
+   só usamos reticências caso a faixa ultrapasse um limite razoável. */
+.cabecalho-ferramentas > .cafe-player--header {
+  width: max-content;
+  max-width: min(420px, 38vw);
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 6px 12px;
+  gap: 6px;
+  padding: 6px 10px;
   border-radius: 999px;
   box-shadow: 0 4px 15px rgba(43, 26, 18, 0.13);
-  flex-shrink: 1;
+  flex: 0 1 auto;
   font-weight: 400;
 }
 .cafe-player--header .cafe-player-topo,
@@ -261,23 +261,28 @@
   display: none;
 }
 .cafe-player--header .cafe-player-navegacao {
-  flex: 1 1 auto;
+  display: grid;
+  flex: 0 1 auto;
   min-width: 0;
-  grid-template-columns: 26px minmax(0, 1fr) 26px;
-  gap: 5px;
+  grid-template-columns: 24px minmax(0, max-content) 24px;
+  gap: 4px;
 }
 .cafe-player--header .cafe-player-nome strong {
   font-size: 12px;
+  max-width: min(255px, 29vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .cafe-player--header .cafe-player-salto,
 .cafe-player--header .cafe-player-icone {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
 }
 .cafe-player--header .cafe-player-acoes {
   flex: 0 0 auto;
   margin: 0;
-  gap: 5px;
+  gap: 4px;
 }
 .cafe-player--header .cafe-player-tocar {
   width: 31px;
@@ -304,50 +309,4 @@
 }
 .cafe-player--header .cafe-player-particulas span {
   font-size: 12px;
-}
-.cabecalho:has(.cafe-player--header) {
-  gap: 12px;
-}
-.cabecalho-nav:has(.cafe-player--header) {
-  gap: clamp(8px, 1.2vw, 18px);
-  min-width: 0;
-}
-@media (max-width: 1100px) {
-  .cabecalho-nav > .cafe-player--header {
-    width: 256px;
-  }
-}
-@media (max-width: 870px) {
-  .cabecalho:has(.cafe-player--header) {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: 68px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    row-gap: 6px;
-  }
-  .cabecalho-nav:has(.cafe-player--header) {
-    flex: 1 1 auto;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px 12px;
-  }
-  .cabecalho-nav > .cafe-player--header {
-    order: 3;
-    flex: 0 1 100%;
-    width: min(100%, 330px);
-  }
-}
-@media (max-width: 480px) {
-  .cabecalho:has(.cafe-player--header) {
-    padding-inline: 12px;
-  }
-  .cabecalho-nav:has(.cafe-player--header) {
-    justify-content: flex-end;
-    font-size: 12px;
-  }
-  .cabecalho-nav > .cafe-player--header {
-    width: 100%;
-    max-width: 100%;
-  }
 }
