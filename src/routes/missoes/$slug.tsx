@@ -9,7 +9,7 @@ import { ESTUDOS_URL } from "@/config";
 import { pageHead } from "@/lib/community";
 import { orientacaoDaMissao } from "@/lib/orientacoes-missoes";
 import {
-  eLinguagemMissao, lerEscolhasMissoes, LINGUAGENS_MISSAO, MISSOES,
+  lerEscolhasMissoes, LINGUAGENS_MISSAO, MISSOES,
   procurarMissao, salvarEscolhasMissoes,
   type EscolhasMissoes, type LinguagemMissao,
 } from "@/lib/missoes";
