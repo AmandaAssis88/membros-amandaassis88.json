@@ -301,3 +301,62 @@
   }
   .home-personalizada .home-capa-imagem {transition:none;}
 }
+
+
+/* O seletor também dá um pequeno sinal de vida às capas, sem competir com o texto. */
+.temas-mini-efeito {
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  width: 118px;
+  height: 77px;
+  border-radius: 11px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.temas-mini-efeito::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .2;
+}
+.temas-mini-efeito--lofi::before,
+.temas-mini-efeito--cabana::before {
+  background: repeating-linear-gradient(110deg,
+    transparent 0 14px, #c2dbff33 15px 16px, transparent 17px 38px);
+  animation: ambiente-mini-chuva 7s linear infinite;
+}
+.temas-mini-efeito--biblioteca::before,
+.temas-mini-efeito--laboratorio::before {
+  background:
+    radial-gradient(circle at 75% 23%, #fff3c0 0 1px,transparent 2px),
+    radial-gradient(circle at 50% 62%, #ffdb9f 0 1px,transparent 2px),
+    radial-gradient(circle at 84% 80%, #fff6d6 0 1px,transparent 2px);
+  opacity: .55;
+  animation: ambiente-mini-brilho 6s ease-in-out infinite;
+}
+.temas-mini-efeito--neon::before {
+  background: radial-gradient(circle at 75% 41%, #d36fff44, transparent 54%);
+  opacity: .65;
+  animation: ambiente-mini-brilho 6s ease-in-out infinite;
+}
+.temas-mini-efeito--solar::before {
+  background: radial-gradient(circle at 78% 20%, #fff9c988, transparent 52%);
+  opacity: .6;
+  animation: ambiente-mini-brilho 8s ease-in-out infinite;
+}
+@keyframes ambiente-mini-chuva {
+  from { transform: translateY(-13px); }
+  to { transform: translateY(31px); }
+}
+@keyframes ambiente-mini-brilho {
+  0%,100% { opacity: .18; }
+  50% { opacity: .6; }
+}
+@media (max-width: 420px) {
+  .temas-mini-efeito { width: 85px; height: 67px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .temas-mini-efeito::before { animation: none !important; }
+}
