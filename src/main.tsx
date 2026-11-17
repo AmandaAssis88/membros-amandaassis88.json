@@ -7,6 +7,7 @@ import "./styles.css";
 import "./styles-missoes.css";
 import "./styles-missoes-cinema.css";
 import "./styles-missoes-pinturas.css";
+import "./styles-missoes-arte-inteira.css";
 
 const router = createRouter({ routeTree, scrollRestoration: true });
 
