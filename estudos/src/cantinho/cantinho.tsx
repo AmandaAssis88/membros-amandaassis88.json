@@ -106,8 +106,18 @@ function EscolherTema({
               aria-pressed={selecionado === opcao.id}
               onClick={() => setSelecionado(opcao.id)}
             >
-              <img src={opcao.miniatura} alt="" loading="lazy" decoding="async" width={148} height={90} />
-              <span className={"temas-mini-efeito temas-mini-efeito--" + opcao.id} aria-hidden="true" />
+              <img
+                src={opcao.miniatura}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width={148}
+                height={90}
+              />
+              <span
+                className={"temas-mini-efeito temas-mini-efeito--" + opcao.id}
+                aria-hidden="true"
+              />
               <span className="temas-opcao-texto">
                 <strong>
                   {opcao.emoji} {opcao.nome}
@@ -319,7 +329,14 @@ export function CantinhoEstudos({
             <Palette size={15} /> SEU AMBIENTE DE ESTUDO
           </span>
           <div className="cantinho-tema-atual">
-            <img src={temaAtual.miniatura} alt="" width={80} height={58} loading="lazy" decoding="async" />
+            <img
+              src={temaAtual.miniatura}
+              alt=""
+              width={80}
+              height={58}
+              loading="lazy"
+              decoding="async"
+            />
             <div>
               <small>Tema atual</small>
               <strong>{temaAtual.nome}</strong>

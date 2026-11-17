@@ -94,7 +94,9 @@ export function Inicio() {
       <section className="home-hero">
         <div className="home-capa-imagem" aria-hidden="true" />
         <div className="home-capa-efeitos" aria-hidden="true">
-          {Array.from({ length: 9 }, (_, i) => <span key={i} />)}
+          {Array.from({ length: 9 }, (_, i) => (
+            <span key={i} />
+          ))}
           <i />
           <b />
         </div>
