@@ -68,7 +68,9 @@ function DetalhesDaMissao() {
 
   const linguagem = LINGUAGENS_MISSAO.find((opcao) => opcao.id === escolhas.linguagem);
   const orientacao = escolhas.linguagem ? orientacaoDaMissao(missao.id, escolhas.linguagem) : null;
-  const codigoInicial = escolhas.linguagem ? codigoInicialDaMissao(missao.id, escolhas.linguagem) : null;
+  const codigoInicial = escolhas.linguagem
+    ? codigoInicialDaMissao(missao.id, escolhas.linguagem)
+    : null;
   const escolhida = escolhas.missaoId === missao.id && Boolean(escolhas.linguagem);
   const linkEstudos = linguagem ? ESTUDOS_URL + "/" + linguagem.trilha : ESTUDOS_URL;
   const numero = String(MISSOES.findIndex((item) => item.id === missao.id) + 1).padStart(2, "0");
@@ -191,27 +193,39 @@ function DetalhesDaMissao() {
           </section>
 
           {codigoInicial && (
-            <section className="mis-bloco mis-bloco-codigo-inicial" aria-labelledby="mis-codigo-inicial-titulo">
+            <section
+              className="mis-bloco mis-bloco-codigo-inicial"
+              aria-labelledby="mis-codigo-inicial-titulo"
+            >
               <p className="mis-eyebrow">UM EMPURRÃOZINHO PARA COMEÇAR</p>
               <div className="mis-codigo-inicial-topo">
                 <div>
                   <h2 id="mis-codigo-inicial-titulo">Seu primeiro arquivo em {linguagem?.nome}</h2>
                   <p>
-                    Pode copiar e colar no editor! Deixamos a estrutura e parte da leitura dos dados.
-                    A lógica principal é sua: complete os comentários TODO para resolver a história.
+                    Pode copiar e colar no editor! Deixamos a estrutura e parte da leitura dos
+                    dados. A lógica principal é sua: complete os comentários TODO para resolver a
+                    história.
                   </p>
                 </div>
                 <button type="button" className="mis-codigo-copiar" onClick={copiarCodigo}>
-                  {copiaCodigo === "copiada" ? <CheckCircle2 size={16} aria-hidden="true" /> : <ClipboardCopy size={16} aria-hidden="true" />}
+                  {copiaCodigo === "copiada" ? (
+                    <CheckCircle2 size={16} aria-hidden="true" />
+                  ) : (
+                    <ClipboardCopy size={16} aria-hidden="true" />
+                  )}
                   {copiaCodigo === "copiada" ? "Copiado!" : "Copiar código"}
                 </button>
               </div>
-              <pre className="mis-codigo-inicial-pre" aria-label={`Código inicial em ${linguagem?.nome}`}>
+              <pre
+                className="mis-codigo-inicial-pre"
+                aria-label={`Código inicial em ${linguagem?.nome}`}
+              >
                 <code>{codigoInicial}</code>
               </pre>
               {copiaCodigo === "erro" && (
                 <p className="mis-codigo-estado" role="status">
-                  Não consegui acessar a área de transferência. Você pode selecionar o código acima e copiar normalmente.
+                  Não consegui acessar a área de transferência. Você pode selecionar o código acima
+                  e copiar normalmente.
                 </p>
               )}
               {copiaCodigo === "copiada" && (

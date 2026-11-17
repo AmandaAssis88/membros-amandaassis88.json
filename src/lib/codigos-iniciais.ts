@@ -4,42 +4,43 @@ import type { LinguagemMissao } from "./missoes";
 type Entrada = { objetivo: string; c: string; python: string; java: string };
 
 const ENTRADAS: Record<string, Entrada> = {
-  "gatinho": {
-    "objetivo": "comparar o alcance da escada com a altura do galho",
-    "c": "    double altura, alcance;\n    if (scanf(\"%lf %lf\", &altura, &alcance) != 2) return 0;",
-    "python": "altura, alcance = map(float, input().split())",
-    "java": "        double altura = entrada.nextDouble();\n        double alcance = entrada.nextDouble();"
+  gatinho: {
+    objetivo: "comparar o alcance da escada com a altura do galho",
+    c: '    double altura, alcance;\n    if (scanf("%lf %lf", &altura, &alcance) != 2) return 0;',
+    python: "altura, alcance = map(float, input().split())",
+    java: "        double altura = entrada.nextDouble();\n        double alcance = entrada.nextDouble();",
   },
-  "incendio": {
-    "objetivo": "calcular quantos litros de água serão usados",
-    "c": "    double vazao, minutos;\n    if (scanf(\"%lf %lf\", &vazao, &minutos) != 2) return 0;",
-    "python": "vazao, minutos = map(float, input().split())",
-    "java": "        double vazao = entrada.nextDouble();\n        double minutos = entrada.nextDouble();"
+  incendio: {
+    objetivo: "calcular quantos litros de água serão usados",
+    c: '    double vazao, minutos;\n    if (scanf("%lf %lf", &vazao, &minutos) != 2) return 0;',
+    python: "vazao, minutos = map(float, input().split())",
+    java: "        double vazao = entrada.nextDouble();\n        double minutos = entrada.nextDouble();",
   },
-  "cafeteria": {
-    "objetivo": "calcular o valor total dos três tipos de pedidos",
-    "c": "    int cafes, bolos, chas;\n    if (scanf(\"%d %d %d\", &cafes, &bolos, &chas) != 3) return 0;",
-    "python": "cafes, bolos, chas = map(int, input().split())",
-    "java": "        int cafes = entrada.nextInt();\n        int bolos = entrada.nextInt();\n        int chas = entrada.nextInt();"
+  cafeteria: {
+    objetivo: "calcular o valor total dos três tipos de pedidos",
+    c: '    int cafes, bolos, chas;\n    if (scanf("%d %d %d", &cafes, &bolos, &chas) != 3) return 0;',
+    python: "cafes, bolos, chas = map(int, input().split())",
+    java: "        int cafes = entrada.nextInt();\n        int bolos = entrada.nextInt();\n        int chas = entrada.nextInt();",
   },
-  "nave": {
-    "objetivo": "verificar se há combustível suficiente para a viagem",
-    "c": "    double distancia, consumo, tanque;\n    if (scanf(\"%lf %lf %lf\", &distancia, &consumo, &tanque) != 3) return 0;",
-    "python": "distancia, consumo, tanque = map(float, input().split())",
-    "java": "        double distancia = entrada.nextDouble();\n        double consumo = entrada.nextDouble();\n        double tanque = entrada.nextDouble();"
+  nave: {
+    objetivo: "verificar se há combustível suficiente para a viagem",
+    c: '    double distancia, consumo, tanque;\n    if (scanf("%lf %lf %lf", &distancia, &consumo, &tanque) != 3) return 0;',
+    python: "distancia, consumo, tanque = map(float, input().split())",
+    java: "        double distancia = entrada.nextDouble();\n        double consumo = entrada.nextDouble();\n        double tanque = entrada.nextDouble();",
   },
-  "castelo": {
-    "objetivo": "registrar o estoque e conferir a entrada ou a retirada de itens",
-    "c": "    int quantidadeDeItens;\n    if (scanf(\"%d\", &quantidadeDeItens) != 1) return 0;\n    // TODO: leia o nome e o estoque de cada item.",
-    "python": "quantidade_de_itens = int(input())\n# TODO: leia o nome e o estoque de cada item.",
-    "java": "        int quantidadeDeItens = entrada.nextInt();\n        // TODO: leia o nome e o estoque de cada item."
-  }
+  castelo: {
+    objetivo: "registrar o estoque e conferir a entrada ou a retirada de itens",
+    c: '    int quantidadeDeItens;\n    if (scanf("%d", &quantidadeDeItens) != 1) return 0;\n    // TODO: leia o nome e o estoque de cada item.',
+    python: "quantidade_de_itens = int(input())\n# TODO: leia o nome e o estoque de cada item.",
+    java: "        int quantidadeDeItens = entrada.nextInt();\n        // TODO: leia o nome e o estoque de cada item.",
+  },
 };
 
 const GENERICOS: Record<LinguagemMissao, string> = {
-  "c": "#include <stdio.h>\n\nint main(void) {\n    // TODO: leia a entrada descrita no enunciado.\n    // TODO: implemente a lógica.\n    // TODO: imprima somente a saída exigida pelos testes.\n    return 0;\n}",
-  "python": "# TODO: leia a entrada descrita no enunciado.\n# TODO: implemente a lógica.\n# TODO: imprima somente a saída exigida pelos testes.",
-  "java": "import java.util.Scanner;\nimport java.util.Locale;\n\n// Main não é public: o arquivo pode se chamar seu-username.java.\nclass Main {\n    public static void main(String[] args) {\n        Scanner entrada = new Scanner(System.in);\n        entrada.useLocale(Locale.US);\n        // TODO: leia os dados e implemente a lógica.\n        // TODO: imprima a saída exata.\n        entrada.close();\n    }\n}"
+  c: "#include <stdio.h>\n\nint main(void) {\n    // TODO: leia a entrada descrita no enunciado.\n    // TODO: implemente a lógica.\n    // TODO: imprima somente a saída exigida pelos testes.\n    return 0;\n}",
+  python:
+    "# TODO: leia a entrada descrita no enunciado.\n# TODO: implemente a lógica.\n# TODO: imprima somente a saída exigida pelos testes.",
+  java: "import java.util.Scanner;\nimport java.util.Locale;\n\n// Main não é public: o arquivo pode se chamar seu-username.java.\nclass Main {\n    public static void main(String[] args) {\n        Scanner entrada = new Scanner(System.in);\n        entrada.useLocale(Locale.US);\n        // TODO: leia os dados e implemente a lógica.\n        // TODO: imprima a saída exata.\n        entrada.close();\n    }\n}",
 };
 
 /** Entrega um arquivo inicial que pode ser executado, mas NÃO é um gabarito. */

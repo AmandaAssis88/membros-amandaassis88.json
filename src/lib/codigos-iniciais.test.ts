@@ -11,8 +11,8 @@ describe("Códigos de partida das missões", () => {
         expect(codigo.length).toBeGreaterThan(100);
         expect(codigo).toContain("TODO");
         // Não podemos oferecer o gabarito como modelo.
-        expect(codigo).not.toContain("printf(\"Alcanca");
-        expect(codigo).not.toContain("print(\"Alcanca");
+        expect(codigo).not.toContain('printf("Alcanca');
+        expect(codigo).not.toContain('print("Alcanca');
       }
     }
   });
