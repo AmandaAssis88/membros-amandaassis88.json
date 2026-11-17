@@ -11,7 +11,14 @@ describe("Capas das missões em cartaz", () => {
 
     for (const missao of emCartaz) {
       for (const pasta of ["", "thumbs/"]) {
-        const caminho = join(process.cwd(), "public", "missoes", "capas", pasta, `${missao.id}.webp`);
+        const caminho = join(
+          process.cwd(),
+          "public",
+          "missoes",
+          "capas",
+          pasta,
+          `${missao.id}.webp`,
+        );
         const conteudo = readFileSync(caminho);
         expect(conteudo.toString("ascii", 0, 4), caminho).toBe("RIFF");
         expect(conteudo.toString("ascii", 8, 12), caminho).toBe("WEBP");
