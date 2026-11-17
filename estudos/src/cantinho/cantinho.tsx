@@ -81,9 +81,9 @@ function EscolherTema({
             <span className="cantinho-kicker">
               <Palette size={15} /> SEU AMBIENTE
             </span>
-            <h2 id="temas-titulo">Escolher meu tema de estudos</h2>
+            <h2 id="temas-titulo">Escolha seu ambiente de estudos</h2>
             <p id="temas-descricao">
-              Um cantinho que combina com você. As trilhas e ferramentas continuam iguais.
+              Escolha o clima que te acolhe hoje. As trilhas e ferramentas continuam iguais.
             </p>
           </div>
           <button
@@ -97,7 +97,7 @@ function EscolherTema({
           </button>
         </header>
 
-        <div className="temas-lista" role="group" aria-label="Estilos disponíveis">
+        <div className="temas-lista" role="group" aria-label="Ambientes disponíveis">
           {TEMAS.map((opcao) => (
             <button
               key={opcao.id}
@@ -106,7 +106,7 @@ function EscolherTema({
               aria-pressed={selecionado === opcao.id}
               onClick={() => setSelecionado(opcao.id)}
             >
-              <img src={opcao.miniatura} alt="" loading="lazy" width={148} height={90} />
+              <img src={opcao.miniatura} alt="" loading="lazy" decoding="async" width={148} height={90} />
               <span className="temas-opcao-texto">
                 <strong>
                   {opcao.emoji} {opcao.nome}
@@ -122,7 +122,7 @@ function EscolherTema({
 
         <div className="temas-rodape">
           <div className="temas-selecionado">
-            <img src={temaAtual.miniatura} alt="" width={58} height={45} />
+            <img src={temaAtual.miniatura} alt="" decoding="async" width={58} height={45} />
             <span>
               <small>Seu próximo ambiente</small>
               <strong>{temaAtual.nome}</strong>
@@ -315,10 +315,10 @@ export function CantinhoEstudos({
 
         <div className="cantinho-tema">
           <span className="cantinho-kicker">
-            <Palette size={15} /> SEU ESTILO DE ESTUDO
+            <Palette size={15} /> SEU AMBIENTE DE ESTUDO
           </span>
           <div className="cantinho-tema-atual">
-            <img src={temaAtual.miniatura} alt="" width={80} height={58} loading="lazy" />
+            <img src={temaAtual.miniatura} alt="" width={80} height={58} loading="lazy" decoding="async" />
             <div>
               <small>Tema atual</small>
               <strong>{temaAtual.nome}</strong>
@@ -329,9 +329,9 @@ export function CantinhoEstudos({
             className="cantinho-abrir-temas"
             onClick={() => setSeletorAberto(true)}
           >
-            <Palette size={16} /> Escolher meu tema <ArrowRight size={15} />
+            <Palette size={16} /> Trocar ambiente <ArrowRight size={15} />
           </button>
-          <small className="cantinho-tema-ajuda">Sua escolha fica salva neste navegador.</small>
+          <small className="cantinho-tema-ajuda">Seu ambiente fica salvo neste navegador.</small>
         </div>
       </div>
 
