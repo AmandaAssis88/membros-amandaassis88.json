@@ -1,55 +1,54 @@
-/**
- * Mesmos IDs e nomes da votação do onboarding (src/components/style-picker.tsx).
- * O voto original fica privado no Supabase; aqui cada aluno escolhe sua própria preferência.
+/** Ambientes de estudo: a escolha não altera as trilhas nem o voto do desafio 1.
+ * As capas estão em WebP; a animação de chuva, vapor e luz vive no CSS.
  */
 export const TEMAS = [
   {
     id: "lofi",
     nome: "Lo-fi Café",
-    descricao: "Chuva, café quentinho e um ritmo só seu.",
+    descricao: "Chuva na janela, café quente e código sem pressa.",
     emoji: "☕",
-    imagem: "/temas/lofi.svg",
-    miniatura: "/temas/thumbs/lofi.svg",
+    imagem: "/temas/ambientes/lofi.webp",
+    miniatura: "/temas/ambientes/thumbs/lofi.webp",
   },
   {
-    id: "gamificado",
-    nome: "Gamificado",
-    descricao: "Mais uma missão, mais um nível alcançado.",
-    emoji: "🎮",
-    imagem: "/temas/gamificado.svg",
-    miniatura: "/temas/thumbs/gamificado.svg",
+    id: "cabana",
+    nome: "Cabana na Chuva",
+    descricao: "Lareira acesa, madeira e um refúgio para se concentrar.",
+    emoji: "🏡",
+    imagem: "/temas/ambientes/cabana.webp",
+    miniatura: "/temas/ambientes/thumbs/cabana.webp",
   },
   {
-    id: "floresta",
-    nome: "Fantasia florestal",
-    descricao: "Um cantinho encantado para novas descobertas.",
-    emoji: "🌿",
-    imagem: "/temas/floresta.svg",
-    miniatura: "/temas/thumbs/floresta.svg",
+    id: "biblioteca",
+    nome: "Biblioteca Encantada",
+    descricao: "Livros, luar e um pouquinho de magia no ar.",
+    emoji: "📚",
+    imagem: "/temas/ambientes/biblioteca.webp",
+    miniatura: "/temas/ambientes/thumbs/biblioteca.webp",
   },
   {
-    id: "clean",
-    nome: "Profissional clean",
-    descricao: "Espaço leve, claro e sem distrações.",
-    emoji: "✨",
-    imagem: "/temas/clean.svg",
-    miniatura: "/temas/thumbs/clean.svg",
+    id: "neon",
+    nome: "Estação Neon",
+    descricao: "Uma noite colorida para criar e explorar ideias.",
+    emoji: "🌌",
+    imagem: "/temas/ambientes/neon.webp",
+    miniatura: "/temas/ambientes/thumbs/neon.webp",
   },
   {
-    id: "terminal",
-    nome: "Terminal hacker",
-    descricao: "Código, terminal e foco em cada comando.",
-    emoji: "⌨️",
-    imagem: "/temas/terminal.svg",
-    miniatura: "/temas/thumbs/terminal.svg",
+    id: "laboratorio",
+    nome: "Laboratório Criativo",
+    descricao: "Robôs, protótipos e curiosidade sobre a mesa.",
+    emoji: "🧪",
+    imagem: "/temas/ambientes/laboratorio.webp",
+    miniatura: "/temas/ambientes/thumbs/laboratorio.webp",
   },
   {
-    id: "brutalismo",
-    nome: "Neo-brutalismo",
-    descricao: "Cores ousadas e criatividade sem limites.",
-    emoji: "🎨",
-    imagem: "/temas/brutalismo.svg",
-    miniatura: "/temas/thumbs/brutalismo.svg",
+    id: "solar",
+    nome: "Ateliê Solar",
+    descricao: "Sol entrando pela janela e espaço para respirar.",
+    emoji: "☀️",
+    imagem: "/temas/ambientes/solar.webp",
+    miniatura: "/temas/ambientes/thumbs/solar.webp",
   },
 ] as const;
 
@@ -58,7 +57,22 @@ export const TEMA_PADRAO: TemaId = "lofi";
 export const CHAVE_TEMA = "unidunedev:estudos:tema:v1";
 
 export function temaValido(valor: unknown): valor is TemaId {
-  return typeof valor === "string" && TEMAS.some((t) => t.id === valor);
+  return typeof valor === "string" && TEMAS.some((tema) => tema.id === valor);
+}
+
+/** Preferências antigas continuam aproveitáveis após a troca da coleção. */
+const MIGRACAO_TEMAS: Record<string, TemaId> = {
+  gamificado: "neon",
+  floresta: "biblioteca",
+  clean: "solar",
+  terminal: "neon",
+  brutalismo: "laboratorio",
+};
+
+export function normalizarTema(valor: unknown): TemaId {
+  if (temaValido(valor)) return valor;
+  if (typeof valor === "string") return MIGRACAO_TEMAS[valor] ?? TEMA_PADRAO;
+  return TEMA_PADRAO;
 }
 
 export const MENSAGENS = [
