@@ -28,7 +28,7 @@ export const TEMAS = [
   },
   {
     id: "neon",
-    nome: "Estação Neon",
+    nome: "Dev focado",
     descricao: "Uma noite colorida para criar e explorar ideias.",
     emoji: "🌌",
     imagem: "/temas/ambientes/neon.webp",
@@ -36,7 +36,7 @@ export const TEMAS = [
   },
   {
     id: "laboratorio",
-    nome: "Laboratório Criativo",
+    nome: "Laboratório de idéias",
     descricao: "Robôs, protótipos e curiosidade sobre a mesa.",
     emoji: "🧪",
     imagem: "/temas/ambientes/laboratorio.webp",
@@ -44,7 +44,7 @@ export const TEMAS = [
   },
   {
     id: "solar",
-    nome: "Ateliê Solar",
+    nome: "Manhãzinha",
     descricao: "Sol entrando pela janela e espaço para respirar.",
     emoji: "☀️",
     imagem: "/temas/ambientes/solar.webp",
