@@ -538,7 +538,7 @@
 /* Partículas que sobem: assinatura delicada própria de cada ambiente.
    Ícones SVG só em dois pontos da cena; os demais são pequenos brilhos.
    A capa WebP continua imóvel e não adicionamos timers, canvas ou vídeos. */
-.home-personalizada .home-capa-efeitos .ambiente-subindo {
+.home-personalizada[data-tema] .home-capa-efeitos span.ambiente-subindo {
   --part-cor: #ffe6bd;
   --part-luz: rgba(255, 218, 160, .35);
   display: grid;
