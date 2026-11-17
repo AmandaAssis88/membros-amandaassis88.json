@@ -16,6 +16,7 @@ import {
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 import { CenaPalcoMissao } from "@/components/cena-palco-missao";
+import { CenaMissao } from "@/components/cena-missao";
 import { AREAS, pageHead } from "@/lib/community";
 import {
   eAreaMissao,
@@ -277,6 +278,7 @@ function MissoesDaComunidade() {
                       title={item.titulo}
                       onClick={() => setIndice(i)}
                     >
+                      <CenaMissao id={item.id} className="mis-cinema-poster-svg" />
                       <img
                         src={`/missoes/capas/${item.id}.webp`}
                         alt=""
