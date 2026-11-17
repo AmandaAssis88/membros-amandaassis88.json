@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Bebida } from "../components/bebida";
 import { CantinhoEstudos } from "../cantinho/cantinho";
+import { ParticulasDoAmbiente } from "../cantinho/particulas";
 import { CHAVE_TEMA, TEMA_PADRAO, normalizarTema, type TemaId } from "../cantinho/temas";
 import { MiniPlayer } from "../components/mini-player";
 import { CRIADOR } from "@/config";
@@ -93,13 +94,7 @@ export function Inicio() {
     <main className="home-personalizada" data-tema={tema}>
       <section className="home-hero">
         <div className="home-capa-imagem" aria-hidden="true" />
-        <div className="home-capa-efeitos" aria-hidden="true">
-          {Array.from({ length: 9 }, (_, i) => (
-            <span key={i} />
-          ))}
-          <i />
-          <b />
-        </div>
+        <ParticulasDoAmbiente tema={tema} />
         <MiniPlayer />
         <div className="home-hero-texto">
           <p className="kicker">☕ CAFÉ DE ESTUDOS DA UNIDUNEDEV</p>
