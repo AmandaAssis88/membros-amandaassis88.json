@@ -280,7 +280,7 @@ function MissoesDaComunidade() {
                     >
                       <CenaMissao id={item.id} className="mis-cinema-poster-svg" />
                       <img
-                        src={`/missoes/capas/${item.id}.webp`}
+                        src={`/missoes/capas/thumbs/${item.id}.webp`}
                         alt=""
                         loading={Math.abs(i - indice) > 1 ? "lazy" : "eager"}
                         decoding="async"
