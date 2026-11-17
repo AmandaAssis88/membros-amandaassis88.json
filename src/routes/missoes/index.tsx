@@ -408,7 +408,7 @@ function MissoesDaComunidade() {
             initial={reduced ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={transicao}
-            className="mis-cinema-conclusao"
+            className={`mis-cinema-conclusao mis-cinema-conclusao--${missao.id}`}
           >
             <div className="mis-cinema-conclusao-texto">
               <span className="mis-cinema-cupom">
