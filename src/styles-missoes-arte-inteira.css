@@ -6,10 +6,18 @@
 :is(.mis-cinema-palco--gatinho, .mis-cinema-conclusao--gatinho, .mis-detalhe-hero.mis-tom-gatinho) {
   --mis-capa-arte: url("/missoes/capas/gatinho.webp");
 }
-:is(.mis-cinema-palco--cafeteria, .mis-cinema-conclusao--cafeteria, .mis-detalhe-hero.mis-tom-cafeteria) {
+:is(
+  .mis-cinema-palco--cafeteria,
+  .mis-cinema-conclusao--cafeteria,
+  .mis-detalhe-hero.mis-tom-cafeteria
+) {
   --mis-capa-arte: url("/missoes/capas/cafeteria.webp");
 }
-:is(.mis-cinema-palco--incendio, .mis-cinema-conclusao--incendio, .mis-detalhe-hero.mis-tom-incendio) {
+:is(
+  .mis-cinema-palco--incendio,
+  .mis-cinema-conclusao--incendio,
+  .mis-detalhe-hero.mis-tom-incendio
+) {
   --mis-capa-arte: url("/missoes/capas/incendio.webp");
 }
 :is(.mis-cinema-palco--nave, .mis-cinema-conclusao--nave, .mis-detalhe-hero.mis-tom-nave) {
@@ -39,7 +47,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(22px) brightness(.52) saturate(.88);
+  filter: blur(22px) brightness(0.52) saturate(0.88);
   transform: scale(1.05);
   pointer-events: none;
 }
@@ -51,9 +59,9 @@
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgba(42, 30, 51, .67) 0%,
-    rgba(42, 30, 51, .30) 50%,
-    rgba(42, 30, 51, .12) 100%
+    rgba(42, 30, 51, 0.67) 0%,
+    rgba(42, 30, 51, 0.3) 50%,
+    rgba(42, 30, 51, 0.12) 100%
   );
 }
 
@@ -63,7 +71,7 @@
   object-fit: contain;
   object-position: center;
   box-sizing: border-box;
-  filter: drop-shadow(0 12px 18px rgba(20, 14, 29, .25));
+  filter: drop-shadow(0 12px 18px rgba(20, 14, 29, 0.25));
 }
 .mis-palco-cenario img.mis-palco-pintura[hidden] {
   display: none !important;
@@ -71,17 +79,21 @@
 .mis-palco-cenario .mis-palco-pintura-veil {
   background: linear-gradient(
     180deg,
-    rgba(38, 28, 45, .05),
+    rgba(38, 28, 45, 0.05),
     transparent 52%,
-    rgba(38, 28, 45, .38)
+    rgba(38, 28, 45, 0.38)
   );
   pointer-events: none;
 }
 /* Os desenhos SVG antigos continuam sob a pintura como alternativa. */
-.mis-palco-cenario .mis-palco-svg { z-index: 2; }
+.mis-palco-cenario .mis-palco-svg {
+  z-index: 2;
+}
 .mis-palco-cenario .mis-palco-particula,
 .mis-palco-cenario .mis-palco-vapor,
-.mis-palco-cenario .mis-palco-vagalume { pointer-events: none; }
+.mis-palco-cenario .mis-palco-vagalume {
+  pointer-events: none;
+}
 
 /* Seleção cinematográfica: texto à esquerda, cena completa à direita. */
 .mis-cinema-palco > .mis-cinema-texto {
@@ -95,13 +107,13 @@
   max-width: none;
   background: linear-gradient(
     90deg,
-    rgba(46, 33, 55, .85) 0%,
-    rgba(46, 33, 55, .75) 83%,
-    rgba(46, 33, 55, .45) 100%
+    rgba(46, 33, 55, 0.85) 0%,
+    rgba(46, 33, 55, 0.75) 83%,
+    rgba(46, 33, 55, 0.45) 100%
   );
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 230, 208, .10);
+  border-right: 1px solid rgba(255, 230, 208, 0.1);
 }
 .mis-cinema-palco > .mis-cinema-pinturas {
   position: relative;
@@ -119,9 +131,9 @@
 .mis-cinema-pinturas .mis-palco-pintura-veil {
   background: linear-gradient(
     180deg,
-    rgba(34, 24, 47, .10),
+    rgba(34, 24, 47, 0.1),
     transparent 45%,
-    rgba(27, 22, 38, .67) 100%
+    rgba(27, 22, 38, 0.67) 100%
   );
 }
 /* As miniaturas continuam sendo pequenos recortes intencionais.
@@ -137,9 +149,9 @@
   border-radius: 17px;
   background: linear-gradient(
     90deg,
-    rgba(40, 35, 49, .85) 0%,
-    rgba(40, 35, 49, .73) 86%,
-    rgba(40, 35, 49, .47) 100%
+    rgba(40, 35, 49, 0.85) 0%,
+    rgba(40, 35, 49, 0.73) 86%,
+    rgba(40, 35, 49, 0.47) 100%
   );
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
@@ -181,13 +193,9 @@
   z-index: 3;
   min-width: 0;
   padding: clamp(17px, 2vw, 27px);
-  border: 1px solid rgba(255, 232, 206, .09);
+  border: 1px solid rgba(255, 232, 206, 0.09);
   border-radius: 20px;
-  background: linear-gradient(
-    90deg,
-    rgba(44, 30, 52, .82) 0%,
-    rgba(44, 30, 52, .68) 100%
-  );
+  background: linear-gradient(90deg, rgba(44, 30, 52, 0.82) 0%, rgba(44, 30, 52, 0.68) 100%);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
@@ -207,9 +215,9 @@
 .mis-cinema-conclusao .mis-palco-pintura-veil {
   background: linear-gradient(
     180deg,
-    rgba(41, 28, 49, .07),
+    rgba(41, 28, 49, 0.07),
     transparent 75%,
-    rgba(41, 28, 49, .12)
+    rgba(41, 28, 49, 0.12)
   );
 }
 
@@ -228,16 +236,16 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(19px) brightness(.48) saturate(.85);
+  filter: blur(19px) brightness(0.48) saturate(0.85);
   transform: scale(1.05);
 }
 .mis-detalhe-hero::before {
   z-index: 1;
   background: linear-gradient(
     90deg,
-    rgba(46, 32, 54, .73) 0%,
-    rgba(46, 32, 54, .39) 60%,
-    rgba(46, 32, 54, .10) 100%
+    rgba(46, 32, 54, 0.73) 0%,
+    rgba(46, 32, 54, 0.39) 60%,
+    rgba(46, 32, 54, 0.1) 100%
   );
 }
 .mis-detalhe-hero > div:first-child {
@@ -247,17 +255,17 @@
   padding: 16px 19px;
   border-radius: 16px;
   color: #fff0de;
-  background: linear-gradient(
-    90deg,
-    rgba(45, 31, 52, .79),
-    rgba(45, 31, 52, .57)
-  );
+  background: linear-gradient(90deg, rgba(45, 31, 52, 0.79), rgba(45, 31, 52, 0.57));
   -webkit-backdrop-filter: blur(11px);
   backdrop-filter: blur(11px);
 }
 .mis-detalhe-hero > div:first-child h1,
-.mis-detalhe-hero > div:first-child p { color: #fff0de; }
-.mis-detalhe-hero > div:first-child .mis-eyebrow { color: #f2c69f; }
+.mis-detalhe-hero > div:first-child p {
+  color: #fff0de;
+}
+.mis-detalhe-hero > div:first-child .mis-eyebrow {
+  color: #f2c69f;
+}
 .mis-detalhe-hero > .mis-palco-cenario {
   position: absolute;
   inset: 0 0 0 auto;
@@ -272,7 +280,9 @@
   padding: 14px;
   object-position: center;
 }
-.mis-detalhe-hero .mis-palco-pintura-veil { background: none; }
+.mis-detalhe-hero .mis-palco-pintura-veil {
+  background: none;
+}
 
 /* Responsividade: na tela pequena, o texto vem primeiro e a imagem
    inteira fica visível logo depois, sem cobrir os controles. */
@@ -289,9 +299,9 @@
   .mis-cinema-palco > .mis-cinema-texto {
     width: 100%;
     align-self: auto;
-    background: rgba(43, 30, 52, .76);
+    background: rgba(43, 30, 52, 0.76);
     border-right: 0;
-    border-bottom: 1px solid rgba(255, 230, 208, .14);
+    border-bottom: 1px solid rgba(255, 230, 208, 0.14);
     -webkit-backdrop-filter: blur(11px);
     backdrop-filter: blur(11px);
   }
@@ -312,9 +322,9 @@
   .mis-portal-card--projeto::after {
     background: linear-gradient(
       180deg,
-      rgba(43, 31, 52, .7) 0%,
-      rgba(43, 31, 52, .23) 75%,
-      rgba(43, 31, 52, .08) 100%
+      rgba(43, 31, 52, 0.7) 0%,
+      rgba(43, 31, 52, 0.23) 75%,
+      rgba(43, 31, 52, 0.08) 100%
     );
   }
   .mis-portal-card--projeto > .mis-portal-card-texto {
@@ -322,7 +332,7 @@
     max-width: 100%;
     padding: 12px 14px;
     margin: 0;
-    background: rgba(43, 31, 52, .75);
+    background: rgba(43, 31, 52, 0.75);
   }
   .mis-portal-card--projeto > .mis-portal-deco--gatinho {
     left: 0;
@@ -364,11 +374,7 @@
     min-height: 0;
   }
   .mis-detalhe-hero::before {
-    background: linear-gradient(
-      180deg,
-      rgba(46, 32, 54, .54) 0%,
-      rgba(46, 32, 54, .12) 100%
-    );
+    background: linear-gradient(180deg, rgba(46, 32, 54, 0.54) 0%, rgba(46, 32, 54, 0.12) 100%);
   }
   .mis-detalhe-hero > div:first-child {
     max-width: 100%;
@@ -405,6 +411,6 @@
   .mis-portal-card--projeto > .mis-portal-card-texto,
   .mis-cinema-conclusao > .mis-cinema-conclusao-texto,
   .mis-detalhe-hero > div:first-child {
-    background-color: rgba(42, 30, 51, .94);
+    background-color: rgba(42, 30, 51, 0.94);
   }
 }
