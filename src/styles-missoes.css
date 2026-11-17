@@ -1430,3 +1430,77 @@
     font-size: 11px;
   }
 }
+
+
+/* Código de partida: copiável, mas com TODOs para o aluno completar. */
+.mis-bloco-codigo-inicial {
+  background: #fcf9f5;
+  border-color: #dbc9d8;
+}
+.mis-codigo-inicial-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.mis-codigo-inicial-topo > div { flex: 1 1 290px; min-width: 0; }
+.mis-codigo-inicial-topo h2 { margin: 4px 0 13px; }
+.mis-codigo-inicial-topo p { margin: 0; color: #675c69; line-height: 1.7; }
+.mis-codigo-copiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 9px 15px;
+  background: #f1d8bd;
+  color: #453049;
+  border: 1px solid #d4ae9f;
+  border-radius: 11px;
+  cursor: pointer;
+  font: 800 12px "DM Sans", sans-serif;
+  transition: background 160ms ease;
+}
+.mis-codigo-copiar:hover { background: #f7e2cb; }
+.mis-codigo-copiar:focus-visible { outline: 3px solid #a77c9d; outline-offset: 3px; }
+.mis-codigo-inicial-pre {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px 22px;
+  margin: 22px 0 15px;
+  border-radius: 15px;
+  overflow-x: auto;
+  white-space: pre;
+  scrollbar-width: thin;
+  background: #2e2837;
+  border: 1px solid #62506a;
+  color: #f7e9dc;
+  text-align: left;
+  font: 12px/1.85 "JetBrains Mono", Consolas, monospace;
+}
+.mis-codigo-inicial-pre code { font: inherit; }
+.mis-bloco .mis-codigo-aviso {
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: #f5e9d9;
+  color: #6b5261;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+.mis-bloco .mis-codigo-estado {
+  margin: 12px 0;
+  color: #4e6b51;
+  font-size: 12px;
+  font-weight: 700;
+}
+@media (max-width: 740px) {
+  .mis-codigo-inicial-topo { flex-direction: column; gap: 15px; }
+  .mis-codigo-inicial-topo > div { flex-basis: auto; }
+  .mis-codigo-copiar { width: 100%; }
+  .mis-codigo-inicial-pre { padding: 16px 13px; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mis-codigo-copiar { transition: none; }
+}
