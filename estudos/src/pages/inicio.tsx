@@ -3,7 +3,7 @@ import { ArrowDown, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Bebida } from "../components/bebida";
 import { CantinhoEstudos } from "../cantinho/cantinho";
-import { CHAVE_TEMA, TEMA_PADRAO, temaValido, type TemaId } from "../cantinho/temas";
+import { CHAVE_TEMA, TEMA_PADRAO, normalizarTema, type TemaId } from "../cantinho/temas";
 import { MiniPlayer } from "../components/mini-player";
 import { CRIADOR } from "@/config";
 import { GRUPOS, PESOS, TRILHAS, duracao, minutosDaTrilha, type Trilha } from "../catalogo";
@@ -71,7 +71,7 @@ export function Inicio() {
   const [tema, setTema] = useState<TemaId>(() => {
     try {
       const salvo = localStorage.getItem(CHAVE_TEMA);
-      return temaValido(salvo) ? salvo : TEMA_PADRAO;
+      return normalizarTema(salvo);
     } catch {
       return TEMA_PADRAO;
     }
@@ -94,9 +94,9 @@ export function Inicio() {
       <section className="home-hero">
         <div className="home-capa-imagem" aria-hidden="true" />
         <div className="home-capa-efeitos" aria-hidden="true">
-          <span />
-          <span />
-          <span />
+          {Array.from({ length: 9 }, (_, i) => <span key={i} />)}
+          <i />
+          <b />
         </div>
         <MiniPlayer />
         <div className="home-hero-texto">
