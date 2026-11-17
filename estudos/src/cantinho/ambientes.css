@@ -533,3 +533,146 @@
     animation: none !important;
   }
 }
+
+
+/* Partículas que sobem: assinatura delicada própria de cada ambiente.
+   Ícones SVG só em dois pontos da cena; os demais são pequenos brilhos.
+   A capa WebP continua imóvel e não adicionamos timers, canvas ou vídeos. */
+.home-personalizada .home-capa-efeitos .ambiente-subindo {
+  --part-cor: #ffe6bd;
+  --part-luz: rgba(255, 218, 160, .35);
+  display: grid;
+  place-items: center;
+  position: absolute;
+  top: auto;
+  left: 72%;
+  bottom: 17%;
+  width: 15px;
+  height: 15px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  filter: none;
+  color: var(--part-cor);
+  opacity: 0;
+  animation: ambiente-subir-suave 9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 4px var(--part-luz));
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo .ambiente-subindo-ponto {
+  position: static;
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--part-cor);
+  box-shadow: 0 0 7px 2px var(--part-luz);
+  animation: none;
+  opacity: .9;
+  filter: none;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--1 {
+  left: 62%; bottom: 18%; animation-delay: -1.4s; animation-duration: 10s;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--2 {
+  left: 75%; bottom: 17%; animation-delay: -5.5s; animation-duration: 13s;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--3 {
+  left: 84%; bottom: 11%; animation-delay: -7s; animation-duration: 11s;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--4 {
+  left: 92%; bottom: 24%; animation-delay: -2.8s; animation-duration: 12s;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--5 {
+  left: 67%; bottom: 44%; animation-delay: -8.4s; animation-duration: 14s;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--6 {
+  left: 89%; bottom: 40%; animation-delay: -4.2s; animation-duration: 12s;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--7 {
+  left: 79%; bottom: 59%; animation-delay: -11.4s; animation-duration: 15s;
+}
+.home-personalizada .home-capa-efeitos .ambiente-subindo--8 {
+  left: 96%; bottom: 13%; animation-delay: -9.1s; animation-duration: 13s;
+}
+
+/* Lo-fi: pontos quentes sobem junto ao vapor do café; a chuva segue descendo. */
+.home-personalizada[data-tema="lofi"] .home-capa-efeitos .ambiente-subindo {
+  --part-cor: #ffe3ba;
+  --part-luz: rgba(255, 200, 138, .36);
+}
+/* Cabana: pequenas brasas douradas diante da lareira. */
+.home-personalizada[data-tema="cabana"] .home-capa-efeitos .ambiente-subindo {
+  --part-cor: #ffb778;
+  --part-luz: rgba(255, 140, 85, .43);
+}
+/* Biblioteca: poeira mágica dourada e símbolos discretos de leitura. */
+.home-personalizada[data-tema="biblioteca"] .home-capa-efeitos .ambiente-subindo {
+  --part-cor: #ffebb8;
+  --part-luz: rgba(255, 225, 151, .38);
+}
+/* Dev focado: pequenos sinais de código e luzes ciano, com pulsação lenta. */
+.home-personalizada[data-tema="neon"] .home-capa-efeitos .ambiente-subindo {
+  --part-cor: #88e9f4;
+  --part-luz: rgba(110, 190, 255, .52);
+}
+/* Laboratório de idéias: pequenos brilhos âmbar de descobertas. */
+.home-personalizada[data-tema="laboratorio"] .home-capa-efeitos .ambiente-subindo {
+  --part-cor: #f9d18b;
+  --part-luz: rgba(255, 202, 115, .47);
+}
+/* Manhãzinha: só dois solzinhos vetoriais, com grãos de luz ao redor. */
+.home-personalizada[data-tema="solar"] .home-capa-efeitos .ambiente-subindo {
+  --part-cor: #ffe8a1;
+  --part-luz: rgba(255, 220, 130, .45);
+}
+
+@keyframes ambiente-subir-suave {
+  0% { opacity: 0; transform: translate3d(0, 18px, 0) scale(.75); }
+  24% { opacity: .43; }
+  55% { opacity: .66; }
+  83% { opacity: .32; }
+  100% { opacity: 0; transform: translate3d(-18px, -115px, 0) scale(1.04); }
+}
+
+/* As miniaturas na gaveta recebem um único detalhe que sobe sem competir com a arte. */
+.temas-mini-efeito::after {
+  content: "✦";
+  position: absolute;
+  right: 19%;
+  bottom: 11%;
+  color: #ffe9bf;
+  font: 400 12px/1 Georgia, serif;
+  text-shadow: 0 0 7px rgba(255, 224, 166, .55);
+  opacity: 0;
+  animation: ambiente-mini-subir 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.temas-mini-efeito--lofi::after { content: "✧"; color: #ffe2b8; }
+.temas-mini-efeito--cabana::after { content: "✦"; color: #ffbc7e; }
+.temas-mini-efeito--biblioteca::after { content: "✧"; color: #ffe7a6; }
+.temas-mini-efeito--neon::after { content: "⌁"; color: #92edfa; font-size: 15px; }
+.temas-mini-efeito--laboratorio::after { content: "✦"; color: #fbd196; }
+.temas-mini-efeito--solar::after { content: "☀"; color: #ffedb8; font-size: 16px; }
+@keyframes ambiente-mini-subir {
+  0%, 100% { opacity: 0; transform: translate3d(0, 8px, 0) scale(.75); }
+  36% { opacity: .72; }
+  78% { opacity: .32; transform: translate3d(-6px, -24px, 0) scale(1); }
+}
+@media (max-width: 760px) {
+  .home-personalizada .home-capa-efeitos .ambiente-subindo { opacity: 0; animation-duration: 12s; }
+  .home-personalizada .home-capa-efeitos .ambiente-subindo svg { width: 12px; height: 12px; }
+  .home-personalizada .home-capa-efeitos .ambiente-subindo--1,
+  .home-personalizada .home-capa-efeitos .ambiente-subindo--5,
+  .home-personalizada .home-capa-efeitos .ambiente-subindo--8 { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-personalizada .home-capa-efeitos .ambiente-subindo,
+  .temas-mini-efeito::after { animation: none !important; opacity: 0 !important; }
+}
