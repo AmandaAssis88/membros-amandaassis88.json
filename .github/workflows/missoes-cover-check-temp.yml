@@ -1,0 +1,36 @@
+name: Validar capas cover das missoes (temporario)
+
+on:
+  push:
+    branches:
+      - feat/missoes-desafio-2
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verificar formatos das alteracoes
+        run: npx prettier --check src/components/cena-palco-missao.tsx src/styles-missoes-arte-inteira.css
+      - name: Verificar lint
+        run: npm run lint
+      - name: Executar testes
+        run: npm test
+      - name: Compilar onboarding
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+      - name: Compilar estudos
+        run: npm run build:estudos
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
