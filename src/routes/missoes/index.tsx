@@ -296,7 +296,9 @@ function MissoesDaComunidade() {
                         }}
                       />
                       <span className="mis-cinema-poster-nome">{item.titulo}</span>
-                      <span className="mis-cinema-poster-numero">{String(i + 1).padStart(2, "0")}</span>
+                      <span className="mis-cinema-poster-numero">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -324,7 +326,6 @@ function MissoesDaComunidade() {
                 </button>
               </div>
             </div>
-
           </motion.div>
         ) : etapa === 1 ? (
           <motion.section
