@@ -260,7 +260,36 @@ function MissoesDaComunidade() {
                   </Link>
                 </div>
               </div>
-              <CenaPalcoMissao id={missao.id} />
+              <div className="mis-cinema-pinturas">
+                <CenaPalcoMissao id={missao.id} />
+                <div className="mis-cinema-pinturas-topo" aria-hidden="true">
+                  <span>SELECIONE A PRÓXIMA HISTÓRIA</span>
+                  <span>{String(indice + 1).padStart(2, "0")} / {String(EM_CARTAZ.length).padStart(2, "0")}</span>
+                </div>
+                <div className="mis-cinema-posteres" role="group" aria-label="Cinco histórias ilustradas">
+                  {EM_CARTAZ.map((item, i) => (
+                    <button
+                      type="button"
+                      key={item.id}
+                      className={`mis-cinema-poster ${indice === i ? "ativo" : ""}`}
+                      aria-label={`Escolher história ${i + 1}: ${item.titulo}`}
+                      aria-pressed={indice === i}
+                      title={item.titulo}
+                      onClick={() => setIndice(i)}
+                    >
+                      <img
+                        src={`/missoes/capas/${item.id}.webp`}
+                        alt=""
+                        loading={Math.abs(i - indice) > 1 ? "lazy" : "eager"}
+                        decoding="async"
+                        onError={(evento) => { evento.currentTarget.hidden = true; }}
+                      />
+                      <span className="mis-cinema-poster-nome">{item.titulo}</span>
+                      <span className="mis-cinema-poster-numero">{String(i + 1).padStart(2, "0")}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
               <span className="mis-cinema-numeracao" aria-hidden="true">
                 0{indice + 1}
               </span>
@@ -284,26 +313,7 @@ function MissoesDaComunidade() {
                 </button>
               </div>
             </div>
-            <div
-              className="mis-cinema-fita"
-              role="group"
-              aria-label="Escolha uma das cinco histórias"
-            >
-              {EM_CARTAZ.map((item, i) => (
-                <button
-                  type="button"
-                  className={`mis-cinema-mini ${indice === i ? "ativo" : ""}`}
-                  key={item.id}
-                  onClick={() => setIndice(i)}
-                  aria-pressed={indice === i}
-                  aria-label={`Ver história ${i + 1}: ${item.titulo}`}
-                >
-                  <span className="mis-cinema-mini-indice">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="mis-cinema-mini-nome">{item.titulo}</span>
-                  {indice === i && <span className="mis-cinema-mini-ponto" aria-hidden="true" />}
-                </button>
-              ))}
-            </div>
+
           </motion.div>
         ) : etapa === 1 ? (
           <motion.section
