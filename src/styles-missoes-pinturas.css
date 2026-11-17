@@ -1,0 +1,228 @@
+/* As cinco histórias da temporada viram pôsteres selecionáveis dentro do palco,
+   não uma lista longa abaixo da dobra. As artes WebP ficam independentes dos textos. */
+
+.mis-cinema-palco {
+  min-height: clamp(520px, calc(100svh - 280px), 720px);
+  grid-template-columns: minmax(0, .99fr) minmax(0, 1.01fr);
+}
+.mis-cinema-palco .mis-cinema-texto { z-index: 7; }
+.mis-cinema-pinturas {
+  min-width: 0;
+  position: relative;
+  isolation: isolate;
+  height: 100%;
+  min-height: 460px;
+  border-radius: 0 28px 28px 0;
+  overflow: hidden;
+  background: #5a485a;
+}
+.mis-cinema-pinturas > .mis-palco-cenario {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  min-height: 0;
+}
+.mis-palco-cenario img.mis-palco-pintura {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: saturate(.95) contrast(.98);
+}
+.mis-palco-cenario img.mis-palco-pintura[hidden] { display: none !important; }
+.mis-palco-pintura-veil {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(34,24,47,.10) 0%, transparent 37%, rgba(27,22,38,.72) 93%);
+}
+.mis-palco-cenario .mis-palco-luz { z-index: 5; }
+.mis-palco-cenario .mis-palco-vapor,
+.mis-palco-cenario .mis-palco-vagalume { z-index: 6; }
+.mis-palco-particula {
+  position: absolute;
+  z-index: 6;
+  display: block;
+  pointer-events: none;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255,223,157,.88);
+  box-shadow: 0 0 12px rgba(255,197,106,.7);
+  animation: mis-palco-ascender 7.5s ease-in-out infinite;
+}
+.mis-palco-particula--a { left: 26%; bottom: 22%; animation-delay: -2s; }
+.mis-palco-particula--b { left: 65%; bottom: 28%; animation-delay: -5s; width: 3px; height: 3px; }
+.mis-palco-particula--c { left: 82%; bottom: 34%; animation-delay: -4s; width: 2px; height: 2px; }
+.mis-palco-cenario--gatinho .mis-palco-particula { background:#e7e9b7; box-shadow:0 0 10px #f9eec199; }
+.mis-palco-cenario--incendio .mis-palco-particula { background:#ffc98d; box-shadow:0 0 11px #ffb572bb; }
+.mis-palco-cenario--cafeteria .mis-palco-particula { background:#ffe0b8; box-shadow:0 0 11px #ffdeb28a; }
+.mis-palco-cenario--nave .mis-palco-particula { background:#c6dbfa; box-shadow:0 0 10px #91c3ffc0; }
+.mis-palco-cenario--castelo .mis-palco-particula { background:#fbe3aa; box-shadow:0 0 11px #ffe9a899; }
+@keyframes mis-palco-ascender {
+  0%, 100% { opacity:0; transform:translate3d(0,12px,0) scale(.75); }
+  35% { opacity:.7; }
+  75% { opacity:.37; }
+  95% { opacity:0; transform:translate3d(-12px,-80px,0) scale(1.05); }
+}
+
+.mis-cinema-pinturas-topo {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 27px;
+  z-index: 8;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  pointer-events: none;
+  color: #ffecd5;
+  text-shadow: 0 1px 8px #251e2a;
+  font: 800 9px/1.5 "JetBrains Mono", monospace;
+  letter-spacing: .09em;
+}
+.mis-cinema-posteres {
+  position: absolute;
+  z-index: 9;
+  bottom: 25px;
+  left: 4%;
+  right: 4%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(4px, .55vw, 8px);
+  overflow: visible;
+}
+.mis-cinema-poster {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  height: clamp(81px, 8vw, 109px);
+  padding: 0;
+  border: 1.5px solid rgba(253,229,200,.58);
+  border-radius: 11px;
+  background: #685369;
+  box-shadow: 0 5px 16px rgba(16,10,25,.3);
+  overflow: hidden;
+  color: #fff0de;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.mis-cinema-poster:nth-child(2) { background:#9b6c6d; }
+.mis-cinema-poster:nth-child(3) { background:#955e51; }
+.mis-cinema-poster:nth-child(4) { background:#62698b; }
+.mis-cinema-poster:nth-child(5) { background:#81718d; }
+.mis-cinema-poster::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 35% 0 0;
+  background: linear-gradient(0deg,rgba(30,19,39,.93),rgba(30,19,39,0));
+  pointer-events: none;
+}
+.mis-cinema-poster > img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+}
+.mis-cinema-poster > img[hidden] { display:none !important; }
+.mis-cinema-poster-nome {
+  position:absolute;
+  z-index:2;
+  left:7px;
+  right:4px;
+  bottom:8px;
+  font:800 clamp(8px,.8vw,10px)/1.2 "DM Sans",sans-serif;
+  overflow-wrap:anywhere;
+  text-shadow: 0 1px 4px #1c1924;
+}
+.mis-cinema-poster-numero {
+  position:absolute;
+  z-index:2;
+  top:5px;
+  left:6px;
+  color:#ffedde;
+  font:800 9px/1 "JetBrains Mono",monospace;
+  text-shadow:0 1px 5px #1d1429;
+}
+.mis-cinema-poster:hover { transform:translateY(-3px); border-color:#fff7df; }
+.mis-cinema-poster.ativo {
+  border:2px solid #f8ce9b;
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px rgba(251,216,165,.3),0 12px 19px rgba(25,13,29,.45);
+}
+.mis-cinema-poster:focus-visible { outline:3px solid #fff2cc; outline-offset:3px; }
+.mis-cinema-poster .mis-cinema-poster-svg {
+  position:absolute;
+  z-index:0;
+  width:100%;
+  height:100%;
+  inset:0;
+  opacity:.55;
+}
+.mis-cinema-direcao { margin: 15px 2px 4px; }
+.mis-cinema-direcao p { margin:0; }
+.mis-cinema-numeracao { z-index: 1; }
+
+/* A mesma arte aparece discretamente na página de detalhes da missão. */
+.mis-detalhe-hero > .mis-palco-cenario img.mis-palco-pintura {
+  object-position:center;
+  opacity:.92;
+}
+
+@media (max-width: 1040px) {
+  .mis-cinema-palco { grid-template-columns:minmax(0,1fr) minmax(0, .9fr); }
+  .mis-cinema-pinturas { min-height:410px; }
+  .mis-cinema-poster { height:85px; border-radius:8px; }
+  .mis-cinema-poster-nome { font-size:8px; left:4px; bottom:5px; }
+  .mis-cinema-posteres { left:3%;right:3%; }
+}
+@media (max-width: 740px) {
+  .mis-cinema-palco { display:flex; flex-direction:column; min-height:0; }
+  .mis-cinema-pinturas {
+    width:100%;
+    height:260px;
+    min-height:260px;
+    border-radius:0 0 20px 20px;
+  }
+  .mis-cinema-pinturas > .mis-palco-cenario { height:100%; min-height:0; }
+  .mis-cinema-pinturas-topo { top:10px; left:15px; right:15px; font-size:8px; }
+  .mis-cinema-posteres {
+    left:12px;
+    right:12px;
+    bottom:13px;
+    display:flex;
+    gap:7px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:thin;
+    padding:9px 3px 5px;
+  }
+  .mis-cinema-poster { flex:0 0 84px; height:82px; scroll-snap-align:center; }
+  .mis-cinema-poster.ativo { transform:translateY(-4px); }
+  .mis-cinema-poster-nome { font-size:9px; }
+  .mis-cinema-texto { padding-bottom:19px; }
+  .mis-cinema-direcao { margin-top:11px; }
+}
+@media (max-width: 420px) {
+  .mis-cinema-pinturas { height:242px; min-height:242px; }
+  .mis-cinema-poster { flex-basis:76px; height:74px; }
+  .mis-cinema-pinturas-topo span:first-child { display:none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mis-palco-particula,
+  .mis-cinema-poster,
+  .mis-cinema-poster.ativo { animation:none!important;transition:none!important; }
+  .mis-palco-particula { opacity:0!important; }
+  .mis-cinema-poster.ativo { transform:none; }
+}
