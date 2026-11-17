@@ -16,7 +16,7 @@ O objetivo é despertar curiosidade, não criar competição ou pressão por pro
 - critérios para verificar o próprio programa;
 - desafio extra opcional.
 
-**Identidade atual:** voltou ao jeito da votação do onboarding e ao Café de Estudos. A escolha acontece num **palco de história por vez**, com SVG próprio, vapor, pequenas luzes e movimento delicado. As antigas capas WebP foram removidas do pacote da branch para manter o site leve; o protótipo anterior permanece no histórico do Git. O visual respeita `prefers-reduced-motion`.
+**Identidade atual:** a experiência mantém uma história em destaque por vez, com cinco pequenos pôsteres ilustrados **dentro do palco** (sem lista de nomes abaixo). As cinco capas e miniaturas foram otimizadas em WebP e integradas ao Git. O texto permanece em HTML, sobre a paleta ameixa do Café de Estudos. Partículas CSS/SVG complementam as artes e respeitam `prefers-reduced-motion`. Se uma imagem falhar, o SVG antigo aparece como reserva.
 
 ## Temporada de estreia
 
@@ -49,7 +49,7 @@ C não possui classes/herança nativas. Para modelagem com C, ensinaremos `struc
 
 1. Ao entrar em `/missoes`, o visitante encontra uma **tela inicial cinematográfica com dois caminhos**: **Desafio 1** (primeiro PR, perfil no mural) e **Desafio 2** (primeiro projeto).
 2. A participação no Desafio 2 não exige concluir o Desafio 1; cada card leva ao seu fluxo. O visitante pode voltar e trocar de desafio.
-3. Ao escolher Desafio 2, vê **uma história de cada vez**, com palco SVG, setas e uma pequena faixa com cinco opções.
+3. Ao escolher Desafio 2, vê **uma história de cada vez**. O palco exibe a capa pintada e uma faixa de **cinco miniaturas ilustradas dentro da cena**, clicáveis, além das setas para navegar.
 4. Escolhe C, Python ou Java em outra etapa, podendo indicar uma área de interesse opcional. A área **não restringe** os projetos.
 5. Confirma a missão; somente nesse momento a escolha é gravada em `localStorage`. Ela ainda não conta como conclusão.
 6. Abre a página individual, com história, passos, três pistas e um **código inicial copiável** para a linguagem escolhida.
@@ -63,13 +63,14 @@ C não possui classes/herança nativas. Para modelagem com C, ensinaremos `struc
 - Catálogo: `src/lib/missoes.ts`.
 - Orientações por linguagem: `src/lib/orientacoes-missoes.ts` (39 combinações de 13 histórias com três pistas graduais).
 - Hub permite somente C, Python e Java; outras linguagens aparecerão depois de terem trilhas disponíveis.
-- Palco SVG: `src/components/cena-palco-missao.tsx` com cena inédita do gatinho; outras quatro reutilizam os SVGs do projeto.
+- Palco com pintura WebP + fallback SVG: `src/components/cena-palco-missao.tsx`. A base SVG do gatinho e das demais cenas continua para carregamento de reserva.
 - Etapas de seleção: `src/routes/missoes/index.tsx`.
 - Modelos de código inicial: `src/lib/codigos-iniciais.ts` e testes em `src/lib/codigos-iniciais.test.ts`.
 - Botão de copiar código: `src/routes/missoes/$slug.tsx`, com formatação responsiva em `src/styles-missoes.css`.
-- Estilos do palco, microanimações e responsividade: `src/styles-missoes-cinema.css`.
+- Estilos do palco, microanimações e responsividade: `src/styles-missoes-cinema.css` e `src/styles-missoes-pinturas.css`.
+- Capas: `public/missoes/capas/{gatinho,cafeteria,incendio,nave,castelo}.webp`; miniaturas: `public/missoes/capas/thumbs/`.
 - `src/styles-missoes.css` mantém os blocos didáticos das páginas de detalhe.
-- Capas WebP e componentes anteriores foram retirados da versão atual; a seleção agora depende apenas de SVG/CSS.
+- Os antigos componentes de cards foram removidos; agora a seleção é feita pelo carrossel de pôsteres e o palco ilustrado com HTML/CSS/SVG.
 - Persistência local: `unidunedev:missoes:escolhas:v1`.
 - **Não existe registro de inscrição, entrega automática nem reserva de vaga no servidor** nesta fase.
 - A seleção não depende de perfil cadastrado; o Desafio 1 tem seu próprio card na primeira tela e leva à rota `/desafio-pr`.
