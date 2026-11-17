@@ -265,9 +265,16 @@ function MissoesDaComunidade() {
                 <CenaPalcoMissao id={missao.id} />
                 <div className="mis-cinema-pinturas-topo" aria-hidden="true">
                   <span>SELECIONE A PRÓXIMA HISTÓRIA</span>
-                  <span>{String(indice + 1).padStart(2, "0")} / {String(EM_CARTAZ.length).padStart(2, "0")}</span>
+                  <span>
+                    {String(indice + 1).padStart(2, "0")} /{" "}
+                    {String(EM_CARTAZ.length).padStart(2, "0")}
+                  </span>
                 </div>
-                <div className="mis-cinema-posteres" role="group" aria-label="Cinco histórias ilustradas">
+                <div
+                  className="mis-cinema-posteres"
+                  role="group"
+                  aria-label="Cinco histórias ilustradas"
+                >
                   {EM_CARTAZ.map((item, i) => (
                     <button
                       type="button"
@@ -284,7 +291,9 @@ function MissoesDaComunidade() {
                         alt=""
                         loading={Math.abs(i - indice) > 1 ? "lazy" : "eager"}
                         decoding="async"
-                        onError={(evento) => { evento.currentTarget.hidden = true; }}
+                        onError={(evento) => {
+                          evento.currentTarget.hidden = true;
+                        }}
                       />
                       <span className="mis-cinema-poster-nome">{item.titulo}</span>
                       <span className="mis-cinema-poster-numero">{String(i + 1).padStart(2, "0")}</span>
