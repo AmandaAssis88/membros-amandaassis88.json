@@ -17,7 +17,9 @@ export function CenaPalcoMissao({ id }: { id: string }) {
         alt=""
         loading="eager"
         decoding="async"
-        onError={(evento) => { evento.currentTarget.hidden = true; }}
+        onError={(evento) => {
+          evento.currentTarget.hidden = true;
+        }}
       />
       <span className="mis-palco-pintura-veil" />
       <span className="mis-palco-particula mis-palco-particula--a" />
