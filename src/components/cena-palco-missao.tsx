@@ -19,6 +19,7 @@ export function CenaPalcoMissao({ id }: { id: string }) {
         decoding="async"
         onError={(evento) => {
           evento.currentTarget.hidden = true;
+          evento.currentTarget.parentElement?.classList.add("mis-palco-cenario--sem-arte");
         }}
       />
       <span className="mis-palco-pintura-veil" />
