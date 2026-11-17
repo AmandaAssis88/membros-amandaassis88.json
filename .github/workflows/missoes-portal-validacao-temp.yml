@@ -1,0 +1,44 @@
+name: Validar portal e códigos iniciais (temporário)
+
+on:
+  push:
+    branches:
+      - feat/missoes-desafio-2
+
+permissions:
+  contents: write
+
+jobs:
+  qualidade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Formatacao e sincronizacao de rotas
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+        run: |
+          npx vite build
+          npx prettier --write src/routes/missoes/index.tsx 'src/routes/missoes/$slug.tsx' src/styles-missoes.css src/styles-missoes-cinema.css src/lib/codigos-iniciais.ts src/lib/codigos-iniciais.test.ts docs/missoes-comunidade.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/routeTree.gen.ts src/routes/missoes/ src/styles-missoes.css src/styles-missoes-cinema.css src/lib/codigos-iniciais.ts src/lib/codigos-iniciais.test.ts docs/missoes-comunidade.md
+          if ! git diff --cached --quiet; then
+            git commit -m "style(missoes): formatar portal e exemplos de código"
+            git push origin HEAD:feat/missoes-desafio-2
+          fi
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+      - run: npm run build:estudos
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
