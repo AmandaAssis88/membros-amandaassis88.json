@@ -1,23 +1,20 @@
-/* Pinturas do Desafio 2 — preservar a composição inteira.
-   A WebP original aparece nítida com contain; a MESMA arte desfocada
-   ocupa o fundo e as áreas de texto recebem um vidro ameixa legível.
-   Nenhum arquivo de imagem é alterado. */
+/*
+ * Missões da comunidade — pinturas em tela cheia.
+ * Equivalente ao BoxFit.cover do Flutter.
+ *
+ * A nova WebP é a ÚNICA arte de cada palco e ocupa todo o card.
+ * O degradê/vidro escuro fica sobre o texto, não sobre a imagem inteira.
+ * O antigo SVG aparece apenas como fallback caso a WebP não carregue.
+ * Miniaturas mantêm seu recorte normal; partículas continuam em CSS.
+ */
 
 :is(.mis-cinema-palco--gatinho, .mis-cinema-conclusao--gatinho, .mis-detalhe-hero.mis-tom-gatinho) {
   --mis-capa-arte: url("/missoes/capas/gatinho.webp");
 }
-:is(
-  .mis-cinema-palco--cafeteria,
-  .mis-cinema-conclusao--cafeteria,
-  .mis-detalhe-hero.mis-tom-cafeteria
-) {
+:is(.mis-cinema-palco--cafeteria, .mis-cinema-conclusao--cafeteria, .mis-detalhe-hero.mis-tom-cafeteria) {
   --mis-capa-arte: url("/missoes/capas/cafeteria.webp");
 }
-:is(
-  .mis-cinema-palco--incendio,
-  .mis-cinema-conclusao--incendio,
-  .mis-detalhe-hero.mis-tom-incendio
-) {
+:is(.mis-cinema-palco--incendio, .mis-cinema-conclusao--incendio, .mis-detalhe-hero.mis-tom-incendio) {
   --mis-capa-arte: url("/missoes/capas/incendio.webp");
 }
 :is(.mis-cinema-palco--nave, .mis-cinema-conclusao--nave, .mis-detalhe-hero.mis-tom-nave) {
@@ -30,28 +27,176 @@
   --mis-capa-arte: url("/missoes/capas/gatinho.webp");
 }
 
-/* O plano de fundo cobre o cartão. Somente essa cópia fica desfocada. */
-:is(.mis-cinema-palco, .mis-cinema-conclusao, .mis-portal-card--projeto) {
+/* Padrão das capas grandes: nunca encolher a arte com contain/padding. */
+.mis-palco-cenario img.mis-palco-pintura {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  object-fit: cover;
+  object-position: center center;
+  filter: none;
+  z-index: 3;
+}
+.mis-palco-cenario img.mis-palco-pintura[hidden] {
+  display: none !important;
+}
+/* A cena vetorial antiga não deve ficar visível por trás das artes novas. */
+.mis-palco-cenario .mis-palco-svg,
+.mis-palco-cenario .mis-palco-lua,
+.mis-palco-cenario::before,
+.mis-palco-cenario::after {
+  display: none;
+}
+.mis-palco-cenario--sem-arte .mis-palco-svg,
+.mis-palco-cenario--sem-arte .mis-palco-lua {
+  display: block;
+}
+.mis-palco-cenario--sem-arte::before,
+.mis-palco-cenario--sem-arte::after {
+  display: block;
+}
+/* Iluminação discreta sobre a pintura, sem misturar o cenário vetorial. */
+.mis-palco-cenario .mis-palco-pintura-veil {
+  z-index: 4;
+  pointer-events: none;
+  background: none;
+}
+.mis-palco-cenario .mis-palco-luz,
+.mis-palco-cenario .mis-palco-particula,
+.mis-palco-cenario .mis-palco-vapor,
+.mis-palco-cenario .mis-palco-vagalume {
+  pointer-events: none;
+}
+
+/* O card todo compartilha uma única cena: posteres e texto sobre ela. */
+.mis-cinema-palco {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  min-height: clamp(520px, calc(100svh - 280px), 720px);
+  background: #382b41;
 }
-:is(.mis-cinema-palco, .mis-cinema-conclusao, .mis-portal-card--projeto)::before {
+.mis-cinema-palco::before {
+  z-index: -1;
+}
+.mis-cinema-palco::after {
   content: "";
   position: absolute;
-  inset: -24px;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(40, 28, 47, .66) 0%,
+    rgba(40, 28, 47, .35) 48%,
+    rgba(40, 28, 47, .05) 90%
+  );
+}
+.mis-cinema-palco > .mis-cinema-pinturas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: inherit;
+  z-index: 1;
+  overflow: hidden;
+  isolation: auto;
+  background: transparent;
+  pointer-events: none;
+}
+.mis-cinema-pinturas > .mis-palco-cenario {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.mis-cinema-pinturas .mis-palco-pintura {
+  object-fit: cover;
+  object-position: 58% center;
+  padding: 0;
+}
+.mis-cinema-pinturas .mis-palco-pintura-veil {
+  background: linear-gradient(
+    180deg,
+    rgba(32, 22, 42, .1),
+    transparent 54%,
+    rgba(28, 19, 37, .58)
+  );
+}
+/* Fundo translúcido: somente na região onde há texto. */
+.mis-cinema-palco > .mis-cinema-texto {
+  position: relative;
+  z-index: 7;
+  flex: 0 0 50%;
+  width: 50%;
+  max-width: 640px;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(
+    90deg,
+    rgba(40, 28, 47, .89) 0%,
+    rgba(40, 28, 47, .72) 76%,
+    rgba(40, 28, 47, .36) 100%
+  );
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  border-right: 1px solid rgba(255, 238, 222, .08);
+}
+/* Os controles ficam sobre a pintura e continuam clicáveis. */
+.mis-cinema-pinturas > .mis-cinema-pinturas-topo {
+  position: absolute;
+  z-index: 8;
+  left: auto;
+  width: 45%;
+  right: 3%;
+}
+.mis-cinema-pinturas > .mis-cinema-posteres {
+  position: absolute;
+  z-index: 9;
+  left: auto;
+  right: 2%;
+  bottom: 23px;
+  width: 46%;
+  pointer-events: auto;
+}
+.mis-cinema-palco .mis-cinema-numeracao {
+  z-index: 2;
+}
+
+/* Portal: a imagem do gatinho preenche o card do Desafio 2. */
+.mis-portal-card--projeto {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #3d3244;
+}
+.mis-portal-card--projeto::before {
+  content: "";
+  position: absolute;
   z-index: 0;
-  border: none;
+  inset: 0;
+  pointer-events: none;
+  border: 0;
   border-radius: 0;
   background-image: var(--mis-capa-arte);
   background-size: cover;
-  background-position: center;
+  background-position: 56% center;
   background-repeat: no-repeat;
-  filter: blur(22px) brightness(0.52) saturate(0.88);
-  transform: scale(1.05);
-  pointer-events: none;
+  filter: none;
+  transform: none;
 }
-:is(.mis-cinema-palco, .mis-cinema-conclusao, .mis-portal-card--projeto)::after {
+.mis-portal-card--projeto::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -59,358 +204,339 @@
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgba(42, 30, 51, 0.67) 0%,
-    rgba(42, 30, 51, 0.3) 50%,
-    rgba(42, 30, 51, 0.12) 100%
+    rgba(35, 27, 45, .87) 0%,
+    rgba(35, 27, 45, .66) 51%,
+    rgba(35, 27, 45, .07) 100%
   );
-}
-
-/* A pintura principal mantém todos os elementos da ilustração visíveis.
-   Nunca usar cover no original: só na camada desfocada acima. */
-.mis-palco-cenario img.mis-palco-pintura {
-  object-fit: contain;
-  object-position: center;
-  box-sizing: border-box;
-  filter: drop-shadow(0 12px 18px rgba(20, 14, 29, 0.25));
-}
-.mis-palco-cenario img.mis-palco-pintura[hidden] {
-  display: none !important;
-}
-.mis-palco-cenario .mis-palco-pintura-veil {
-  background: linear-gradient(
-    180deg,
-    rgba(38, 28, 45, 0.05),
-    transparent 52%,
-    rgba(38, 28, 45, 0.38)
-  );
-  pointer-events: none;
-}
-/* Os desenhos SVG antigos continuam sob a pintura como alternativa. */
-.mis-palco-cenario .mis-palco-svg {
-  z-index: 2;
-}
-.mis-palco-cenario .mis-palco-particula,
-.mis-palco-cenario .mis-palco-vapor,
-.mis-palco-cenario .mis-palco-vagalume {
-  pointer-events: none;
-}
-
-/* Seleção cinematográfica: texto à esquerda, cena completa à direita. */
-.mis-cinema-palco > .mis-cinema-texto {
-  position: relative;
-  z-index: 7;
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-  max-width: none;
-  background: linear-gradient(
-    90deg,
-    rgba(46, 33, 55, 0.85) 0%,
-    rgba(46, 33, 55, 0.75) 83%,
-    rgba(46, 33, 55, 0.45) 100%
-  );
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 230, 208, 0.1);
-}
-.mis-cinema-palco > .mis-cinema-pinturas {
-  position: relative;
-  z-index: 2;
-  background: transparent;
-}
-.mis-cinema-pinturas > .mis-palco-cenario {
-  background: transparent;
-}
-/* Respiro extra no rodapé para os pôsteres interativos. */
-.mis-cinema-pinturas .mis-palco-pintura {
-  padding: 16px 14px 132px;
-  object-position: center 40%;
-}
-.mis-cinema-pinturas .mis-palco-pintura-veil {
-  background: linear-gradient(
-    180deg,
-    rgba(34, 24, 47, 0.1),
-    transparent 45%,
-    rgba(27, 22, 38, 0.67) 100%
-  );
-}
-/* As miniaturas continuam sendo pequenos recortes intencionais.
-   A ilustração em destaque, por sua vez, aparece por inteiro. */
-
-/* Portal do Desafio 2: imagem e texto podem compartilhar o cartão
-   sem que o gatinho, a escada ou a árvore sejam cortados. */
-.mis-portal-card--projeto > .mis-portal-card-texto {
-  z-index: 3;
-  max-width: 69%;
-  padding: clamp(12px, 1.6vw, 19px);
-  margin-left: clamp(-15px, -1vw, -8px);
-  border-radius: 17px;
-  background: linear-gradient(
-    90deg,
-    rgba(40, 35, 49, 0.85) 0%,
-    rgba(40, 35, 49, 0.73) 86%,
-    rgba(40, 35, 49, 0.47) 100%
-  );
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
 }
 .mis-portal-card--projeto > .mis-portal-deco--gatinho {
-  position: absolute;
-  z-index: 2;
-  right: 0;
-  bottom: 0;
-  width: 59%;
-  height: 100%;
-  opacity: 1;
+  display: none;
 }
-.mis-portal-deco--gatinho > .mis-palco-cenario {
+.mis-portal-card--projeto > .mis-portal-card-texto {
   position: relative;
+  z-index: 3;
+  max-width: 76%;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Confirmação: imagem grande e nítida ocupando a carta inteira. */
+.mis-cinema-conclusao {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 570px;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(30px, 5vw, 72px);
+  background: #382b40;
+}
+.mis-cinema-conclusao::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  border: 0;
+  border-radius: 0;
+  background-image: var(--mis-capa-arte);
+  background-size: cover;
+  background-position: 55% center;
+  background-repeat: no-repeat;
+  filter: none;
+  transform: none;
+}
+.mis-cinema-conclusao::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(37, 26, 45, .80) 0%,
+    rgba(37, 26, 45, .50) 58%,
+    rgba(37, 26, 45, .07) 100%
+  );
+}
+.mis-cinema-conclusao > .mis-palco-cenario {
+  /* partículas, mas não uma segunda fotografia sobre o background cover */
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
   min-height: 0;
+  opacity: 1;
   background: transparent;
+  pointer-events: none;
 }
-.mis-portal-deco--gatinho .mis-palco-pintura {
-  padding: 15px 8px;
-  object-position: center;
+.mis-cinema-conclusao > .mis-palco-cenario img.mis-palco-pintura {
+  display: none;
 }
-.mis-portal-deco--gatinho .mis-palco-pintura-veil {
-  background: none;
-}
-.mis-portal-deco--gatinho .mis-palco-svg {
-  max-width: 100%;
-  width: 100%;
-  height: auto;
-  right: 0;
-  bottom: 8%;
-}
-
-/* Confirmação: evitar uma faixa vertical estreita ampliando/cortando a arte. */
 .mis-cinema-conclusao > .mis-cinema-conclusao-texto {
   position: relative;
   z-index: 3;
+  flex: 0 1 63%;
+  width: 63%;
+  max-width: 680px;
   min-width: 0;
-  padding: clamp(17px, 2vw, 27px);
-  border: 1px solid rgba(255, 232, 206, 0.09);
-  border-radius: 20px;
-  background: linear-gradient(90deg, rgba(44, 30, 52, 0.82) 0%, rgba(44, 30, 52, 0.68) 100%);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-.mis-cinema-conclusao > .mis-palco-cenario {
-  position: relative;
-  z-index: 2;
-  align-self: stretch;
-  width: 100%;
-  height: 100%;
-  min-height: 370px;
-  background: transparent;
-}
-.mis-cinema-conclusao .mis-palco-pintura {
-  padding: 16px 8px;
-  object-position: center;
-}
-.mis-cinema-conclusao .mis-palco-pintura-veil {
+  padding: clamp(16px, 2vw, 25px);
+  border: 1px solid rgba(255, 233, 211, .10);
+  border-radius: 19px;
   background: linear-gradient(
-    180deg,
-    rgba(41, 28, 49, 0.07),
-    transparent 75%,
-    rgba(41, 28, 49, 0.12)
+    90deg,
+    rgba(41, 30, 51, .72),
+    rgba(41, 30, 51, .49)
   );
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
 }
 
-/* Enunciado da missão: mesmas proporções, cenário inteiro. */
+/* Enunciados individuais: mesma pintura atrás do texto. */
 .mis-detalhe-hero {
+  position: relative;
   isolation: isolate;
-  background: #352b3e;
+  overflow: hidden;
+  background: #372a3e;
 }
 .mis-detalhe-hero::after {
   content: "";
   position: absolute;
-  inset: -20px;
   z-index: 0;
+  inset: 0;
   pointer-events: none;
   background-image: var(--mis-capa-arte);
   background-size: cover;
-  background-position: center;
+  background-position: 55% center;
   background-repeat: no-repeat;
-  filter: blur(19px) brightness(0.48) saturate(0.85);
-  transform: scale(1.05);
+  filter: none;
+  transform: none;
 }
 .mis-detalhe-hero::before {
   z-index: 1;
   background: linear-gradient(
     90deg,
-    rgba(46, 32, 54, 0.73) 0%,
-    rgba(46, 32, 54, 0.39) 60%,
-    rgba(46, 32, 54, 0.1) 100%
+    rgba(40, 28, 48, .81) 0%,
+    rgba(40, 28, 48, .58) 56%,
+    rgba(40, 28, 48, .05) 100%
   );
+}
+.mis-detalhe-hero > .mis-palco-cenario {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  z-index: 2;
+  opacity: 1;
+  pointer-events: none;
+}
+.mis-detalhe-hero > .mis-palco-cenario img.mis-palco-pintura {
+  display: none;
 }
 .mis-detalhe-hero > div:first-child {
   position: relative;
   z-index: 3;
-  max-width: min(56%, 650px);
-  padding: 16px 19px;
-  border-radius: 16px;
-  color: #fff0de;
-  background: linear-gradient(90deg, rgba(45, 31, 52, 0.79), rgba(45, 31, 52, 0.57));
-  -webkit-backdrop-filter: blur(11px);
-  backdrop-filter: blur(11px);
+  max-width: min(58%, 650px);
+  padding: 19px 23px;
+  border-radius: 17px;
+  color: #fff0dc;
+  background: rgba(44, 30, 53, .58);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
 }
 .mis-detalhe-hero > div:first-child h1,
-.mis-detalhe-hero > div:first-child p {
-  color: #fff0de;
-}
-.mis-detalhe-hero > div:first-child .mis-eyebrow {
-  color: #f2c69f;
-}
-.mis-detalhe-hero > .mis-palco-cenario {
-  position: absolute;
-  inset: 0 0 0 auto;
-  z-index: 2;
-  width: 53%;
-  height: 100%;
-  min-height: 0;
-  opacity: 1;
-  background: transparent;
-}
-.mis-detalhe-hero .mis-palco-pintura {
-  padding: 14px;
-  object-position: center;
-}
-.mis-detalhe-hero .mis-palco-pintura-veil {
-  background: none;
-}
+.mis-detalhe-hero > div:first-child p { color: #fff0dc; }
+.mis-detalhe-hero > div:first-child .mis-eyebrow { color: #f0c39b; }
 
-/* Responsividade: na tela pequena, o texto vem primeiro e a imagem
-   inteira fica visível logo depois, sem cobrir os controles. */
-@media (max-width: 1040px) {
-  .mis-portal-card--projeto > .mis-portal-card-texto {
-    max-width: 75%;
-  }
-  .mis-cinema-pinturas .mis-palco-pintura {
-    padding-bottom: 115px;
-  }
-}
-
-@media (max-width: 740px) {
+/* Colunas compactas: texto legível e pintura protagonista. */
+@media (max-width: 1050px) {
   .mis-cinema-palco > .mis-cinema-texto {
-    width: 100%;
-    align-self: auto;
-    background: rgba(43, 30, 52, 0.76);
-    border-right: 0;
-    border-bottom: 1px solid rgba(255, 230, 208, 0.14);
-    -webkit-backdrop-filter: blur(11px);
-    backdrop-filter: blur(11px);
+    flex-basis: 54%;
+    width: 54%;
+  }
+  .mis-cinema-pinturas > .mis-cinema-posteres {
+    width: 43%;
+    right: 2%;
+  }
+  .mis-cinema-pinturas > .mis-cinema-pinturas-topo {
+    width: 43%;
+  }
+  .mis-portal-card--projeto > .mis-portal-card-texto {
+    max-width: 83%;
+  }
+}
+
+/* Mobile: pintura cobre o card e o painel de texto recebe um degradê vertical.
+   Os pôsteres ficam no rodapé sem bloquear o botão principal. */
+@media (max-width: 740px) {
+  .mis-cinema-palco {
+    display: flex;
+    flex-direction: column;
+    min-height: 660px;
+    padding-bottom: 128px;
+  }
+  .mis-cinema-palco::after {
+    background: linear-gradient(
+      180deg,
+      rgba(37, 26, 46, .54) 0%,
+      rgba(37, 26, 46, .27) 60%,
+      rgba(37, 26, 46, .63) 100%
+    );
   }
   .mis-cinema-palco > .mis-cinema-pinturas {
-    width: 100%;
-    height: clamp(260px, 79vw, 440px);
+    position: absolute;
+    inset: 0;
+    height: 100%;
     min-height: 0;
+    width: 100%;
+    border-radius: inherit;
   }
   .mis-cinema-pinturas .mis-palco-pintura {
-    padding: 8px 10px 105px;
+    object-position: 57% center;
+  }
+  .mis-cinema-palco > .mis-cinema-texto {
+    width: 100%;
+    flex: 0 0 auto;
+    max-width: none;
+    align-self: auto;
+    display: block;
+    padding: 27px 22px 28px;
+    background: linear-gradient(
+      180deg,
+      rgba(40, 28, 48, .88) 0%,
+      rgba(40, 28, 48, .73) 77%,
+      rgba(40, 28, 48, .34) 100%
+    );
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 231, 209, .12);
+  }
+  .mis-cinema-pinturas > .mis-cinema-pinturas-topo {
+    top: auto;
+    bottom: 127px;
+    right: 17px;
+    left: 17px;
+    width: auto;
+    justify-content: flex-end;
+  }
+  .mis-cinema-pinturas-topo > span:first-child {
+    display: none;
+  }
+  .mis-cinema-pinturas > .mis-cinema-posteres {
+    bottom: 15px;
+    left: 13px;
+    right: 13px;
+    width: auto;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    pointer-events: auto;
+    padding: 10px 3px 6px;
+    gap: 7px;
   }
 
   .mis-portal-card--projeto {
-    min-height: 530px;
-    align-items: flex-start;
-    padding: 21px 17px;
+    min-height: 340px;
+    align-items: center;
+    padding: 25px 20px;
+  }
+  .mis-portal-card--projeto::before {
+    background-position: 61% center;
   }
   .mis-portal-card--projeto::after {
     background: linear-gradient(
-      180deg,
-      rgba(43, 31, 52, 0.7) 0%,
-      rgba(43, 31, 52, 0.23) 75%,
-      rgba(43, 31, 52, 0.08) 100%
+      90deg,
+      rgba(36, 26, 45, .91) 0%,
+      rgba(36, 26, 45, .73) 58%,
+      rgba(36, 26, 45, .17) 100%
     );
   }
   .mis-portal-card--projeto > .mis-portal-card-texto {
-    width: 100%;
-    max-width: 100%;
-    padding: 12px 14px;
+    width: 87%;
+    max-width: 87%;
     margin: 0;
-    background: rgba(43, 31, 52, 0.75);
-  }
-  .mis-portal-card--projeto > .mis-portal-deco--gatinho {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: auto;
-    width: 100%;
-    height: 205px;
-    opacity: 1;
-  }
-  .mis-portal-deco--gatinho .mis-palco-pintura {
-    padding: 7px 12px;
+    padding: 0;
+    background: none;
   }
 
   .mis-cinema-conclusao {
-    gap: 14px;
-    padding: 19px 15px;
+    min-height: 580px;
+    padding: 22px;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .mis-cinema-conclusao::before {
+    background-position: 58% center;
+  }
+  .mis-cinema-conclusao::after {
+    background: linear-gradient(
+      180deg,
+      rgba(36, 26, 45, .76) 0%,
+      rgba(36, 26, 45, .59) 50%,
+      rgba(36, 26, 45, .10) 100%
+    );
   }
   .mis-cinema-conclusao > .mis-cinema-conclusao-texto {
     order: 0;
-    padding: 19px 17px;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 18px;
+    background: rgba(41, 30, 51, .61);
   }
   .mis-cinema-conclusao > .mis-palco-cenario {
-    order: 1;
-    width: 100%;
-    height: clamp(215px, 60vw, 320px);
+    order: 0;
+    position: absolute;
+    inset: 0;
+    height: 100%;
     min-height: 0;
-  }
-  .mis-cinema-conclusao .mis-palco-pintura {
-    padding: 8px 12px;
   }
 
   .mis-detalhe-hero {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    min-height: 380px;
     padding: 18px;
-    min-height: 0;
+  }
+  .mis-detalhe-hero::after {
+    background-position: 55% center;
   }
   .mis-detalhe-hero::before {
-    background: linear-gradient(180deg, rgba(46, 32, 54, 0.54) 0%, rgba(46, 32, 54, 0.12) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(39, 27, 47, .76),
+      rgba(39, 27, 47, .20)
+    );
   }
   .mis-detalhe-hero > div:first-child {
     max-width: 100%;
-    width: 100%;
-    padding: 17px 16px;
+    padding: 16px;
+    background: rgba(39, 27, 47, .65);
   }
   .mis-detalhe-hero > .mis-palco-cenario {
-    position: relative;
-    inset: auto;
-    align-self: stretch;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: clamp(190px, 57vw, 290px);
-    min-height: 0;
-    right: auto;
-    opacity: 1;
-  }
-  .mis-detalhe-hero .mis-palco-pintura {
-    padding: 6px;
+    height: 100%;
   }
 }
 
+/* Reduzir o painel e evitar altura exagerada em aparelhos pequenos. */
 @media (max-width: 390px) {
-  .mis-portal-card--projeto {
-    min-height: 545px;
+  .mis-cinema-palco {
+    min-height: 690px;
   }
-  .mis-portal-card--projeto > .mis-portal-deco--gatinho {
-    opacity: 1;
-  }
-}
-
-/* Fallback nos navegadores que não oferecem backdrop-filter. */
-@supports not (backdrop-filter: blur(1px)) {
-  .mis-cinema-palco > .mis-cinema-texto,
-  .mis-portal-card--projeto > .mis-portal-card-texto,
-  .mis-cinema-conclusao > .mis-cinema-conclusao-texto,
-  .mis-detalhe-hero > div:first-child {
-    background-color: rgba(42, 30, 51, 0.94);
+  .mis-portal-card--projeto > .mis-portal-card-texto {
+    max-width: 95%;
+    width: 95%;
   }
 }
