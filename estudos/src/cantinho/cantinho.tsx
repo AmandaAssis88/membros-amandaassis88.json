@@ -107,6 +107,7 @@ function EscolherTema({
               onClick={() => setSelecionado(opcao.id)}
             >
               <img src={opcao.miniatura} alt="" loading="lazy" decoding="async" width={148} height={90} />
+              <span className={"temas-mini-efeito temas-mini-efeito--" + opcao.id} aria-hidden="true" />
               <span className="temas-opcao-texto">
                 <strong>
                   {opcao.emoji} {opcao.nome}
