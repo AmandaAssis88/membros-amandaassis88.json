@@ -1,0 +1,31 @@
+name: Validar partículas dos ambientes (temporário)
+
+on:
+  push:
+    branches:
+      - feat/missoes-desafio-2
+
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint do projeto
+        run: npm run lint
+      - name: Testes do projeto
+        run: npm test
+      - name: Build do Café de Estudos
+        run: npm run build:estudos
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+      - name: Build do onboarding
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
