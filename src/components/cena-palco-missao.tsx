@@ -1,9 +1,8 @@
 import { CenaMissao } from "./cena-missao";
 
 /**
- * Pequena cena vetorial, no espírito do cantinho lo-fi do onboarding.
- * Sem imagens geradas: os elementos são desenhados com SVG e recebem
- * apenas microanimações em CSS (que respeitam redução de movimento).
+ * Capa de cada história: pintura em WebP com uma camada atmosférica em CSS/SVG.
+ * Os SVGs anteriores permanecem como fallback quando a arte não está disponível.
  */
 export function CenaPalcoMissao({ id }: { id: string }) {
   return (
@@ -12,6 +11,18 @@ export function CenaPalcoMissao({ id }: { id: string }) {
       <span className="mis-palco-luz mis-palco-luz--b" />
       <span className="mis-palco-luz mis-palco-luz--c" />
       <span className="mis-palco-lua" />
+      <img
+        className="mis-palco-pintura"
+        src={`/missoes/capas/${id}.webp`}
+        alt=""
+        loading="eager"
+        decoding="async"
+        onError={(evento) => { evento.currentTarget.hidden = true; }}
+      />
+      <span className="mis-palco-pintura-veil" />
+      <span className="mis-palco-particula mis-palco-particula--a" />
+      <span className="mis-palco-particula mis-palco-particula--b" />
+      <span className="mis-palco-particula mis-palco-particula--c" />
       {id === "gatinho" ? (
         <svg
           className="mis-palco-svg mis-palco-svg--gatinho"
