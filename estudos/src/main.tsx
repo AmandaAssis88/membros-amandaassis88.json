@@ -19,6 +19,7 @@ import "./estudos.css";
 import "./components/mini-player.css";
 import "./components/pomodoro.css";
 import "./cantinho/cantinho.css";
+import "./cantinho/ambientes.css";
 
 const raiz = createRootRoute({
   component: () => (
