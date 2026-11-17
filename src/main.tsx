@@ -6,6 +6,7 @@ import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import "./styles-missoes.css";
 import "./styles-missoes-cinema.css";
+import "./styles-missoes-pinturas.css";
 
 const router = createRouter({ routeTree, scrollRestoration: true });
 
