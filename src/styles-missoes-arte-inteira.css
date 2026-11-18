@@ -101,9 +101,9 @@
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgba(40, 28, 47, 0.66) 0%,
-    rgba(40, 28, 47, 0.35) 48%,
-    rgba(40, 28, 47, 0.05) 90%
+    rgba(40, 28, 47, 0.25) 0%,
+    rgba(40, 28, 47, 0.10) 48%,
+    rgba(40, 28, 47, 0.02) 90%
   );
 }
 .mis-cinema-palco > .mis-cinema-pinturas {
@@ -151,15 +151,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  /* Deixar a pintura perceptível atrás do texto, sem sacrificar contraste. */
   background: linear-gradient(
     90deg,
-    rgba(40, 28, 47, 0.89) 0%,
-    rgba(40, 28, 47, 0.72) 76%,
-    rgba(40, 28, 47, 0.36) 100%
+    rgba(40, 28, 47, 0.68) 0%,
+    rgba(40, 28, 47, 0.55) 76%,
+    rgba(40, 28, 47, 0.27) 100%
   );
-  -webkit-backdrop-filter: blur(9px);
-  backdrop-filter: blur(9px);
-  border-right: 1px solid rgba(255, 238, 222, 0.08);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  border-right: 0;
 }
 /* Os controles ficam sobre a pintura e continuam clicáveis. */
 .mis-cinema-pinturas > .mis-cinema-pinturas-topo {
@@ -417,12 +418,12 @@
     padding: 27px 22px 28px;
     background: linear-gradient(
       180deg,
-      rgba(40, 28, 48, 0.88) 0%,
-      rgba(40, 28, 48, 0.73) 77%,
-      rgba(40, 28, 48, 0.34) 100%
+      rgba(40, 28, 48, 0.70) 0%,
+      rgba(40, 28, 48, 0.57) 77%,
+      rgba(40, 28, 48, 0.27) 100%
     );
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     border-right: 0;
     border-bottom: 1px solid rgba(255, 231, 209, 0.12);
   }
