@@ -1,0 +1,44 @@
+name: Validar scrim sem blur (temporario)
+
+on:
+  push:
+    branches:
+      - feat/missoes-desafio-2
+
+permissions:
+  contents: write
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Formatar o CSS atualizado
+        run: |
+          npx prettier --write src/styles-missoes-arte-inteira.css
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/styles-missoes-arte-inteira.css
+          if ! git diff --cached --quiet; then
+            git commit -m "style(missoes): formatar degradê cinematográfico"
+            git push origin HEAD:feat/missoes-desafio-2
+          fi
+      - name: Lint
+        run: npm run lint
+      - name: Testes
+        run: npm test
+      - name: Build onboarding
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+      - name: Build estudos
+        run: npm run build:estudos
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
