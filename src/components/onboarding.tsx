@@ -16,6 +16,7 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import { EntradaGitHub } from "@/components/entrada-github";
+import { buscarMembro, entrarComo } from "@/lib/identidade";
 import { Button } from "@/components/ui/button";
 import {
   MemberCard,
@@ -198,7 +199,16 @@ function Welcome({ onStart }: { onStart: (github?: string) => void }) {
 }
 
 export function Onboarding() {
-  const [draft] = useState(readDraft);
+  const [draft] = useState(() => {
+    const salvo = readDraft();
+    // Quem se inscreveu neste navegador e já está no mural não precisa ver a tela final de novo:
+    // volta para o início, já reconhecido(a), com o atalho para a jornada.
+    if (salvo.passport && buscarMembro(salvo.passport.github)) {
+      entrarComo(salvo.passport.github);
+      return { ...salvo, step: 0, passport: null };
+    }
+    return salvo;
+  });
   const [step, setStep] = useState(() => Math.min(Math.max(draft.step ?? 0, 0), 4));
   const [data, setData] = useState<Registration>(() => ({ ...initial, ...draft.data }));
   const [category, setCategory] = useState<AvatarCategory>(() =>
