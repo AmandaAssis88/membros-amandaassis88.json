@@ -264,3 +264,25 @@
     animation: none;
   }
 }
+
+/* Balcão: Algoritmos centralizado abaixo da base, como o próximo passo de um roteiro */
+.cardapio-proximo-passo {
+  display: grid;
+  justify-items: center;
+  margin: -12px 0 40px;
+}
+.cardapio-conector {
+  width: 2px;
+  height: 28px;
+  margin-bottom: 8px;
+  border-left: 2px dashed var(--borda);
+}
+.cardapio-proximo-passo .cartao-trilha {
+  width: min(100%, 720px);
+}
+@media (min-width: 761px) {
+  .cardapio-proximo-passo .cartao-nome,
+  .cardapio-proximo-passo .cartao-frase {
+    white-space: nowrap;
+  }
+}

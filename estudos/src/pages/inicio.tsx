@@ -104,6 +104,9 @@ function EmBreve({ itens }: { itens: { icone: string; nome: string; item: string
 
 const grupoDe = (id: Trilha["grupo"]) => GRUPOS.find((g) => g.id === id)!;
 
+// Algoritmos fica fora da grade, centralizado logo abaixo, como o próximo passo depois da base.
+const TRILHA_EM_DESTAQUE = "algoritmos";
+
 function GrupoDoCardapio({
   grupo,
   concluidas,
@@ -111,7 +114,7 @@ function GrupoDoCardapio({
   grupo: (typeof GRUPOS)[number];
   concluidas: string[];
 }) {
-  const trilhas = TRILHAS.filter((t) => t.grupo === grupo.id);
+  const trilhas = TRILHAS.filter((t) => t.grupo === grupo.id && t.id !== TRILHA_EM_DESTAQUE);
   if (trilhas.length === 0) return null;
   return (
     <div className="cardapio-grupo">
@@ -130,6 +133,7 @@ function GrupoDoCardapio({
 
 export function Inicio() {
   const concluidas = useConcluidas();
+  const destaque = TRILHAS.find((t) => t.id === TRILHA_EM_DESTAQUE);
   const [tema, setTema] = useState<TemaId>(() => {
     try {
       const salvo = localStorage.getItem(CHAVE_TEMA);
@@ -201,6 +205,12 @@ export function Inicio() {
             <GrupoDoCardapio key={g.id} grupo={g} concluidas={concluidas} />
           ))}
         </div>
+        {destaque && (
+          <div className="cardapio-proximo-passo">
+            <span className="cardapio-conector" aria-hidden="true" />
+            <CartaoTrilha trilha={destaque} concluidas={concluidas} />
+          </div>
+        )}
         <GrupoDoCardapio grupo={grupoDe("linguagens")} concluidas={concluidas} />
       </section>
 
