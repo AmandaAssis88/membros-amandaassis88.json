@@ -85,9 +85,18 @@ const SALAO = [
   },
 ];
 
-function EmBreve({ itens }: { itens: { icone: string; nome: string; item: string }[] }) {
+function EmBreve({
+  itens,
+  centralizado = false,
+}: {
+  itens: { icone: string; nome: string; item: string }[];
+  centralizado?: boolean;
+}) {
   return (
-    <ul className="em-breve" aria-label="Trilhas que estão chegando">
+    <ul
+      className={`em-breve ${centralizado ? "em-breve--centralizado" : ""}`}
+      aria-label="Trilhas que estão chegando"
+    >
       {itens.map((i) => (
         <li key={i.nome}>
           <span aria-hidden="true">{i.icone}</span>
@@ -110,9 +119,12 @@ const TRILHA_EM_DESTAQUE = "algoritmos";
 function GrupoDoCardapio({
   grupo,
   concluidas,
+  centralizado = false,
 }: {
   grupo: (typeof GRUPOS)[number];
   concluidas: string[];
+  /** Cartões largos e centralizados, como passos de um roteiro */
+  centralizado?: boolean;
 }) {
   const trilhas = TRILHAS.filter((t) => t.grupo === grupo.id && t.id !== TRILHA_EM_DESTAQUE);
   if (trilhas.length === 0) return null;
@@ -122,7 +134,7 @@ function GrupoDoCardapio({
         <span aria-hidden="true">📁</span> {grupo.pasta}
         <small>{grupo.texto}</small>
       </p>
-      <div className="cardapio-grade">
+      <div className={centralizado ? "cardapio-roteiro" : "cardapio-grade"}>
         {trilhas.map((t) => (
           <CartaoTrilha key={t.id} trilha={t} concluidas={concluidas} />
         ))}
@@ -220,8 +232,10 @@ export function Inicio() {
           <h2>Para adoçar qualquer bebida</h2>
           <p>Jeitos de organizar o código que valem em qualquer linguagem.</p>
         </div>
-        <GrupoDoCardapio grupo={grupoDe("paradigmas")} concluidas={concluidas} />
+        <GrupoDoCardapio grupo={grupoDe("paradigmas")} concluidas={concluidas} centralizado />
+        <span className="cardapio-conector cardapio-conector--centro" aria-hidden="true" />
         <EmBreve
+          centralizado
           itens={[{ icone: "🍯", nome: "Programação funcional", item: "Mel: puro, não muda" }]}
         />
       </section>

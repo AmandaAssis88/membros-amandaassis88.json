@@ -286,3 +286,28 @@
     white-space: nowrap;
   }
 }
+
+/* Açucareiro: o mesmo roteiro centralizado do Balcão */
+.cardapio-roteiro {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+.cardapio-roteiro .cartao-trilha {
+  width: min(100%, 720px);
+}
+@media (min-width: 761px) {
+  .cardapio-roteiro .cartao-nome,
+  .cardapio-roteiro .cartao-frase {
+    white-space: nowrap;
+  }
+}
+.cardapio-conector--centro {
+  display: block;
+  margin: 8px auto;
+}
+.em-breve--centralizado {
+  grid-template-columns: min(100%, 720px);
+  justify-content: center;
+  margin-top: 0;
+}
