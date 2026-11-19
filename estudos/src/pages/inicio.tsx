@@ -88,13 +88,16 @@ const SALAO = [
 function EmBreve({
   itens,
   centralizado = false,
+  largo = false,
 }: {
   itens: { icone: string; nome: string; item: string }[];
   centralizado?: boolean;
+  /** Duas colunas largas, alinhadas com uma grade larga logo acima */
+  largo?: boolean;
 }) {
   return (
     <ul
-      className={`em-breve ${centralizado ? "em-breve--centralizado" : ""}`}
+      className={`em-breve ${centralizado ? "em-breve--centralizado" : ""} ${largo ? "em-breve--largo" : ""}`}
       aria-label="Trilhas que estão chegando"
     >
       {itens.map((i) => (
@@ -120,11 +123,14 @@ function GrupoDoCardapio({
   grupo,
   concluidas,
   centralizado = false,
+  largo = false,
 }: {
   grupo: (typeof GRUPOS)[number];
   concluidas: string[];
-  /** Cartões largos e centralizados, como passos de um roteiro */
+  /** Cartões largos, um embaixo do outro, como passos de um roteiro */
   centralizado?: boolean;
+  /** Duas colunas largas, para o texto caber sem quebrar */
+  largo?: boolean;
 }) {
   const trilhas = TRILHAS.filter((t) => t.grupo === grupo.id && t.id !== TRILHA_EM_DESTAQUE);
   if (trilhas.length === 0) return null;
@@ -134,7 +140,13 @@ function GrupoDoCardapio({
         <span aria-hidden="true">📁</span> {grupo.pasta}
         <small>{grupo.texto}</small>
       </p>
-      <div className={centralizado ? "cardapio-roteiro" : "cardapio-grade"}>
+      <div
+        className={
+          centralizado
+            ? "cardapio-roteiro"
+            : `cardapio-grade ${largo ? "cardapio-grade--larga" : ""}`
+        }
+      >
         {trilhas.map((t) => (
           <CartaoTrilha key={t.id} trilha={t} concluidas={concluidas} />
         ))}
@@ -249,8 +261,9 @@ export function Inicio() {
             antes de entrar numa equipe.
           </p>
         </div>
-        <GrupoDoCardapio grupo={grupoDe("ferramentas")} concluidas={concluidas} />
+        <GrupoDoCardapio grupo={grupoDe("ferramentas")} concluidas={concluidas} largo />
         <EmBreve
+          largo
           itens={[
             { icone: "🔪", nome: "Terminal e Linux", item: "A faca do chef" },
             { icone: "🥄", nome: "Testes e depuração", item: "A colher de prova" },
@@ -277,8 +290,9 @@ export function Inicio() {
           <h2>Os bastidores</h2>
           <p>Como o sistema funciona por dentro. Ninguém vê, mas sem isso o restaurante fecha.</p>
         </div>
-        <GrupoDoCardapio grupo={grupoDe("cozinha")} concluidas={concluidas} />
+        <GrupoDoCardapio grupo={grupoDe("cozinha")} concluidas={concluidas} largo />
         <EmBreve
+          largo
           itens={[
             { icone: "🧑‍🍳", nome: "Arquitetura de software", item: "A brigada de cozinha" },
             { icone: "🍽️", nome: "Design System", item: "A louça e o uniforme" },
