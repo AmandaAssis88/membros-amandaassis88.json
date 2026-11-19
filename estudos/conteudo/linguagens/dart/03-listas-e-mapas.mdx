@@ -1,0 +1,218 @@
+<Aquecimento perguntas={[
+  { p: "Escreva um switch como expressão que devolve 8 para 'P' e 0 para o resto.", r: "switch (t) { 'P' => 8, _ => 0 }" },
+  { p: "Por que if (texto) não compila em Dart?", r: "Porque a condição precisa ser bool. Para texto vazio, use texto.isEmpty." },
+  { p: "Como percorrer cada item de uma lista?", r: "for (final item in lista) { ... }" },
+]} />
+
+No Flutter, quase toda tela mostra uma **lista** de alguma coisa: produtos, mensagens, contatos. Nesta aula você aprende as três coleções do Dart: **List**, **Map** e **Set**.
+
+## List: a lista com tipo
+
+```dart
+void main() {
+  final frutas = <String>['manga', 'morango'];
+
+  frutas.add('banana');
+  print(frutas);
+  print(frutas[0]);
+  print(frutas.length);
+  print(frutas.contains('kiwi'));
+
+  frutas.remove('morango');
+  print(frutas);
+}
+```
+
+```saida
+[manga, morango, banana]
+manga
+3
+false
+[manga, banana]
+```
+
+- `<String>[...]` cria uma lista **só de textos**. `frutas.add(10)` não compila.
+- Se você escrever só `['manga', 'morango']`, o Dart infere `List<String>` sozinho.
+- Posições começam em **0**; `add` coloca no fim; `remove` tira.
+
+## map, where e fold
+
+Os mesmos métodos do JavaScript, com nomes um pouco diferentes:
+
+```dart
+void main() {
+  final precos = [8.0, 12.0, 10.0, 15.0];
+
+  final comAumento = precos.map((p) => p * 1.1).toList();
+  final baratos = precos.where((p) => p < 11).toList();
+  final total = precos.fold(0.0, (soma, p) => soma + p);
+
+  print(comAumento.map((p) => p.toStringAsFixed(2)).toList());
+  print(baratos);
+  print(total);
+}
+```
+
+```saida
+[8.80, 13.20, 11.00, 16.50]
+[8.0, 10.0]
+45.0
+```
+
+| Dart | JavaScript | Faz |
+| --- | --- | --- |
+| `map` | `map` | transforma cada item |
+| `where` | `filter` | escolhe os que passam no teste |
+| `fold` | `reduce` | junta tudo num valor |
+
+<Nota tipo="cuidado" titulo="Não esqueça o toList()">
+`map` e `where` devolvem um **Iterable** (uma sequência "preguiçosa", calculada só quando alguém pede). Para ter uma `List` de volta, termine com `.toList()`. No Flutter, esse esquecimento é um erro clássico.
+</Nota>
+
+## Map: chave e valor
+
+Um `Map` guarda pares de **chave → valor**, como o dicionário do Python:
+
+```dart
+void main() {
+  final precos = <String, double>{
+    'manga': 12.0,
+    'morango': 13.5,
+  };
+
+  precos['banana'] = 10.0;
+  print(precos);
+  print(precos['manga']);
+  print(precos['kiwi']);
+  print(precos.containsKey('morango'));
+
+  for (final entrada in precos.entries) {
+    print('${entrada.key}: R\$ ${entrada.value.toStringAsFixed(2)}');
+  }
+}
+```
+
+```saida
+{manga: 12.0, morango: 13.5, banana: 10.0}
+12.0
+null
+true
+manga: R$ 12.00
+morango: R$ 13.50
+banana: R$ 10.00
+```
+
+Repare que `precos['kiwi']` devolve `null`: a chave pode não existir. Por isso o tipo de `precos['manga']` é `double?`, e o null safety obriga a tratar (por exemplo, `precos['kiwi'] ?? 0`).
+
+## Set: sem repetidos
+
+```dart
+void main() {
+  final pedidos = ['manga', 'morango', 'manga', 'banana', 'morango'];
+  final sabores = pedidos.toSet();
+
+  print(sabores);
+  print('${sabores.length} sabores diferentes');
+}
+```
+
+```saida
+{manga, morango, banana}
+3 sabores diferentes
+```
+
+Um `Set` nunca guarda o mesmo valor duas vezes.
+
+## Coleções com if e for dentro
+
+Um recurso muito usado no Flutter para montar listas de widgets:
+
+```dart
+void main() {
+  final temPromocao = true;
+  final frutas = ['manga', 'morango'];
+
+  final cardapio = [
+    'Smoothie do dia',
+    if (temPromocao) 'Promoção: 2 por R\$ 20',
+    for (final f in frutas) 'Smoothie de $f',
+  ];
+
+  print(cardapio);
+}
+```
+
+```saida
+[Smoothie do dia, Promoção: 2 por R$ 20, Smoothie de manga, Smoothie de morango]
+```
+
+O `if` dentro da lista só coloca o item se a condição for verdadeira; o `for` coloca um item para cada fruta. Guarde isso: na última aula, você vai ver o Flutter usando exatamente isso para montar a tela.
+
+<Tarefa titulo="Relatório do dia">
+
+Dado este mapa de vendas (sabor → quantidade):
+
+```dart-exemplo
+final vendas = {'manga': 12, 'morango': 7, 'banana': 3, 'açaí': 15};
+```
+
+1. Mostre o total de smoothies vendidos.
+2. Mostre só os sabores que venderam **10 ou mais**.
+3. Mostre o sabor mais vendido.
+
+<Dica>
+1: `vendas.values.fold(0, (a, b) => a + b)`. 2: `vendas.entries.where(...).map((e) => e.key).toList()`. 3: percorra `vendas.entries` guardando a entrada com o maior `value`.
+</Dica>
+
+<Resposta>
+
+```dart
+void main() {
+  final vendas = {'manga': 12, 'morango': 7, 'banana': 3, 'açaí': 15};
+
+  final total = vendas.values.fold(0, (soma, qtd) => soma + qtd);
+  print('Total: $total');
+
+  final campeoes = vendas.entries.where((e) => e.value >= 10).map((e) => e.key).toList();
+  print('10 ou mais: $campeoes');
+
+  var maisVendido = vendas.entries.first;
+  for (final e in vendas.entries) {
+    if (e.value > maisVendido.value) {
+      maisVendido = e;
+    }
+  }
+  print('Mais vendido: ${maisVendido.key} (${maisVendido.value})');
+}
+```
+
+```saida
+Total: 37
+10 ou mais: [manga, açaí]
+Mais vendido: açaí (15)
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual método do Dart equivale ao filter do JavaScript?"
+  opcoes={["map", "where", "fold"]}
+  correta={1}
+  explicacao="where escolhe os itens que passam no teste. E não esqueça o .toList() no fim."
+/>
+
+<Cartoes itens={[
+  { frente: "List, Map e Set", verso: "Lista com posições; pares chave → valor; conjunto sem repetidos." },
+  { frente: "map, where e fold", verso: "Transformar cada item; escolher alguns; juntar tudo num valor." },
+  { frente: "Por que .toList()?", verso: "map e where devolvem um Iterable. toList() transforma de volta em List." },
+  { frente: "mapa['chave'] que não existe", verso: "Devolve null. O tipo é V?, e é preciso tratar (?? valor)." },
+]} />
+
+## Resumindo
+
+- `List<T>`, `Map<K, V>` e `Set<T>`, sempre com tipo.
+- `map`, `where` e `fold`, terminando com `.toList()` quando precisar de lista.
+- Acessar um `Map` pode dar `null`.
+- `if` e `for` dentro de coleções: muito usado no Flutter.

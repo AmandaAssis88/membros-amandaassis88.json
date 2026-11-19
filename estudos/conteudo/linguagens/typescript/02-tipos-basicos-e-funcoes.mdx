@@ -1,0 +1,215 @@
+<Aquecimento perguntas={[
+  { p: "O navegador roda TypeScript direto?", r: "Não. O TypeScript é compilado para JavaScript, e os tipos são apagados." },
+  { p: "Precisa anotar o tipo em const nome = 'Ana'?", r: "Não: o TypeScript infere que é string." },
+  { p: "Quando o TypeScript mostra os erros de tipo?", r: "Antes de rodar: no editor e na compilação." },
+]} />
+
+Agora que você já sabe o que é o rótulo, vamos preencher a tabela nutricional inteira: arrays, objetos, valores que podem ser de mais de um tipo e, principalmente, **funções**.
+
+## Arrays
+
+```typescript
+const precos: number[] = [5, 9, 6];
+const sabores: string[] = ["café", "chá"];
+
+precos.push(12);
+console.log(precos);
+console.log(sabores.length);
+```
+
+```saida
+[ 5, 9, 6, 12 ]
+2
+```
+
+`number[]` lê-se "array de números". Tentar `precos.push("doze")` dá erro: só entra número.
+
+## Funções: tipando a entrada e a saída
+
+Os parâmetros são o lugar onde as anotações mais importam, porque o TypeScript não tem como adivinhar o que vai chegar:
+
+```typescript
+function precoFinal(preco: number, quantidade: number, desconto: number = 0): number {
+  return preco * quantidade * (1 - desconto / 100);
+}
+
+console.log(precoFinal(10, 3));
+console.log(precoFinal(10, 3, 20));
+```
+
+```saida
+30
+24
+```
+
+- `preco: number` em cada parâmetro.
+- `desconto: number = 0` tem valor padrão (e por isso pode ser omitido na chamada).
+- O `: number` depois dos parênteses é o **tipo de retorno**.
+
+Com arrow functions, é igual:
+
+```typescript
+const dobro = (n: number): number => n * 2;
+console.log(dobro(21));
+```
+
+```saida
+42
+```
+
+E agora o bug do começo da trilha não passa mais:
+
+```typescript-exemplo
+precoFinal(5, "2");
+```
+
+```saida
+Argument of type 'string' is not assignable to parameter of type 'number'.
+```
+
+## Parâmetros opcionais
+
+Um `?` depois do nome diz que o parâmetro pode não vir:
+
+```typescript
+function saudar(nome: string, apelido?: string): string {
+  if (apelido) {
+    return `Oi, ${apelido}!`;
+  }
+  return `Olá, ${nome}.`;
+}
+
+console.log(saudar("Maria Clara"));
+console.log(saudar("Maria Clara", "Mari"));
+```
+
+```saida
+Olá, Maria Clara.
+Oi, Mari!
+```
+
+Dentro da função, `apelido` é `string | undefined`. Por isso o `if` antes de usar.
+
+## Union: um ou outro
+
+O `|` cria um tipo que aceita **um ou outro**:
+
+```typescript
+let mesa: number | string = 4;
+mesa = "balcão";
+
+type Tamanho = "pequeno" | "médio" | "grande";
+
+function preco(tamanho: Tamanho): number {
+  if (tamanho === "pequeno") return 5;
+  if (tamanho === "médio") return 7;
+  return 9;
+}
+
+console.log(mesa, preco("grande"));
+```
+
+```saida
+balcão 9
+```
+
+O `type Tamanho = "pequeno" | "médio" | "grande"` é um tipo que aceita **só esses três textos**. Escrever `preco("gigante")` dá erro, e o editor sugere as três opções enquanto você digita. Isso substitui muito comentário do tipo `// tamanho pode ser P, M ou G`.
+
+<Nota tipo="dica" titulo="type: dando nome a um tipo">
+`type` cria um **apelido** para um tipo, para você reaproveitar. Na próxima aula, ele vai descrever objetos inteiros.
+</Nota>
+
+## Funções que não devolvem nada
+
+```typescript
+function avisar(mensagem: string): void {
+  console.log(`📣 ${mensagem}`);
+}
+
+avisar("Café fresquinho saindo!");
+```
+
+```saida
+📣 Café fresquinho saindo!
+```
+
+`void` significa "não devolve nada útil".
+
+## Tipando callbacks
+
+Lembra dos callbacks? Dá para dizer que um parâmetro é uma **função**, e com que formato:
+
+```typescript
+function aplicarEmTodos(lista: number[], transformar: (n: number) => number): number[] {
+  return lista.map(transformar);
+}
+
+console.log(aplicarEmTodos([5, 8, 10], (p) => p * 1.1));
+```
+
+```saida
+[ 5.5, 8.8, 11 ]
+```
+
+`(n: number) => number` lê-se "uma função que recebe um número e devolve um número". Repare que no callback `(p) => p * 1.1` não precisou anotar o `p`: o TypeScript já sabe que é `number` pelo tipo do parâmetro.
+
+<Tarefa titulo="A máquina de café tipada">
+
+Crie uma função `fazerBebida` que recebe:
+
+- `tipo`: só pode ser `"espresso"`, `"latte"` ou `"mocha"`;
+- `acucar`: número de colheres, **opcional**;
+- e devolve uma `string`.
+
+Ela devolve, por exemplo, `"latte com 2 colher(es) de açúcar"` ou `"espresso sem açúcar"`. Confira no Playground que `fazerBebida("chá")` dá erro.
+
+<Dica>
+Crie `type Bebida = "espresso" | "latte" | "mocha";`. Para o opcional, `acucar?: number`, e trate o caso em que ele não veio ou é 0.
+</Dica>
+
+<Resposta>
+
+```typescript
+type Bebida = "espresso" | "latte" | "mocha";
+
+function fazerBebida(tipo: Bebida, acucar?: number): string {
+  if (!acucar) {
+    return `${tipo} sem açúcar`;
+  }
+  return `${tipo} com ${acucar} colher(es) de açúcar`;
+}
+
+console.log(fazerBebida("latte", 2));
+console.log(fazerBebida("espresso"));
+```
+
+```saida
+latte com 2 colher(es) de açúcar
+espresso sem açúcar
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que significa o tipo 'P' | 'M' | 'G'?"
+  opcoes={["Qualquer string", "Só um destes três textos: 'P', 'M' ou 'G'", "Um array com os três"]}
+  correta={1}
+  explicacao="Um union de textos literais aceita só aqueles valores exatos. O editor até sugere as opções."
+/>
+
+<Cartoes itens={[
+  { frente: "Array de números", verso: "number[]" },
+  { frente: "Tipar uma função", verso: "function f(a: number, b?: string): boolean { ... }" },
+  { frente: "O que é um union?", verso: "Um tipo que aceita um ou outro: number | string, ou 'P' | 'M' | 'G'." },
+  { frente: "void", verso: "Tipo de retorno de uma função que não devolve nada útil." },
+  { frente: "Tipo de um callback", verso: "(n: number) => number: recebe número, devolve número." },
+]} />
+
+## Resumindo
+
+- Arrays: `tipo[]`.
+- Em funções, anote os **parâmetros** e o **retorno**; `?` para opcional.
+- **Union** (`|`) para "um ou outro", inclusive com textos exatos.
+- `type` dá nome a um tipo; `void` é "não devolve nada".

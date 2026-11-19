@@ -1,0 +1,261 @@
+<Aquecimento perguntas={[
+  { p: "Quantos laços o Go tem?", r: "Um só: o for (que também faz o papel do while)." },
+  { p: "O switch do Go precisa de break no fim de cada case?", r: "Não: ele para sozinho no primeiro case que bate." },
+  { p: "Para que serve o _ no for _, v := range lista?", r: "Para descartar a posição, que não vai ser usada." },
+]} />
+
+Toda API em Go lida com listas e tabelas de dados. As duas estruturas do dia a dia são o **slice** (a lista) e o **map** (a tabela de chave e valor).
+
+## Arrays e slices
+
+O Go tem **arrays**, que têm tamanho fixo, e **slices**, que crescem. Na prática, você usa slices quase sempre.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var semana [7]int
+	semana[0] = 2
+	fmt.Println(semana, len(semana))
+
+	latas := []int{2, 1, 3}
+	latas = append(latas, 2)
+	fmt.Println(latas, len(latas))
+	fmt.Println(latas[0], latas[len(latas)-1])
+}
+```
+
+```saida
+[2 0 0 0 0 0 0] 7
+[2 1 3 2] 4
+2 2
+```
+
+- `[7]int` é um array de **exatamente** 7 inteiros (os outros começam com o valor zero).
+- `[]int{...}` (sem número) é um **slice**.
+- `append` devolve o slice com o item a mais. Repare no `latas = append(latas, ...)`: sempre guarde o resultado.
+- `len` é o tamanho.
+
+<Nota tipo="cuidado" titulo="Índice fora do slice quebra o programa">
+`latas[10]` num slice de 4 itens não devolve `undefined`: o programa **para** com `panic: runtime error: index out of range`. Confira o `len` antes de acessar uma posição que pode não existir.
+</Nota>
+
+## Fatiando: o nome "slice"
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	tarefas := []string{"daily", "review", "bug", "deploy", "happy hour"}
+
+	fmt.Println(tarefas[1:3])
+	fmt.Println(tarefas[:2])
+	fmt.Println(tarefas[3:])
+}
+```
+
+```saida
+[review bug]
+[daily review]
+[deploy happy hour]
+```
+
+`lista[inicio:fim]` pega do `inicio` até **antes** do `fim`, como o `slice` do JavaScript e o fatiamento do Python.
+
+## Não tem map/filter? Tem for!
+
+O Go não tem `map` e `filter` como o JavaScript. A filosofia é: um `for` é claro o bastante.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	precos := []float64{7.5, 12, 5, 9}
+
+	var baratos []float64
+	total := 0.0
+	for _, p := range precos {
+		total += p
+		if p < 9 {
+			baratos = append(baratos, p)
+		}
+	}
+
+	fmt.Println(baratos)
+	fmt.Printf("Total: R$ %.2f\n", total)
+}
+```
+
+```saida
+[7.5 5]
+Total: R$ 33.50
+```
+
+O `var baratos []float64` cria um slice **vazio** (o valor zero de um slice é `nil`, e o `append` funciona nele normalmente).
+
+<Nota tipo="curiosidade" titulo="O pacote slices">
+As versões recentes do Go trazem o pacote `slices`, com atalhos como `slices.Contains(lista, valor)`, `slices.Sort(lista)` e `slices.Index(lista, valor)`. Mas o `for` continua sendo o jeito mais comum de transformar e filtrar.
+</Nota>
+
+## Maps: chave e valor
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	cafeina := map[string]int{
+		"café":       95,
+		"energético": 80,
+	}
+
+	cafeina["chá"] = 40
+	fmt.Println(cafeina["café"])
+	fmt.Println(len(cafeina))
+
+	mg, existe := cafeina["chocolate quente"]
+	fmt.Println(mg, existe)
+
+	delete(cafeina, "chá")
+	fmt.Println(len(cafeina))
+}
+```
+
+```saida
+95
+3
+0 false
+2
+```
+
+- `map[string]int` é um map com chaves `string` e valores `int`.
+- Uma chave que não existe devolve o **valor zero** (`0`), sem erro.
+- Para saber se a chave existe **mesmo**, use a forma com duas variáveis: `valor, existe := mapa[chave]`. É o famoso **"comma ok"**, que você vai ver muito em Go.
+- `delete` remove uma chave.
+
+### Percorrendo um map
+
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func main() {
+	vendas := map[string]int{"energético": 12, "café": 30, "chá": 7}
+
+	nomes := make([]string, 0, len(vendas))
+	for nome := range vendas {
+		nomes = append(nomes, nome)
+	}
+	sort.Strings(nomes)
+
+	for _, nome := range nomes {
+		fmt.Printf("%s: %d\n", nome, vendas[nome])
+	}
+}
+```
+
+```saida
+café: 30
+chá: 7
+energético: 12
+```
+
+<Nota tipo="cuidado" titulo="A ordem de um map é aleatória">
+O Go embaralha de propósito a ordem em que um `map` é percorrido. Se você precisa de ordem (para mostrar ou testar), pegue as chaves, ordene e percorra a lista ordenada, como no exemplo. O `make([]string, 0, len(vendas))` cria um slice vazio já com espaço reservado.
+</Nota>
+
+<Tarefa titulo="Ranking da madrugada">
+
+O time registrou quantas latas cada dev tomou na semana de entrega:
+
+```go-exemplo
+registros := []string{"ana", "caio", "ana", "bia", "caio", "ana", "bia", "ana"}
+```
+
+Cada nome é uma lata. Monte um `map[string]int` contando as latas de cada pessoa, mostre o total de cada um em **ordem alfabética** e diga quem tomou mais.
+
+<Dica>
+Para contar: `contagem[nome]++` (como o valor zero é 0, funciona até na primeira vez). Para a ordem, junte as chaves num slice e use `sort.Strings`. Para o maior, guarde o nome e a quantidade do recordista enquanto percorre.
+</Dica>
+
+<Resposta>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func main() {
+	registros := []string{"ana", "caio", "ana", "bia", "caio", "ana", "bia", "ana"}
+
+	contagem := map[string]int{}
+	for _, nome := range registros {
+		contagem[nome]++
+	}
+
+	nomes := make([]string, 0, len(contagem))
+	for nome := range contagem {
+		nomes = append(nomes, nome)
+	}
+	sort.Strings(nomes)
+
+	campeao, maximo := "", 0
+	for _, nome := range nomes {
+		fmt.Printf("%s: %d lata(s)\n", nome, contagem[nome])
+		if contagem[nome] > maximo {
+			campeao, maximo = nome, contagem[nome]
+		}
+	}
+
+	fmt.Printf("Mais energizada: %s (%d). Alguém confere se ela está bem. 😅\n", campeao, maximo)
+}
+```
+
+```saida
+ana: 4 lata(s)
+bia: 2 lata(s)
+caio: 2 lata(s)
+Mais energizada: ana (4). Alguém confere se ela está bem. 😅
+```
+
+Repare no `campeao, maximo = nome, contagem[nome]`: o Go atribui duas variáveis de uma vez.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual o jeito de saber se uma chave existe num map em Go?"
+  opcoes={["if mapa[chave] != nil", "valor, existe := mapa[chave]", "mapa.has(chave)"]}
+  correta={1}
+  explicacao="O 'comma ok': a segunda variável é true se a chave existe. Sem ela, uma chave ausente devolve só o valor zero."
+/>
+
+<Cartoes itens={[
+  { frente: "Array × slice", verso: "Array tem tamanho fixo ([3]int); slice cresce ([]int) e é o mais usado." },
+  { frente: "Adicionar num slice", verso: "lista = append(lista, item) — sempre guarde o resultado." },
+  { frente: "Fatiar", verso: "lista[1:3] pega do 1 até antes do 3." },
+  { frente: "Comma ok", verso: "v, ok := mapa[chave] — ok diz se a chave existe." },
+  { frente: "Ordem de um map", verso: "Aleatória. Para ordenar, pegue as chaves e use sort.Strings." },
+]} />
+
+## Resumindo
+
+- **Slices** crescem com `append`; `len` dá o tamanho; `[a:b]` fatia.
+- Para transformar e filtrar, o Go usa `for`.
+- **Maps** com `map[K]V`; `v, ok := m[k]` para saber se existe; `delete` remove.
+- A ordem de um map é aleatória: ordene as chaves quando precisar.

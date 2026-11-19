@@ -1,0 +1,197 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre int.parse e int.tryParse?", r: "parse quebra com texto inválido; tryParse devolve null." },
+  { p: "Como juntar uma lista de textos com vírgulas?", r: "lista.join(', ')" },
+  { p: "Qual método do Dart equivale ao reduce do JavaScript?", r: "fold." },
+]} />
+
+Funções em Dart têm um recurso que você vai usar o tempo todo no Flutter: os **parâmetros nomeados**. Toda tela de app é montada chamando funções (e construtores) com dezenas deles.
+
+## Declarando uma função
+
+```dart
+double precoComDesconto(double preco, double percentual) {
+  return preco - preco * percentual / 100;
+}
+
+void main() {
+  print(precoComDesconto(20, 10));
+  print(precoComDesconto(12, 50));
+}
+```
+
+```saida
+18.0
+6.0
+```
+
+- O tipo de retorno vem **antes** do nome (`double`), como em Java.
+- Cada parâmetro tem seu tipo.
+- `void` quando não devolve nada.
+
+## A seta: funções de uma linha
+
+```dart
+int dobro(int n) => n * 2;
+String saudar(String nome) => 'Oi, $nome!';
+
+void main() {
+  print(dobro(21));
+  print(saudar('Caio'));
+}
+```
+
+```saida
+42
+Oi, Caio!
+```
+
+`=> expressão` é o mesmo que `{ return expressão; }`.
+
+## Parâmetros nomeados
+
+Com chaves `{ }` na declaração, os parâmetros passam a ter **nome** na chamada:
+
+```dart
+String montarPedido({
+  required String sabor,
+  String tamanho = 'M',
+  bool comGranola = false,
+}) {
+  final extra = comGranola ? ' com granola' : '';
+  return 'Smoothie de $sabor ($tamanho)$extra';
+}
+
+void main() {
+  print(montarPedido(sabor: 'manga'));
+  print(montarPedido(sabor: 'açaí', comGranola: true, tamanho: 'G'));
+}
+```
+
+```saida
+Smoothie de manga (M)
+Smoothie de açaí (G) com granola
+```
+
+- `required` torna o parâmetro **obrigatório**: esquecer o `sabor` não compila.
+- Os outros têm **valor padrão**.
+- Na chamada, a **ordem não importa**, e cada valor diz para que serve.
+
+<Nota tipo="curiosidade" titulo="É assim no Flutter inteiro">
+Um botão no Flutter é algo como `ElevatedButton(onPressed: pedir, child: Text('Pedir'))`. Esses `onPressed:` e `child:` são parâmetros nomeados. Entendendo esta aula, você entende metade do código de qualquer tela.
+</Nota>
+
+## Parâmetros opcionais por posição
+
+Também existem opcionais **sem nome**, com colchetes:
+
+```dart
+String servir(String bebida, [String? nome]) {
+  if (nome == null) return '$bebida saindo!';
+  return '$bebida da $nome saindo!';
+}
+
+void main() {
+  print(servir('Smoothie'));
+  print(servir('Smoothie', 'Bia'));
+}
+```
+
+```saida
+Smoothie saindo!
+Smoothie da Bia saindo!
+```
+
+São menos comuns. Na dúvida, prefira os nomeados.
+
+## Funções como valores
+
+Como em JavaScript, funções podem ser guardadas e passadas para outras:
+
+```dart
+List<double> aplicarEmTodos(List<double> precos, double Function(double) transformar) {
+  return precos.map(transformar).toList();
+}
+
+void main() {
+  final precos = [10.0, 12.0, 15.0];
+
+  print(aplicarEmTodos(precos, (p) => p * 2));
+  print(aplicarEmTodos(precos, (p) => p - 1));
+}
+```
+
+```saida
+[20.0, 24.0, 30.0]
+[9.0, 11.0, 14.0]
+```
+
+`double Function(double)` é o **tipo** de uma função que recebe um `double` e devolve um `double`. A função anônima `(p) => p * 2` é o callback.
+
+<Nota tipo="analogia" titulo="Pensa assim: o liquidificador e a receita">
+O `aplicarEmTodos` é o liquidificador: ele sabe bater cada fruta. A função que você passa é a receita: "dobra", "tira um". Liquidificador igual, receitas diferentes. No Flutter, o `onPressed` de um botão recebe a receita do que fazer quando alguém tocar nele.
+</Nota>
+
+<Tarefa titulo="Calculadora da mesa">
+
+Crie uma função `fecharConta` com parâmetros nomeados:
+
+- `itens` (lista de preços), **obrigatório**;
+- `pessoas`, padrão 1;
+- `gorjeta` (em %), padrão 10.
+
+Ela devolve uma `String` como `Total: R$ 46.20 | Cada um: R$ 23.10`.
+
+<Dica>
+`String fecharConta({required List<double> itens, int pessoas = 1, double gorjeta = 10})`. Some com `fold(0.0, ...)`.
+</Dica>
+
+<Resposta>
+
+```dart
+String fecharConta({
+  required List<double> itens,
+  int pessoas = 1,
+  double gorjeta = 10,
+}) {
+  final soma = itens.fold(0.0, (total, p) => total + p);
+  final total = soma * (1 + gorjeta / 100);
+  final cadaUm = total / pessoas;
+  return 'Total: R\$ ${total.toStringAsFixed(2)} | Cada um: R\$ ${cadaUm.toStringAsFixed(2)}';
+}
+
+void main() {
+  print(fecharConta(itens: [12, 9, 15, 6], pessoas: 2));
+  print(fecharConta(itens: [30, 20], gorjeta: 0));
+}
+```
+
+```saida
+Total: R$ 46.20 | Cada um: R$ 23.10
+Total: R$ 50.00 | Cada um: R$ 50.00
+```
+
+Repare que `[12, 9, 15, 6]` funciona como `List<double>`: o Dart entende os números como decimais porque o parâmetro pede `double`.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Numa função com {required String sabor, String tamanho = 'M'}, qual chamada está certa?"
+  opcoes={["montarPedido('manga')", "montarPedido(tamanho: 'G')", "montarPedido(sabor: 'manga')"]}
+  correta={2}
+  explicacao="Parâmetros nomeados vão com o nome na chamada, e o required não pode faltar."
+/>
+
+<Cartoes itens={[
+  { frente: "Função de uma linha", verso: "int dobro(int n) => n * 2;" },
+  { frente: "Parâmetros nomeados", verso: "f({required String a, int b = 1}) e na chamada f(a: 'x', b: 2)." },
+  { frente: "O que faz o required?", verso: "Torna um parâmetro nomeado obrigatório." },
+  { frente: "Tipo de uma função", verso: "double Function(double): recebe double, devolve double." },
+]} />
+
+## Resumindo
+
+- Tipo de retorno antes do nome; `=>` para uma linha.
+- **Parâmetros nomeados** com `{ }`, `required` e valores padrão: o jeito do Flutter.
+- Funções são valores e podem ser passadas como callback.

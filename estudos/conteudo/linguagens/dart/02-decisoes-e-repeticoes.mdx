@@ -1,0 +1,221 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre final e var?", r: "final não pode receber outro valor; var pode." },
+  { p: "Quanto dá 7 ~/ 2 em Dart?", r: "3: é a divisão inteira." },
+  { p: "Como dizer que uma String pode ser nula?", r: "Com ? no tipo: String? apelido;" },
+]} />
+
+Decisões e repetições em Dart são quase iguais às de Java e JavaScript. A novidade boa é o **switch moderno**, que deixa várias decisões bem mais curtas.
+
+## if, else if e else
+
+```dart
+void main() {
+  final media = 6.5;
+
+  if (media >= 7) {
+    print('Aprovado');
+  } else if (media >= 5) {
+    print('Recuperação');
+  } else {
+    print('Reprovado');
+  }
+}
+```
+
+```saida
+Recuperação
+```
+
+A condição precisa ser um `bool` de verdade. Diferente do JavaScript, `if (0)` ou `if (nome)` **não compila**: nada de valores "falsy". Para conferir texto vazio, seja explícito: `if (nome.isEmpty)`.
+
+| Operador | Significa |
+| --- | --- |
+| `==`, `!=` | igual, diferente (sem a confusão do `===` do JavaScript) |
+| `<`, `>`, `<=`, `>=` | comparações |
+| `&&`, `\|\|`, `!` | e, ou, não |
+
+## O ternário
+
+```dart
+void main() {
+  final idade = 17;
+  final ingresso = idade >= 18 ? 'inteira' : 'meia';
+  print('Ingresso: $ingresso');
+}
+```
+
+```saida
+Ingresso: meia
+```
+
+## switch moderno
+
+Para escolher entre vários valores, o `switch` em forma de **expressão** devolve um valor direto:
+
+```dart
+void main() {
+  final tamanho = 'G';
+
+  final preco = switch (tamanho) {
+    'P' => 8.0,
+    'M' => 10.0,
+    'G' => 12.0,
+    _ => 0.0,
+  };
+
+  print('Smoothie $tamanho: R\$ ${preco.toStringAsFixed(2)}');
+}
+```
+
+```saida
+Smoothie G: R$ 12.00
+```
+
+- Cada linha é `valor => resultado`.
+- O `_` é o "qualquer outro caso".
+
+Dá até para usar condições:
+
+```dart
+void main() {
+  final pontos = 85;
+
+  final nivel = switch (pontos) {
+    >= 100 => 'Ouro',
+    >= 50 => 'Prata',
+    _ => 'Bronze',
+  };
+
+  print('Cliente nível $nivel');
+}
+```
+
+```saida
+Cliente nível Prata
+```
+
+## Repetições
+
+### for clássico
+
+```dart
+void main() {
+  for (var i = 1; i <= 3; i++) {
+    print('Batendo o smoothie... $i');
+  }
+}
+```
+
+```saida
+Batendo o smoothie... 1
+Batendo o smoothie... 2
+Batendo o smoothie... 3
+```
+
+### while
+
+```dart
+void main() {
+  var copos = 3;
+  while (copos > 0) {
+    print('Ainda tem $copos copo(s)');
+    copos--;
+  }
+  print('Acabou!');
+}
+```
+
+```saida
+Ainda tem 3 copo(s)
+Ainda tem 2 copo(s)
+Ainda tem 1 copo(s)
+Acabou!
+```
+
+### for-in: passando por cada item
+
+```dart
+void main() {
+  final frutas = ['manga', 'morango', 'banana'];
+
+  for (final fruta in frutas) {
+    print('Descascando $fruta');
+  }
+}
+```
+
+```saida
+Descascando manga
+Descascando morango
+Descascando banana
+```
+
+Em Dart, é `in` (e não `of`, como no JavaScript).
+
+<Tarefa titulo="Fidelidade do smoothie">
+
+Percorra a lista de pedidos `[2, 5, 1, 8, 3]` (quantidade de smoothies de cada cliente) e, para cada um, mostre o brinde usando um `switch`:
+
+- 5 ou mais: `granola grátis`;
+- 3 ou mais: `topping grátis`;
+- menos que isso: `obrigado!`.
+
+No fim, mostre quantos smoothies foram vendidos no total.
+
+<Dica>
+`for (final qtd in pedidos)`, um `switch (qtd) { >= 5 => ..., >= 3 => ..., _ => ... }` e uma variável `var total = 0;` que vai somando.
+</Dica>
+
+<Resposta>
+
+```dart
+void main() {
+  final pedidos = [2, 5, 1, 8, 3];
+  var total = 0;
+
+  for (final qtd in pedidos) {
+    final brinde = switch (qtd) {
+      >= 5 => 'granola grátis',
+      >= 3 => 'topping grátis',
+      _ => 'obrigado!',
+    };
+    total += qtd;
+    print('$qtd smoothie(s): $brinde');
+  }
+
+  print('Total vendido: $total');
+}
+```
+
+```saida
+2 smoothie(s): obrigado!
+5 smoothie(s): granola grátis
+1 smoothie(s): obrigado!
+8 smoothie(s): granola grátis
+3 smoothie(s): topping grátis
+Total vendido: 19
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Em Dart, if (nome) compila quando nome é uma String?"
+  opcoes={["Sim, texto vazio vale false", "Não: a condição precisa ser um bool", "Só se nome não for nulo"]}
+  correta={1}
+  explicacao="Dart não tem valores 'falsy'. Para texto vazio, use nome.isEmpty."
+/>
+
+<Cartoes itens={[
+  { frente: "Condições em Dart", verso: "Precisam ser bool de verdade. Nada de if (0) ou if (texto)." },
+  { frente: "switch como expressão", verso: "final x = switch (v) { 'P' => 8, 'M' => 10, _ => 0 };" },
+  { frente: "O que é o _ no switch?", verso: "O caso 'qualquer outro valor'." },
+  { frente: "Percorrer uma lista", verso: "for (final item in lista) { ... }" },
+]} />
+
+## Resumindo
+
+- `if`/`else` com condições `bool` (sem *falsy*); `==` já compara direito.
+- `switch` como expressão, com `=>` e `_`, até com condições (`>= 50`).
+- `for`, `while` e `for-in` para listas.

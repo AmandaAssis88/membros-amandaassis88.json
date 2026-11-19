@@ -1,0 +1,167 @@
+Bem-vindo ao TypeScript! 🥤 Se o JavaScript é o refrigerante de cola, o TypeScript é a **cola zero**: a mesma bebida, o mesmo sabor, só que com a **tabela nutricional** no rótulo. Essa tabela são os **tipos**: eles dizem o que cada variável pode guardar, e avisam quando algo não bate **antes** de o código rodar.
+
+<Chute pergunta="Este código JavaScript tem um bug. Você consegue achar antes de rodar?">
+
+```javascript-exemplo
+function calcularTotal(preco, quantidade) {
+  return preco * quantidade;
+}
+
+const qtd = document.querySelector("#quantidade").value;
+console.log(calcularTotal(5, qtd + 1));
+```
+
+O `value` de um campo é sempre **texto**. Se a pessoa digitar `2`, `qtd + 1` vira `"21"` (juntou os textos, lembra?), e o total sai **105** em vez de 15. O JavaScript roda tudo sem reclamar. O TypeScript marcaria essa linha em vermelho no editor, antes de qualquer cliente ver.
+
+</Chute>
+
+## O que é o TypeScript
+
+- É o **JavaScript com tipos**. Todo código JavaScript válido também é TypeScript válido.
+- Foi criado pela Microsoft em 2012 e hoje é usado na maior parte dos projetos profissionais de front-end e Node.js (inclusive aqui na Unidunedev: os arquivos `.ts` e `.tsx` são TypeScript).
+- O navegador **não** entende TypeScript. Antes de rodar, o código é **compilado** (traduzido) para JavaScript, e os tipos são apagados.
+
+<Passos itens={[
+  { icone: "✍️", titulo: "Você escreve", texto: "pedido.ts, com tipos" },
+  { icone: "🔍", titulo: "O compilador confere", texto: "os tipos batem? se não, mostra o erro" },
+  { icone: "📄", titulo: "Gera JavaScript", texto: "pedido.js, sem tipos" },
+  { icone: "🌐", titulo: "Roda", texto: "no navegador ou no Node.js" },
+]} />
+
+<Nota tipo="analogia" titulo="Pensa assim: o rótulo e o fiscal">
+Os tipos são o rótulo da lata; o compilador é o fiscal da fábrica que confere cada lata **antes** de ir para a prateleira. Uma vez na prateleira (rodando no navegador), não tem mais fiscal: o rótulo já cumpriu o papel dele.
+</Nota>
+
+## Onde testar
+
+Clique em **Testar**: ele abre o **TypeScript Playground**, o site oficial. Apague o exemplo de lá, cole o código e clique em **Run**. A saída aparece na aba **Logs**, à direita. Os erros de tipo aparecem sublinhados em vermelho, enquanto você digita.
+
+## Sua primeira anotação de tipo
+
+```typescript
+const produto: string = "Cappuccino";
+const preco: number = 9;
+const temEstoque: boolean = true;
+
+console.log(`${produto}: R$ ${preco.toFixed(2)} (${temEstoque ? "tem" : "acabou"})`);
+```
+
+```saida
+Cappuccino: R$ 9.00 (tem)
+```
+
+O `: string` depois do nome é a **anotação de tipo**: "esta variável guarda texto". Os tipos básicos são os mesmos do JavaScript: `string`, `number` e `boolean`.
+
+## O erro aparece antes
+
+Agora tente colocar um valor do tipo errado:
+
+```typescript-exemplo
+let preco: number = 9;
+preco = "nove reais";
+```
+
+```saida
+Type 'string' is not assignable to type 'number'.
+```
+
+Esse erro aparece **no editor**, enquanto você digita, e o código nem é gerado. No JavaScript, o mesmo engano só seria descoberto quando alguém tentasse fazer uma conta com `"nove reais"`.
+
+## Inferência: o TypeScript adivinha
+
+Você não precisa anotar tudo. Quando a variável já nasce com um valor, o TypeScript **descobre o tipo sozinho**:
+
+```typescript
+const bebida = "Latte";
+let xicaras = 3;
+xicaras = xicaras + 1;
+
+console.log(bebida.toUpperCase(), xicaras);
+```
+
+```saida
+LATTE 4
+```
+
+Passe o mouse sobre `xicaras` no Playground: ele mostra `let xicaras: number`. O TypeScript inferiu. E se você tentar `xicaras = "quatro"`, ele reclama igual.
+
+<Nota tipo="dica" titulo="Quando anotar">
+Deixe o TypeScript inferir as variáveis com valor inicial. Anote os **parâmetros de funções** (ele não tem como adivinhar o que vai chegar) e as variáveis que nascem vazias. Você vê isso na próxima aula.
+</Nota>
+
+## O editor vira um copiloto
+
+O maior ganho do dia a dia nem é o erro: é o **autocompletar**. Como o editor sabe que `bebida` é uma `string`, quando você digita `bebida.` ele lista só os métodos de texto (`toUpperCase`, `slice`, `includes`...). Em objetos grandes, ele mostra todos os campos que existem, e você para de ter que adivinhar se era `nomeCliente` ou `clienteNome`.
+
+<Explique pergunta="Se o navegador não entende TypeScript, por que vale a pena usar?">
+Porque o ganho acontece antes de rodar: enquanto você escreve, o compilador confere se os valores combinam com os tipos e aponta erros como somar texto com número ou acessar um campo que não existe. O editor também passa a sugerir os campos e métodos certos. Depois, o código vira JavaScript normal, e o navegador roda sem saber que um dia teve tipos.
+</Explique>
+
+<Tarefa titulo="Achando os erros pelo rótulo">
+
+Cole este código no Playground e, **sem rodar**, use os sublinhados vermelhos para encontrar e corrigir os três problemas:
+
+```typescript-exemplo
+const cliente: string = "Ana";
+const pontos: number = "120";
+const vip: boolean = pontos > 100;
+
+console.log(cliente.toUppercase());
+console.log(`Pontos: ${pontos.toFixed(0)}`);
+console.log(vip ? "Cliente VIP" : "Cliente comum");
+const desconto: number = vip ? "10%" : 0;
+```
+
+<Dica>
+Passe o mouse sobre cada sublinhado vermelho e leia a mensagem. Um dos problemas é de digitação: em JavaScript, maiúsculas e minúsculas importam.
+</Dica>
+
+<Resposta>
+
+```typescript
+const cliente: string = "Ana";
+const pontos: number = 120;
+const vip: boolean = pontos > 100;
+
+console.log(cliente.toUpperCase());
+console.log(`Pontos: ${pontos.toFixed(0)}`);
+console.log(vip ? "Cliente VIP" : "Cliente comum");
+const desconto: number = vip ? 10 : 0;
+console.log(`Desconto: ${desconto}%`);
+```
+
+```saida
+ANA
+Pontos: 120
+Cliente VIP
+Desconto: 10%
+```
+
+1. `"120"` é texto, mas `pontos` é `number`: tirar as aspas.
+2. `toUppercase` não existe: o certo é `toUpperCase`, com **C** maiúsculo. O TypeScript até sugere o nome certo.
+3. `"10%"` é texto, mas `desconto` é `number`: guardar o número `10` e colocar o `%` só na hora de mostrar.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que acontece com os tipos quando o TypeScript é compilado para JavaScript?"
+  opcoes={["Viram verificações que rodam no navegador", "São apagados: o JavaScript gerado não tem tipos", "Ficam como comentários obrigatórios"]}
+  correta={1}
+  explicacao="Os tipos servem para conferir o código antes de rodar. O JavaScript gerado é normal, sem nenhum tipo."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é TypeScript?", verso: "JavaScript com tipos, que é compilado para JavaScript antes de rodar." },
+  { frente: "Anotação de tipo", verso: "const preco: number = 9; (o : number diz o que a variável guarda)" },
+  { frente: "Inferência", verso: "Quando a variável nasce com valor, o TypeScript descobre o tipo sozinho." },
+  { frente: "Quando o TypeScript acha o erro?", verso: "Antes de rodar: no editor, enquanto você digita, e na compilação." },
+]} />
+
+## Resumindo
+
+- TypeScript é JavaScript com **tipos**, conferidos antes de rodar.
+- O código é compilado para JavaScript, e os tipos somem.
+- `string`, `number` e `boolean` com `: tipo` depois do nome.
+- Deixe a **inferência** trabalhar; anote os parâmetros de funções.

@@ -1,0 +1,237 @@
+<Aquecimento perguntas={[
+  { p: "Por que usar === em vez de ==?", r: "Porque === compara valor e tipo; == converte os tipos e dá resultados inesperados." },
+  { p: "Quais valores são 'falsy' em JavaScript?", r: "false, 0, '' (texto vazio), null, undefined e NaN." },
+  { p: "Qual laço usar para percorrer os valores de uma lista?", r: "for...of." },
+]} />
+
+Agora você vai guardar muitos valores de uma vez. Em JavaScript, duas estruturas fazem quase tudo: o **array** (a lista) e o **objeto** (o registro com nomes). E elas são a base do **JSON**, o formato em que quase toda API conversa.
+
+## Arrays: listas
+
+```javascript
+const cardapio = ["café", "chá", "bolo"];
+
+console.log(cardapio[0]);
+console.log(cardapio.length);
+
+cardapio.push("suco");
+console.log(cardapio);
+
+const ultimo = cardapio.pop();
+console.log(ultimo, cardapio);
+```
+
+```saida
+café
+3
+[ 'café', 'chá', 'bolo', 'suco' ]
+suco [ 'café', 'chá', 'bolo' ]
+```
+
+- As posições começam em **0**.
+- `length` é o tamanho.
+- `push` coloca no fim; `pop` tira do fim (lembra da pilha de pratos, na trilha de Algoritmos?).
+
+<Nota tipo="curiosidade" titulo="const com array?">
+Repare que `cardapio` é `const` e mesmo assim mudou. O `const` impede **trocar** a variável por outra coisa (`cardapio = []` dá erro), mas não impede **mexer dentro** do array.
+</Nota>
+
+## Os três métodos que você vai usar todo dia
+
+```javascript
+const precos = [5, 9, 6, 12];
+
+const comAumento = precos.map((p) => p * 1.1);
+const baratos = precos.filter((p) => p < 8);
+const total = precos.reduce((soma, p) => soma + p, 0);
+
+console.log(comAumento.map((p) => p.toFixed(2)));
+console.log(baratos);
+console.log(total);
+```
+
+```saida
+[ '5.50', '9.90', '6.60', '13.20' ]
+[ 5, 6 ]
+32
+```
+
+| Método | Faz | Devolve |
+| --- | --- | --- |
+| `map` | transforma **cada** item | um array novo, do mesmo tamanho |
+| `filter` | escolhe os itens que passam no teste | um array novo, menor (ou igual) |
+| `reduce` | junta tudo num valor só | um valor (a soma, por exemplo) |
+
+O `(p) => p * 1.1` é uma **arrow function**, uma função curtinha: "recebe `p` e devolve `p * 1.1`". Você vai ver funções com calma na aula 5.
+
+Outros úteis: `includes` (tem esse item?), `find` (o primeiro que passa no teste), `indexOf` (em que posição está?) e `sort` (ordena).
+
+## Objetos: um registro com nomes
+
+Um objeto guarda várias informações de **uma** coisa, cada uma com um nome (a **chave**):
+
+```javascript
+const produto = {
+  nome: "Cappuccino",
+  preco: 9,
+  categoria: "bebida",
+  temLactose: true,
+};
+
+console.log(produto.nome);
+console.log(produto["preco"]);
+
+produto.preco = 9.5;
+produto.tamanho = "médio";
+console.log(produto);
+```
+
+```saida
+Cappuccino
+9
+{
+  nome: 'Cappuccino',
+  preco: 9.5,
+  categoria: 'bebida',
+  temLactose: true,
+  tamanho: 'médio'
+}
+```
+
+É o mesmo que o dicionário do Python. Acesse com ponto (`produto.nome`) ou com colchetes (`produto["nome"]`, útil quando a chave está numa variável).
+
+## Arrays de objetos: o formato das APIs
+
+Na vida real, quase tudo vem assim: uma lista de objetos.
+
+```javascript
+const pedidos = [
+  { cliente: "Ana", total: 21 },
+  { cliente: "Bia", total: 13 },
+  { cliente: "Caio", total: 17 },
+];
+
+const grandes = pedidos.filter((p) => p.total > 15).map((p) => p.cliente);
+console.log(grandes);
+
+const faturamento = pedidos.reduce((soma, p) => soma + p.total, 0);
+console.log(`Faturamento: R$ ${faturamento}`);
+```
+
+```saida
+[ 'Ana', 'Caio' ]
+Faturamento: R$ 51
+```
+
+Repare no encadeamento: primeiro `filter` (só os grandes), depois `map` (só o nome). Lê quase como uma frase.
+
+## Desestruturação: tirando valores de dentro
+
+Um atalho muito usado para pegar partes de objetos e arrays:
+
+```javascript
+const pedido = { cliente: "Ana", total: 21, mesa: 4 };
+const { cliente, total } = pedido;
+console.log(cliente, total);
+
+const [primeiro, segundo] = ["café", "chá", "bolo"];
+console.log(primeiro, segundo);
+```
+
+```saida
+Ana 21
+café chá
+```
+
+## JSON: objetos viajando pela internet
+
+**JSON** é texto no formato de objetos e arrays do JavaScript. É assim que o front-end e o back-end trocam dados (o card do mural da Unidunedev é um JSON!).
+
+```javascript
+const pedido = { cliente: "Ana", itens: ["café", "bolo"] };
+
+const texto = JSON.stringify(pedido);
+console.log(texto);
+
+const deVolta = JSON.parse(texto);
+console.log(deVolta.itens[1]);
+```
+
+```saida
+{"cliente":"Ana","itens":["café","bolo"]}
+bolo
+```
+
+`JSON.stringify` transforma objeto em texto (para enviar); `JSON.parse` transforma texto em objeto (para usar).
+
+<Tarefa titulo="Relatório do cardápio">
+
+Dado este array:
+
+```javascript
+const produtos = [
+  { nome: "Café", preco: 5, categoria: "bebida" },
+  { nome: "Pão de queijo", preco: 6, categoria: "comida" },
+  { nome: "Cappuccino", preco: 9, categoria: "bebida" },
+  { nome: "Croissant", preco: 10, categoria: "comida" },
+];
+```
+
+1. Mostre só os **nomes** das bebidas.
+2. Mostre o **preço médio** dos produtos.
+3. Mostre o produto **mais caro** (o objeto inteiro).
+
+<Dica>
+1: `filter` + `map`. 2: `reduce` para somar e divida por `length`. 3: `reduce` guardando o maior até agora: `(maior, p) => (p.preco > maior.preco ? p : maior)`.
+</Dica>
+
+<Resposta>
+
+```javascript
+const produtos = [
+  { nome: "Café", preco: 5, categoria: "bebida" },
+  { nome: "Pão de queijo", preco: 6, categoria: "comida" },
+  { nome: "Cappuccino", preco: 9, categoria: "bebida" },
+  { nome: "Croissant", preco: 10, categoria: "comida" },
+];
+
+const bebidas = produtos.filter((p) => p.categoria === "bebida").map((p) => p.nome);
+console.log(bebidas);
+
+const media = produtos.reduce((soma, p) => soma + p.preco, 0) / produtos.length;
+console.log(`Preço médio: R$ ${media.toFixed(2)}`);
+
+const maisCaro = produtos.reduce((maior, p) => (p.preco > maior.preco ? p : maior));
+console.log(maisCaro);
+```
+
+```saida
+[ 'Café', 'Cappuccino' ]
+Preço médio: R$ 7.50
+{ nome: 'Croissant', preco: 10, categoria: 'comida' }
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual método transforma cada item de um array e devolve um array do mesmo tamanho?"
+  opcoes={["filter", "map", "reduce"]}
+  correta={1}
+  explicacao="map transforma cada item. filter escolhe alguns; reduce junta tudo num valor."
+/>
+
+<Cartoes itens={[
+  { frente: "map, filter e reduce", verso: "Transformar cada item; escolher alguns; juntar tudo num valor." },
+  { frente: "Como acessar a chave de um objeto?", verso: "objeto.chave ou objeto['chave']." },
+  { frente: "O que é JSON?", verso: "Texto no formato de objetos e arrays, usado para trocar dados entre sistemas." },
+  { frente: "JSON.stringify × JSON.parse", verso: "Objeto → texto; texto → objeto." },
+]} />
+
+## Resumindo
+
+- **Arrays**: listas com posições a partir de 0, `push`, `pop`, `length`.
+- `map`, `filter` e `reduce` resolvem a maior parte do trabalho com listas.
+- **Objetos**: chave e valor, acessados com ponto ou colchetes.
+- Arrays de objetos e **JSON** são a língua das APIs.

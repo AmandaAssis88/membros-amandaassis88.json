@@ -1,0 +1,198 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre List e Set?", r: "Set não guarda valores repetidos." },
+  { p: "O que mapa['kiwi'] devolve se a chave não existe?", r: "null." },
+  { p: "Por que terminar map e where com .toList()?", r: "Porque eles devolvem um Iterable, não uma List." },
+]} />
+
+Nomes, e-mails, buscas, mensagens: num app, o texto está em todo lugar. Os métodos de `String` do Dart são bem parecidos com os do JavaScript e do Java, então esta aula vai rápido.
+
+## O básico
+
+```dart
+void main() {
+  final bebida = 'Smoothie';
+
+  print(bebida.length);
+  print(bebida[0]);
+  print(bebida.toUpperCase());
+  print(bebida.toLowerCase());
+  print(bebida.isEmpty);
+}
+```
+
+```saida
+8
+S
+SMOOTHIE
+smoothie
+false
+```
+
+Como em quase toda linguagem, strings **não mudam**: os métodos devolvem uma string nova.
+
+## Limpar, procurar e trocar
+
+```dart
+void main() {
+  final digitado = '   Ana@Email.com   ';
+  final email = digitado.trim().toLowerCase();
+
+  print(email);
+  print(email.contains('@'));
+  print(email.startsWith('ana'));
+  print(email.endsWith('.com'));
+  print(email.indexOf('@'));
+  print(email.replaceAll('email', 'smoothie'));
+}
+```
+
+```saida
+ana@email.com
+true
+true
+true
+3
+ana@smoothie.com
+```
+
+## Pedaços, quebrar e juntar
+
+```dart
+void main() {
+  final codigo = 'PED-2026-0042';
+  print(codigo.substring(0, 3));
+  print(codigo.substring(4, 8));
+
+  final linha = 'manga;morango;banana';
+  final frutas = linha.split(';');
+  print(frutas);
+  print(frutas.join(', '));
+}
+```
+
+```saida
+PED
+2026
+[manga, morango, banana]
+manga, morango, banana
+```
+
+- `substring(inicio, fim)` pega do `inicio` até **antes** do `fim`.
+- `split` quebra num `List<String>`; `join` junta de volta.
+
+## Preencher e converter
+
+```dart
+void main() {
+  print('42'.padLeft(4, '0'));
+  print('Manga'.padRight(10, '.') + 'R\$ 12');
+  print('=' * 15);
+
+  print(int.parse('7') + 1);
+  print(double.parse('3.5') * 2);
+  print(int.tryParse('abc'));
+}
+```
+
+```saida
+0042
+Manga.....R$ 12
+===============
+8
+7.0
+null
+```
+
+- `padLeft` / `padRight` completam até um tamanho.
+- `'=' * 15` repete o texto (em Dart, dá para multiplicar string por número).
+- `int.parse` converte, mas **quebra** se o texto não for número. O `int.tryParse` devolve `null` em vez de quebrar: o jeito seguro para valores digitados pelo usuário.
+
+## Textos de várias linhas
+
+```dart
+void main() {
+  final nome = 'Bia';
+  final recibo = '''
+Cliente: $nome
+Smoothie de manga
+Obrigado pela visita!''';
+
+  print(recibo);
+}
+```
+
+```saida
+Cliente: Bia
+Smoothie de manga
+Obrigado pela visita!
+```
+
+Três aspas (`'''`) permitem quebrar linhas dentro do texto, e a interpolação continua funcionando.
+
+<Tarefa titulo="Validando o cadastro">
+
+Escreva um programa que, a partir de um nome e de um telefone digitados com sujeira, mostre:
+
+- o nome com espaços sobrando removidos e a primeira letra de cada palavra maiúscula: `'  maria   clara '` → `Maria Clara`;
+- o telefone só com os números: `'(81) 99999-1234'` → `81999991234`;
+- se o telefone tem 11 dígitos (válido) ou não.
+
+<Dica>
+Para o nome: `trim()`, `split(' ')`, `where((p) => p.isNotEmpty)` e, para cada palavra, `p[0].toUpperCase() + p.substring(1)`. Para o telefone, `replaceAll(RegExp(r'[^0-9]'), '')` remove tudo que não é número.
+</Dica>
+
+<Resposta>
+
+```dart
+void main() {
+  final nomeBruto = '  maria   clara ';
+  final telefoneBruto = '(81) 99999-1234';
+
+  final nome = nomeBruto
+      .trim()
+      .split(' ')
+      .where((p) => p.isNotEmpty)
+      .map((p) => p[0].toUpperCase() + p.substring(1))
+      .join(' ');
+
+  final telefone = telefoneBruto.replaceAll(RegExp(r'[^0-9]'), '');
+  final valido = telefone.length == 11;
+
+  print(nome);
+  print(telefone);
+  print(valido ? 'Telefone válido' : 'Telefone inválido');
+}
+```
+
+```saida
+Maria Clara
+81999991234
+Telefone válido
+```
+
+O `RegExp(r'[^0-9]')` é uma **expressão regular**: "qualquer caractere que não seja de 0 a 9". O `r` antes das aspas faz o Dart ler o texto literalmente.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual a forma segura de converter um texto digitado pelo usuário em número?"
+  opcoes={["int.parse(texto)", "int.tryParse(texto), tratando o null", "texto as int"]}
+  correta={1}
+  explicacao="int.parse quebra se o texto não for número. tryParse devolve null, e o null safety obriga a tratar."
+/>
+
+<Cartoes itens={[
+  { frente: "trim, contains, replaceAll", verso: "Tira espaços das pontas; procura; troca todas as ocorrências." },
+  { frente: "substring(inicio, fim)", verso: "Pega do inicio até antes do fim." },
+  { frente: "int.parse × int.tryParse", verso: "parse quebra com texto inválido; tryParse devolve null." },
+  { frente: "Texto de várias linhas", verso: "Com três aspas: ''' ... '''" },
+]} />
+
+## Resumindo
+
+- Strings não mudam; `trim`, `toLowerCase`, `contains`, `replaceAll` e `substring` resolvem o dia a dia.
+- `split` e `join` convertem entre texto e lista.
+- `int.tryParse` para converter o que o usuário digitou.
+- `'''` para textos de várias linhas.

@@ -1,0 +1,219 @@
+<Aquecimento perguntas={[
+  { p: "Como descrever o formato de um objeto em TypeScript?", r: "Com uma interface (ou um type) listando os campos e seus tipos." },
+  { p: "O que o readonly faz num campo?", r: "Impede que ele seja alterado depois que o objeto é criado." },
+  { p: "O tipo de um JSON vindo da API é garantido pelo TypeScript?", r: "Não. O tipo é uma promessa; para conferir de verdade, é preciso validar (com Zod, por exemplo)." },
+]} />
+
+Duas ideias que parecem avançadas, mas você vai usar toda semana: **narrowing** (o TypeScript entender, pelo seu `if`, que tipo a variável tem naquele ponto) e **generics** (funções e tipos que funcionam com qualquer tipo, sem perder a informação).
+
+## Narrowing: estreitando o tipo
+
+Quando uma variável pode ser de mais de um tipo, o TypeScript só deixa você usar o que vale para **todos** eles. Até você conferir:
+
+```typescript
+function formatarMesa(mesa: number | string): string {
+  if (typeof mesa === "number") {
+    return `Mesa ${mesa.toString().padStart(2, "0")}`;
+  }
+  return mesa.toUpperCase();
+}
+
+console.log(formatarMesa(7));
+console.log(formatarMesa("balcão"));
+```
+
+```saida
+Mesa 07
+BALCÃO
+```
+
+Dentro do `if`, o TypeScript **sabe** que `mesa` é `number`. Depois do `return`, só sobrou `string`, e o `toUpperCase` é liberado. Isso se chama **narrowing** (estreitamento).
+
+## null e undefined: o bug de um bilhão
+
+Com o modo `strict` ligado (o padrão dos projetos novos), o TypeScript obriga você a tratar o "pode não existir":
+
+```typescript
+interface Cliente {
+  nome: string;
+  apelido?: string;
+}
+
+function nomeNoCopo(cliente: Cliente | undefined): string {
+  if (!cliente) {
+    return "Cliente sem cadastro";
+  }
+  return cliente.apelido ?? cliente.nome;
+}
+
+console.log(nomeNoCopo({ nome: "Maria Clara", apelido: "Mari" }));
+console.log(nomeNoCopo({ nome: "Caio" }));
+console.log(nomeNoCopo(undefined));
+```
+
+```saida
+Mari
+Caio
+Cliente sem cadastro
+```
+
+Sem o `if (!cliente)`, o `cliente.nome` dá erro de compilação: `'cliente' is possibly 'undefined'`. É o TypeScript impedindo o famoso `Cannot read properties of undefined`, o erro mais comum do JavaScript.
+
+Dois operadores ajudam muito:
+
+| Operador | Exemplo | Significa |
+| --- | --- | --- |
+| `?.` | `cliente?.nome` | se `cliente` existir, pega o `nome`; senão, `undefined` |
+| `??` | `apelido ?? nome` | se o da esquerda for `null` ou `undefined`, usa o da direita |
+
+<Nota tipo="curiosidade" titulo="O erro de um bilhão de dólares">
+Tony Hoare, que inventou a referência nula em 1965, chamou essa ideia de "meu erro de um bilhão de dólares", pela quantidade de bugs que ela causou. Linguagens modernas (TypeScript com strict, Kotlin, Swift, Dart) obrigam a tratar o nulo antes de usar.
+</Nota>
+
+## Unions com etiqueta
+
+Um padrão muito comum para representar estados: cada formato tem um campo que diz **qual** ele é.
+
+```typescript
+type Resultado =
+  | { status: "carregando" }
+  | { status: "sucesso"; itens: string[] }
+  | { status: "erro"; mensagem: string };
+
+function mostrar(r: Resultado): string {
+  switch (r.status) {
+    case "carregando":
+      return "⏳ Carregando o cardápio...";
+    case "sucesso":
+      return `☕ ${r.itens.join(", ")}`;
+    case "erro":
+      return `⚠️ ${r.mensagem}`;
+  }
+}
+
+console.log(mostrar({ status: "carregando" }));
+console.log(mostrar({ status: "sucesso", itens: ["café", "chá"] }));
+console.log(mostrar({ status: "erro", mensagem: "Sem conexão" }));
+```
+
+```saida
+⏳ Carregando o cardápio...
+☕ café, chá
+⚠️ Sem conexão
+```
+
+Em cada `case`, o TypeScript sabe quais campos existem: `r.itens` só pode ser usado no caso `"sucesso"`. É impossível mostrar a lista de itens quando deu erro.
+
+## Generics: a caixa que sabe o que guarda
+
+Imagine uma função que devolve o primeiro item de uma lista. Com `any`, ela aceitaria tudo, mas o TypeScript perderia a informação do tipo. Com **generics**, o tipo vira um **parâmetro**:
+
+```typescript
+function primeiro<T>(lista: T[]): T | undefined {
+  return lista[0];
+}
+
+const bebida = primeiro(["café", "chá"]);
+const preco = primeiro([5, 9, 6]);
+
+console.log(bebida?.toUpperCase(), preco?.toFixed(2));
+```
+
+```saida
+CAFÉ 5.00
+```
+
+O `<T>` é um "tipo a ser definido". Chamando com uma lista de textos, `T` vira `string`, e `bebida` é `string | undefined`. Com números, `T` vira `number`. Uma função só, e o tipo nunca se perde.
+
+<Nota tipo="analogia" titulo="Pensa assim: o pote com etiqueta em branco">
+Um generic é um pote de vidro com a etiqueta em branco. Na hora de usar, você escreve na etiqueta: "pote de **açúcar**". A partir daí, todo mundo sabe o que tem dentro, e ninguém coloca sal por engano.
+</Nota>
+
+Você já usa generics sem perceber: `Array<number>` é o mesmo que `number[]`, e `Promise<Pedido>` é "uma Promise que vai entregar um `Pedido`".
+
+### Um tipo genérico para respostas de API
+
+```typescript
+interface RespostaApi<T> {
+  dados: T;
+  pagina: number;
+}
+
+interface Produto {
+  nome: string;
+  preco: number;
+}
+
+const resposta: RespostaApi<Produto[]> = {
+  dados: [{ nome: "Café", preco: 5 }],
+  pagina: 1,
+};
+
+console.log(resposta.dados[0].nome);
+```
+
+```saida
+Café
+```
+
+Um molde só (`RespostaApi`) serve para produtos, pedidos, usuários... cada um com seu tipo.
+
+<Tarefa titulo="O último da fila">
+
+1. Escreva uma função genérica `ultimo<T>(lista: T[]): T | undefined` que devolve o último item.
+2. Escreva uma função `descrever(valor: string | number | boolean): string` que devolve `"texto com N letras"`, `"número N"` ou `"sim"`/`"não"`, usando `typeof` para estreitar o tipo.
+
+<Dica>
+Para o último: `lista[lista.length - 1]` (ou `lista.at(-1)`). Para o descrever, três `if` com `typeof valor === "..."`.
+</Dica>
+
+<Resposta>
+
+```typescript
+function ultimo<T>(lista: T[]): T | undefined {
+  return lista[lista.length - 1];
+}
+
+function descrever(valor: string | number | boolean): string {
+  if (typeof valor === "string") {
+    return `texto com ${valor.length} letras`;
+  }
+  if (typeof valor === "number") {
+    return `número ${valor}`;
+  }
+  return valor ? "sim" : "não";
+}
+
+console.log(ultimo(["café", "chá", "bolo"]));
+console.log(descrever("latte"), "|", descrever(42), "|", descrever(false));
+```
+
+```saida
+bolo
+texto com 5 letras | número 42 | não
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Em function primeiro<T>(lista: T[]): T, o que é o T?"
+  opcoes={["Um tipo fixo chamado T", "Um parâmetro de tipo, definido a cada chamada", "Abreviação de 'texto'"]}
+  correta={1}
+  explicacao="T é um tipo genérico: com uma lista de strings, T vira string; com números, number."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é narrowing?", verso: "O TypeScript estreitar o tipo de uma variável a partir de um if, typeof ou switch." },
+  { frente: "?. e ??", verso: "?. acessa só se existir; ?? usa o valor da direita se o da esquerda for null ou undefined." },
+  { frente: "Union com etiqueta", verso: "Vários formatos com um campo em comum (status) que diz qual é qual." },
+  { frente: "Para que servem os generics?", verso: "Escrever funções e tipos que funcionam com qualquer tipo, sem perder a informação do tipo." },
+]} />
+
+## Resumindo
+
+- **Narrowing**: `typeof`, `if` e `switch` dizem ao TypeScript qual tipo vale ali.
+- Com `strict`, `null` e `undefined` precisam ser tratados: use `?.` e `??`.
+- **Unions com etiqueta** representam estados sem misturar campos.
+- **Generics** (`<T>`) são potes com etiqueta: o tipo é decidido no uso.

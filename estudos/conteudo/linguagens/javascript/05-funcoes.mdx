@@ -1,0 +1,209 @@
+<Aquecimento perguntas={[
+  { p: "O que split e join fazem?", r: "split quebra uma string num array; join junta um array numa string." },
+  { p: "Por que fazer trim().toLowerCase() antes de comparar e-mails?", r: "Para ignorar espaços sobrando e diferenças de maiúsculas e minúsculas." },
+  { p: "O que reduce faz num array?", r: "Junta todos os itens num valor só, como uma soma." },
+]} />
+
+Você já usou funções prontas (`console.log`, `map`, `split`). Agora vai criar as suas. Em JavaScript, funções são especialmente importantes: elas podem ser guardadas em variáveis e passadas para outras funções, e é isso que faz o `map` e o `filter` funcionarem.
+
+## Declarando uma função
+
+```javascript
+function precoComDesconto(preco, percentual) {
+  const desconto = preco * (percentual / 100);
+  return preco - desconto;
+}
+
+console.log(precoComDesconto(20, 10));
+console.log(precoComDesconto(9, 50));
+```
+
+```saida
+18
+4.5
+```
+
+- `preco` e `percentual` são os **parâmetros** (o que a função recebe).
+- `return` devolve o resultado e **encerra** a função.
+- Sem `return`, a função devolve `undefined`.
+
+## Arrow functions: o jeito curto
+
+O mesmo, com a sintaxe de flecha (`=>`), muito usada no JavaScript moderno:
+
+```javascript
+const precoComDesconto = (preco, percentual) => {
+  const desconto = preco * (percentual / 100);
+  return preco - desconto;
+};
+
+const dobro = (n) => n * 2;
+const saudar = () => "Bom dia!";
+
+console.log(precoComDesconto(20, 10));
+console.log(dobro(21));
+console.log(saudar());
+```
+
+```saida
+18
+42
+Bom dia!
+```
+
+Quando a função tem **uma linha só**, dá para tirar as chaves e o `return`: `(n) => n * 2` já devolve `n * 2`.
+
+| Forma | Exemplo | Quando usar |
+| --- | --- | --- |
+| `function` | `function somar(a, b) { ... }` | Funções principais, com nome |
+| arrow | `const somar = (a, b) => a + b;` | Funções curtas, principalmente passadas para outras (`map`, `filter`) |
+
+## Valores padrão
+
+```javascript
+function servir(bebida, tamanho = "médio") {
+  return `${bebida} ${tamanho} saindo!`;
+}
+
+console.log(servir("Café"));
+console.log(servir("Chá", "grande"));
+```
+
+```saida
+Café médio saindo!
+Chá grande saindo!
+```
+
+Se o parâmetro não for passado, usa o valor depois do `=`.
+
+## Recebendo um objeto: parâmetros com nome
+
+Com muitos parâmetros, fica difícil lembrar a ordem. A saída é receber um **objeto** e desestruturar:
+
+```javascript
+function montarPedido({ cliente, bebida, tamanho = "médio", viagem = false }) {
+  const local = viagem ? "para viagem" : "para a mesa";
+  return `${cliente}: ${bebida} ${tamanho}, ${local}`;
+}
+
+console.log(montarPedido({ cliente: "Ana", bebida: "Latte", viagem: true }));
+```
+
+```saida
+Ana: Latte médio, para viagem
+```
+
+Na chamada, cada valor tem nome, e a ordem não importa. Esse padrão aparece muito em React.
+
+## Funções são valores: callbacks
+
+Em JavaScript, uma função pode ser passada como argumento para outra. A função passada se chama **callback** ("chame de volta"):
+
+```javascript
+function aplicarEmTodos(lista, transformar) {
+  const resultado = [];
+  for (const item of lista) {
+    resultado.push(transformar(item));
+  }
+  return resultado;
+}
+
+const precos = [5, 8, 10];
+console.log(aplicarEmTodos(precos, (p) => p * 2));
+console.log(aplicarEmTodos(precos, (p) => `R$ ${p}`));
+```
+
+```saida
+[ 10, 16, 20 ]
+[ 'R$ 5', 'R$ 8', 'R$ 10' ]
+```
+
+Você acabou de escrever o seu próprio `map`! É exatamente assim que ele funciona por dentro: percorre a lista e chama o callback em cada item.
+
+<Nota tipo="analogia" titulo="Pensa assim: o barista e a receita">
+O `aplicarEmTodos` é o barista: ele sabe passar por cada xícara da fila. O callback é a receita que você entrega a ele: "em cada uma, coloque leite". Barista igual, receitas diferentes.
+</Nota>
+
+## Escopo: onde a variável existe
+
+Uma variável criada com `let` ou `const` só existe **dentro do bloco** `{ }` onde nasceu:
+
+```javascript
+const taxa = 0.1;
+
+function calcularGorjeta(total) {
+  const gorjeta = total * taxa;
+  return gorjeta;
+}
+
+console.log(calcularGorjeta(50));
+console.log(typeof gorjeta);
+```
+
+```saida
+5
+undefined
+```
+
+A função enxerga `taxa` (que está fora), mas quem está fora **não** enxerga `gorjeta` (que está dentro). Isso evita que uma função bagunce as variáveis da outra.
+
+<Explique pergunta="Por que dá para passar (p) => p * 2 para o map?">
+Porque, em JavaScript, funções são valores como números e textos: podem ir para variáveis e ser passadas como argumento. O map recebe essa função e a chama uma vez para cada item da lista, guardando o que ela devolve no array novo.
+</Explique>
+
+<Tarefa titulo="Calculadora de conta da mesa">
+
+Crie uma função `fecharConta` que recebe um objeto com `itens` (array de preços), `pessoas` e `gorjeta` (opcional, padrão 10). Ela devolve um texto com o total com gorjeta e quanto cada pessoa paga.
+
+```javascript-exemplo
+fecharConta({ itens: [12, 9, 15, 6], pessoas: 2 });
+// "Total: R$ 46.20 | Cada um: R$ 23.10"
+```
+
+<Dica>
+Desestruture no parâmetro com valor padrão: `{ itens, pessoas, gorjeta = 10 }`. Some com `reduce`, aplique a gorjeta e divida.
+</Dica>
+
+<Resposta>
+
+```javascript
+function fecharConta({ itens, pessoas, gorjeta = 10 }) {
+  const soma = itens.reduce((total, preco) => total + preco, 0);
+  const total = soma * (1 + gorjeta / 100);
+  const cadaUm = total / pessoas;
+  return `Total: R$ ${total.toFixed(2)} | Cada um: R$ ${cadaUm.toFixed(2)}`;
+}
+
+console.log(fecharConta({ itens: [12, 9, 15, 6], pessoas: 2 }));
+console.log(fecharConta({ itens: [30, 20], pessoas: 4, gorjeta: 0 }));
+```
+
+```saida
+Total: R$ 46.20 | Cada um: R$ 23.10
+Total: R$ 50.00 | Cada um: R$ 12.50
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que a arrow function (n) => n + 1 devolve quando chamada com 4?"
+  opcoes={["undefined, porque não tem return", "5", "Erro de sintaxe"]}
+  correta={1}
+  explicacao="Numa arrow function de uma linha sem chaves, o return é automático."
+/>
+
+<Cartoes itens={[
+  { frente: "function × arrow", verso: "function somar(a, b) { return a + b; } é o mesmo que const somar = (a, b) => a + b;" },
+  { frente: "O que é um callback?", verso: "Uma função passada como argumento para outra, que a chama quando precisa." },
+  { frente: "Parâmetro com valor padrão", verso: "function servir(bebida, tamanho = 'médio') { ... }" },
+  { frente: "Escopo de let e const", verso: "Só existem dentro do bloco { } onde foram criadas." },
+]} />
+
+## Resumindo
+
+- `function nome(params) { return ... }` ou `const nome = (params) => ...`.
+- Valores padrão e objetos como parâmetro deixam as chamadas claras.
+- Funções são valores: dá para passá-las como **callback**.
+- Variáveis de dentro de uma função ficam lá dentro (escopo).

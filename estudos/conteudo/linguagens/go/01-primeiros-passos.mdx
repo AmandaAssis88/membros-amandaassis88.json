@@ -1,0 +1,257 @@
+Bem-vindo ao Go! ⚡ Se as outras linguagens são bebidas de café da tarde, o Go é o **energético**: leve, rápido, sem frescura, e feito para aguentar **muita coisa ao mesmo tempo**. Não por acaso, é a lata que mantém de pé boa parte da internet: Docker, Kubernetes e muitos servidores de empresas grandes são escritos em Go.
+
+<Nota tipo="curiosidade" titulo="Nasceu da espera">
+O Go foi criado no Google em 2007, por Robert Griesemer, Rob Pike e Ken Thompson (um dos criadores do Unix e do C). Diz a lenda que a ideia surgiu enquanto esperavam um programa gigante em C++ terminar de compilar. Muito tempo parado sem energia: o Go nasceu para compilar em segundos.
+</Nota>
+
+## Por que o mercado gosta do Go
+
+| Característica | Na prática |
+| --- | --- |
+| **Simples** | Poucas palavras-chave (25). Dá para aprender a linguagem inteira em pouco tempo |
+| **Compilado e rápido** | Vira um único arquivo executável, sem precisar instalar nada para rodar |
+| **Concorrência fácil** | Fazer milhares de coisas ao mesmo tempo é parte da linguagem (aula 7) |
+| **Ferramentas inclusas** | Formatador, testes e gerenciador de pacotes já vêm junto |
+
+Ele é muito usado em **back-end**, APIs, ferramentas de linha de comando e infraestrutura (DevOps e nuvem).
+
+## Onde testar
+
+Clique em **Testar**: ele abre o **Go Playground**, o site oficial. Apague o exemplo de lá, cole o código e clique em **Run**.
+
+## Seu primeiro programa
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Olá, mundo! ⚡")
+}
+```
+
+```saida
+Olá, mundo! ⚡
+```
+
+- `package main`: este arquivo é um **programa** (e não uma biblioteca).
+- `import "fmt"`: traz o pacote de formatação, que tem as funções de mostrar texto.
+- `func main()`: por onde o programa começa.
+- Sem `;` no fim das linhas. E a chave `{` **tem que** ficar na mesma linha do `func` (o Go não aceita na linha de baixo).
+
+<Nota tipo="dica" titulo="O Go formata para você">
+Todo código Go do mundo tem a mesma cara, porque a ferramenta `gofmt` formata tudo automaticamente (com tabs, inclusive). No Playground, o botão **Format** faz isso. Discussão sobre estilo de chaves? No Go, não existe.
+</Nota>
+
+## Variáveis
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var bebida string = "Energético"
+	latas := 2
+	preco := 7.5
+
+	latas = latas + 1
+	fmt.Println(bebida, latas, preco)
+}
+```
+
+```saida
+Energético 3 7.5
+```
+
+- `var nome tipo = valor` é a forma completa.
+- `:=` é o atalho mais usado: declara **e** descobre o tipo sozinho. Só funciona dentro de funções.
+- Depois de criada, a variável muda com `=` (sem os dois pontos).
+
+<Nota tipo="cuidado" titulo="Variável sem uso não compila">
+Em Go, declarar uma variável e não usar é **erro de compilação**: `declared and not used`. O mesmo vale para `import` sem uso. Parece chato, mas mantém o código limpo. É o energético cobrando: nada de peso morto.
+</Nota>
+
+## Os tipos
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var latas int = 3
+	var preco float64 = 7.5
+	var nome string = "Bia"
+	var acordada bool = true
+
+	fmt.Println(latas, preco, nome, acordada)
+
+	var total float64 = float64(latas) * preco
+	fmt.Println(total)
+}
+```
+
+```saida
+3 7.5 Bia true
+22.5
+```
+
+| Tipo | Exemplo |
+| --- | --- |
+| `int` | `3`, `-10` |
+| `float64` | `7.5` |
+| `string` | `"Bia"` (sempre aspas **duplas**) |
+| `bool` | `true`, `false` |
+
+O Go **nunca** mistura tipos sozinho: `latas * preco` (int com float64) não compila. Você converte de propósito: `float64(latas)`.
+
+### Valor zero
+
+Uma variável declarada sem valor não fica "vazia": ganha o **valor zero** do tipo.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var contador int
+	var media float64
+	var nome string
+	var ativo bool
+
+	fmt.Println(contador, media, nome == "", ativo)
+}
+```
+
+```saida
+0 0 true false
+```
+
+`0` para números, `""` para texto, `false` para booleano. Nada de `undefined`.
+
+## Mostrando com formatação: Printf
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	nome := "Caio"
+	latas := 2
+	preco := 7.5
+
+	fmt.Printf("%s tomou %d latas: R$ %.2f\n", nome, latas, float64(latas)*preco)
+
+	recibo := fmt.Sprintf("Total: R$ %.2f", 15.0)
+	fmt.Println(recibo)
+}
+```
+
+```saida
+Caio tomou 2 latas: R$ 15.00
+Total: R$ 15.00
+```
+
+| Verbo | Mostra |
+| --- | --- |
+| `%s` | texto |
+| `%d` | inteiro |
+| `%.2f` | decimal com 2 casas |
+| `%v` | qualquer valor, no formato padrão |
+| `\n` | quebra de linha (o `Printf` não pula linha sozinho) |
+
+`Sprintf` faz a mesma coisa, mas **devolve** o texto em vez de mostrar.
+
+## Constantes
+
+```go
+package main
+
+import "fmt"
+
+const limiteDiario = 2
+
+func main() {
+	latasHoje := 3
+	fmt.Println(latasHoje > limiteDiario)
+}
+```
+
+```saida
+true
+```
+
+<Tarefa titulo="A comanda da madrugada">
+
+Você está na véspera da entrega do trabalho. Crie variáveis para o seu nome, o número de latas de energético, o preço da lata e o número de horas de código. Mostre:
+
+```saida
+Dev: Bia
+Latas: 3 (R$ 22.50)
+Horas de código: 6
+Latas por hora: 0.50
+```
+
+<Dica>
+Use `:=` para tudo e `Printf` com `%s`, `%d` e `%.2f`. Para dividir latas por horas (dois `int`), converta os dois para `float64` antes.
+</Dica>
+
+<Resposta>
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	nome := "Bia"
+	latas := 3
+	precoLata := 7.5
+	horas := 6
+
+	fmt.Printf("Dev: %s\n", nome)
+	fmt.Printf("Latas: %d (R$ %.2f)\n", latas, float64(latas)*precoLata)
+	fmt.Printf("Horas de código: %d\n", horas)
+	fmt.Printf("Latas por hora: %.2f\n", float64(latas)/float64(horas))
+}
+```
+
+```saida
+Dev: Bia
+Latas: 3 (R$ 22.50)
+Horas de código: 6
+Latas por hora: 0.50
+```
+
+(Recomendação da casa: água também conta como bebida. 💧)
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que acontece em Go se você declarar uma variável e nunca usar?"
+  opcoes={["Nada, ela é ignorada", "O programa não compila", "Ela vira uma constante"]}
+  correta={1}
+  explicacao="Go recusa variáveis e imports sem uso: 'declared and not used'."
+/>
+
+<Cartoes itens={[
+  { frente: "O mínimo de um programa Go", verso: "package main, import \"fmt\" e func main() { ... }" },
+  { frente: ":= × var", verso: ":= declara e infere o tipo (dentro de funções); var nome tipo = valor é a forma completa." },
+  { frente: "Valor zero", verso: "0 para números, \"\" para string, false para bool." },
+  { frente: "Printf: %s, %d, %.2f, %v", verso: "Texto, inteiro, decimal com 2 casas, qualquer valor." },
+  { frente: "int * float64 compila?", verso: "Não. Converta: float64(n) * preco." },
+]} />
+
+## Resumindo
+
+- Go é simples, compilado, rápido e feito para concorrência: o **energético** do back-end.
+- `package main`, `import` e `func main()`; sem `;`; `gofmt` formata tudo.
+- `:=` no dia a dia; tipos nunca se misturam sozinhos.
+- Variáveis e imports sem uso **não compilam**.
+- `Printf` com `%s`, `%d`, `%.2f` e `%v`.

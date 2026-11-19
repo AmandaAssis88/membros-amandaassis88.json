@@ -1,0 +1,296 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre := e =?", r: ":= declara uma variável nova; = muda o valor de uma que já existe." },
+  { p: "Qual o valor zero de uma string em Go?", r: "\"\" (texto vazio)." },
+  { p: "Como mostrar um decimal com duas casas no Printf?", r: "Com %.2f." },
+]} />
+
+O Go corta o que não precisa, e esta aula mostra isso bem: ele tem **um** laço só. Um. O `for` faz o papel de todos os outros.
+
+## if e else
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	horasDeSono := 5
+
+	if horasDeSono >= 8 {
+		fmt.Println("Descansado. Nem precisa de energético.")
+	} else if horasDeSono >= 5 {
+		fmt.Println("Dá para encarar a daily.")
+	} else {
+		fmt.Println("Modo zumbi ativado. 🧟")
+	}
+}
+```
+
+```saida
+Dá para encarar a daily.
+```
+
+- **Sem parênteses** na condição.
+- As **chaves são obrigatórias**, mesmo com uma linha só.
+- A condição precisa ser `bool` (nada de `if 0`).
+
+### if com declaração
+
+Um recurso muito usado: criar uma variável **só para o if**:
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	latas := 3
+	if total := float64(latas) * 7.5; total > 20 {
+		fmt.Printf("R$ %.2f? Está gastando mais com energético do que com o curso.\n", total)
+	}
+}
+```
+
+```saida
+R$ 22.50? Está gastando mais com energético do que com o curso.
+```
+
+O `total` só existe dentro do `if`. Você vai ver muito isso no tratamento de erros (aula 5).
+
+## switch
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	dia := "sexta"
+
+	switch dia {
+	case "segunda":
+		fmt.Println("Café duplo e coragem.")
+	case "sexta":
+		fmt.Println("Deploy na sexta? Prepare as latas.")
+	case "sábado", "domingo":
+		fmt.Println("Descanso. Ou hackathon.")
+	default:
+		fmt.Println("Dia normal de código.")
+	}
+}
+```
+
+```saida
+Deploy na sexta? Prepare as latas.
+```
+
+Diferente de C e Java, **não precisa de `break`**: o Go para no primeiro `case` que bate. E um `case` aceita vários valores separados por vírgula.
+
+O `switch` sem valor funciona como uma sequência de `if`:
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	bateria := 15
+
+	switch {
+	case bateria > 50:
+		fmt.Println("Tranquilo")
+	case bateria > 20:
+		fmt.Println("Bom procurar uma tomada")
+	default:
+		fmt.Println("Bateria do dev e do notebook no fim")
+	}
+}
+```
+
+```saida
+Bateria do dev e do notebook no fim
+```
+
+## O único laço: for
+
+### O clássico
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	for i := 1; i <= 3; i++ {
+		fmt.Println("Gole", i)
+	}
+}
+```
+
+```saida
+Gole 1
+Gole 2
+Gole 3
+```
+
+### O "while" do Go
+
+Só com a condição, o `for` vira um `while`:
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	energia := 100
+	for energia > 0 {
+		fmt.Println("Codando com", energia, "% de energia")
+		energia -= 40
+	}
+	fmt.Println("Hora de dormir.")
+}
+```
+
+```saida
+Codando com 100 % de energia
+Codando com 60 % de energia
+Codando com 20 % de energia
+Hora de dormir.
+```
+
+### Percorrendo com range
+
+Para passar por uma lista, `for` com `range`:
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	tarefas := []string{"daily", "code review", "corrigir bug"}
+
+	for i, tarefa := range tarefas {
+		fmt.Println(i, tarefa)
+	}
+
+	for _, tarefa := range tarefas {
+		fmt.Println("Feito:", tarefa)
+	}
+}
+```
+
+```saida
+0 daily
+1 code review
+2 corrigir bug
+Feito: daily
+Feito: code review
+Feito: corrigir bug
+```
+
+O `range` devolve a **posição** e o **valor**. Se não precisar da posição, use `_` (lembra: variável sem uso não compila, e o `_` é o jeito de dizer "não quero esse").
+
+### break e continue
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	for i := 1; i <= 6; i++ {
+		if i%2 == 0 {
+			continue
+		}
+		if i > 4 {
+			break
+		}
+		fmt.Println("Ímpar:", i)
+	}
+}
+```
+
+```saida
+Ímpar: 1
+Ímpar: 3
+```
+
+`continue` pula para a próxima volta; `break` sai do laço.
+
+<Tarefa titulo="O medidor de cafeína">
+
+Percorra as bebidas do dia `[]string{"café", "energético", "água", "energético", "chá"}` e, com um `switch`, some a cafeína de cada uma: café **95** mg, energético **80** mg, chá **40** mg, água **0**. Mostre cada bebida com a cafeína, e no fim o total. Se o total passar de **300 mg**, mostre um aviso.
+
+<Dica>
+`for _, b := range bebidas`, um `switch b` com os `case` que somam numa variável `total`, e um `if` no fim.
+</Dica>
+
+<Resposta>
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	bebidas := []string{"café", "energético", "água", "energético", "chá"}
+	total := 0
+
+	for _, b := range bebidas {
+		mg := 0
+		switch b {
+		case "café":
+			mg = 95
+		case "energético":
+			mg = 80
+		case "chá":
+			mg = 40
+		}
+		total += mg
+		fmt.Printf("%s: %d mg\n", b, mg)
+	}
+
+	fmt.Printf("Total: %d mg\n", total)
+	if total > 300 {
+		fmt.Println("⚠️ Passou do limite. Hoje é dia de água.")
+	}
+}
+```
+
+```saida
+café: 95 mg
+energético: 80 mg
+água: 0 mg
+energético: 80 mg
+chá: 40 mg
+Total: 295 mg
+```
+
+Por 5 mg, escapou do aviso. Por pouco. 😅
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Como se escreve um 'while' em Go?"
+  opcoes={["while energia > 0 { }", "for energia > 0 { }", "Go não tem como repetir enquanto uma condição for verdadeira"]}
+  correta={1}
+  explicacao="Go tem um laço só: o for. Com apenas a condição, ele funciona como while."
+/>
+
+<Cartoes itens={[
+  { frente: "if em Go", verso: "Sem parênteses na condição, chaves obrigatórias." },
+  { frente: "switch em Go precisa de break?", verso: "Não. Ele para no primeiro case que bate." },
+  { frente: "Quantos laços o Go tem?", verso: "Um: o for. Clássico, só com condição (while) ou com range." },
+  { frente: "for com range", verso: "for i, v := range lista { } — use _ para ignorar a posição." },
+]} />
+
+## Resumindo
+
+- `if` sem parênteses e com chaves; dá para declarar uma variável no próprio `if`.
+- `switch` sem `break`, com vários valores por `case`, ou sem valor nenhum.
+- **Um laço só**: `for` (clássico, "while" ou `range`).
+- `_` descarta o valor que você não vai usar.

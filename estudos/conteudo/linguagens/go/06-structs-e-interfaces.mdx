@@ -1,0 +1,300 @@
+<Aquecimento perguntas={[
+  { p: "Qual o padrão do Go para tratar erros?", r: "A função devolve (valor, error) e quem chama confere: if err != nil { ... }." },
+  { p: "Para que serve o defer?", r: "Agendar uma chamada para quando a função terminar, como fechar um arquivo." },
+  { p: "Como embrulhar um erro com contexto?", r: "fmt.Errorf(\"contexto: %w\", err)" },
+]} />
+
+O Go não tem classes. Nem herança. Mesmo assim, organiza programas enormes. O segredo está em três peças: **structs** (os dados), **métodos** (o comportamento) e **interfaces** (os combinados). Menos ingredientes, mesma energia.
+
+## Struct: agrupando dados
+
+```go
+package main
+
+import "fmt"
+
+type Bebida struct {
+	Nome    string
+	Cafeina int
+	Preco   float64
+	Gelada  bool
+}
+
+func main() {
+	lata := Bebida{Nome: "Energético", Cafeina: 80, Preco: 7.5, Gelada: true}
+	fmt.Println(lata.Nome, lata.Preco)
+
+	lata.Preco = 8
+	fmt.Printf("%+v\n", lata)
+
+	var vazia Bebida
+	fmt.Printf("%+v\n", vazia)
+}
+```
+
+```saida
+Energético 7.5
+{Nome:Energético Cafeina:80 Preco:8 Gelada:true}
+{Nome: Cafeina:0 Preco:0 Gelada:false}
+```
+
+- `type Bebida struct { ... }` cria um tipo novo com campos.
+- Cria-se com `Bebida{Campo: valor, ...}`; campos não informados ganham o valor zero.
+- `%+v` mostra o struct com os nomes dos campos (ótimo para depurar).
+
+<Nota tipo="curiosidade" titulo="Maiúscula = público">
+Em Go, nomes que começam com **letra maiúscula** são visíveis para outros pacotes (públicos); com minúscula, ficam só no próprio pacote (privados). É por isso que é `fmt.Println`, com P maiúsculo. Sem `public` nem `private`: a primeira letra decide.
+</Nota>
+
+## Métodos: comportamento no struct
+
+Um método é uma função com um **receptor**, o struct ao qual ela pertence:
+
+```go
+package main
+
+import "fmt"
+
+type Bebida struct {
+	Nome    string
+	Cafeina int
+	Preco   float64
+}
+
+func (b Bebida) Etiqueta() string {
+	return fmt.Sprintf("%s (%d mg) - R$ %.2f", b.Nome, b.Cafeina, b.Preco)
+}
+
+func (b *Bebida) DarDesconto(percentual float64) {
+	b.Preco = b.Preco * (1 - percentual/100)
+}
+
+func main() {
+	lata := Bebida{Nome: "Energético", Cafeina: 80, Preco: 8}
+	fmt.Println(lata.Etiqueta())
+
+	lata.DarDesconto(25)
+	fmt.Println(lata.Etiqueta())
+}
+```
+
+```saida
+Energético (80 mg) - R$ 8.00
+Energético (80 mg) - R$ 6.00
+```
+
+- `func (b Bebida) Etiqueta()`: o `(b Bebida)` antes do nome é o receptor. Dentro, `b` é a bebida (como o `this`/`self`).
+- `func (b *Bebida) DarDesconto(...)`: com **`*`**, o método recebe um **ponteiro** (o endereço da bebida original) e consegue **alterá-la**. Sem o `*`, ele mexeria numa cópia, e o preço original não mudaria.
+
+<Nota tipo="dica" titulo="Regra prática do *">
+Se o método **muda** o struct, use `*` no receptor. Se só **lê**, pode ser sem. Se você fez a trilha de C, é a mesma ideia dos ponteiros, só que sem a aritmética perigosa.
+</Nota>
+
+## Construtores: só uma função
+
+O Go não tem construtor especial. A convenção é uma função `NovoAlgo` (ou `NewAlgo`) que valida e devolve o struct:
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+type Pedido struct {
+	Cliente string
+	Latas   int
+}
+
+func NovoPedido(cliente string, latas int) (*Pedido, error) {
+	if latas <= 0 {
+		return nil, errors.New("pedido precisa de pelo menos uma lata")
+	}
+	if latas > 3 {
+		return nil, fmt.Errorf("%d latas? Vamos com calma: máximo 3", latas)
+	}
+	return &Pedido{Cliente: cliente, Latas: latas}, nil
+}
+
+func main() {
+	p, err := NovoPedido("Bia", 2)
+	if err == nil {
+		fmt.Printf("%+v\n", *p)
+	}
+
+	_, err = NovoPedido("Caio", 6)
+	fmt.Println("Erro:", err)
+}
+```
+
+```saida
+{Cliente:Bia Latas:2}
+Erro: 6 latas? Vamos com calma: máximo 3
+```
+
+O `&` pega o endereço do struct criado, e o `*` em `*p` acessa o valor de volta.
+
+## Interfaces: o combinado
+
+Uma **interface** lista métodos. Qualquer tipo que tiver esses métodos **já satisfaz** a interface, sem precisar declarar nada:
+
+```go
+package main
+
+import "fmt"
+
+type Bebida interface {
+	Nome() string
+	Cafeina() int
+}
+
+type Cafe struct{ Doses int }
+
+func (c Cafe) Nome() string { return fmt.Sprintf("Café (%d dose(s))", c.Doses) }
+func (c Cafe) Cafeina() int { return 95 * c.Doses }
+
+type Energetico struct{ Ml int }
+
+func (e Energetico) Nome() string { return fmt.Sprintf("Energético %d ml", e.Ml) }
+func (e Energetico) Cafeina() int { return e.Ml * 32 / 100 }
+
+type Agua struct{}
+
+func (Agua) Nome() string { return "Água" }
+func (Agua) Cafeina() int { return 0 }
+
+func cafeinaTotal(bebidas []Bebida) int {
+	total := 0
+	for _, b := range bebidas {
+		fmt.Printf("%-20s %3d mg\n", b.Nome(), b.Cafeina())
+		total += b.Cafeina()
+	}
+	return total
+}
+
+func main() {
+	dia := []Bebida{Cafe{Doses: 2}, Energetico{Ml: 250}, Agua{}}
+	fmt.Println("Total:", cafeinaTotal(dia), "mg")
+}
+```
+
+```saida
+Café (2 dose(s))     190 mg
+Energético 250 ml     80 mg
+Água                   0 mg
+Total: 270 mg
+```
+
+- `Cafe`, `Energetico` e `Agua` nunca dizem "eu implemento `Bebida`". Eles **têm** os métodos, então **são** bebidas. Isso se chama **tipagem estrutural** (ou *duck typing* com conferência na compilação).
+- A função `cafeinaTotal` aceita qualquer `Bebida`. Amanhã alguém cria `Cha` com os dois métodos, e ela funciona sem mudar uma linha.
+- `%-20s` alinha o texto à esquerda em 20 espaços; `%3d`, o número à direita em 3.
+
+<Nota tipo="analogia" titulo="Pensa assim: a máquina de vending">
+A máquina de bebidas não quer saber a marca: se tem o formato de lata e o código de barras, ela vende. A interface é o formato da lata; cada tipo que se encaixa entra na máquina.
+</Nota>
+
+<Nota tipo="curiosidade" titulo="Composição no lugar da herança">
+Sem herança, o Go reaproveita colocando um struct **dentro** de outro (*embedding*): `type Barista struct { Pessoa; Especialidade string }` faz o `Barista` ganhar os campos e métodos de `Pessoa`. É o "prefira composição a herança" virando regra da linguagem.
+</Nota>
+
+## A interface mais famosa: error
+
+Lembra do `error` da aula passada? Ele é só uma interface com um método:
+
+```go-exemplo
+type error interface {
+	Error() string
+}
+```
+
+Qualquer tipo com um método `Error() string` é um erro. Simples assim.
+
+<Tarefa titulo="A geladeira do escritório">
+
+1. Crie um struct `Geladeira` com um campo `latas` (um `map[string]int`, de sabor para quantidade).
+2. Crie um método `Repor(sabor string, qtd int)` que soma latas (receptor com `*`!).
+3. Crie um método `Pegar(sabor string) error` que tira uma lata, ou devolve erro se o sabor acabou.
+4. Reponha 2 de "tradicional", pegue 3 e mostre o que acontece.
+
+<Dica>
+Crie a geladeira com `g := &Geladeira{latas: map[string]int{}}` (o map precisa ser criado antes de usar). No `Pegar`, confira `if g.latas[sabor] == 0`.
+</Dica>
+
+<Resposta>
+
+```go
+package main
+
+import "fmt"
+
+type Geladeira struct {
+	latas map[string]int
+}
+
+func (g *Geladeira) Repor(sabor string, qtd int) {
+	g.latas[sabor] += qtd
+}
+
+func (g *Geladeira) Pegar(sabor string) error {
+	if g.latas[sabor] == 0 {
+		return fmt.Errorf("acabou o %s. Toma uma água e volta a codar", sabor)
+	}
+	g.latas[sabor]--
+	return nil
+}
+
+func main() {
+	g := &Geladeira{latas: map[string]int{}}
+	g.Repor("tradicional", 2)
+
+	for i := 1; i <= 3; i++ {
+		if err := g.Pegar("tradicional"); err != nil {
+			fmt.Println("Tentativa", i, "→", err)
+			continue
+		}
+		fmt.Println("Tentativa", i, "→ peguei uma lata. Restam", g.latas["tradicional"])
+	}
+}
+```
+
+```saida
+Tentativa 1 → peguei uma lata. Restam 1
+Tentativa 2 → peguei uma lata. Restam 0
+Tentativa 3 → acabou o tradicional. Toma uma água e volta a codar
+```
+
+Repare no `if err := g.Pegar(...); err != nil`: o "if com declaração" da aula 2, no seu uso mais comum.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Como um tipo passa a satisfazer uma interface em Go?"
+  opcoes={["Escrevendo implements Interface", "Tendo todos os métodos da interface, sem declarar nada", "Herdando de uma classe base"]}
+  correta={1}
+  explicacao="Em Go, a satisfação é implícita: se tem os métodos, é da interface."
+/>
+
+<Quiz
+  pergunta="Um método precisa alterar um campo do struct. Como deve ser o receptor?"
+  opcoes={["func (b Bebida) ...", "func (b *Bebida) ...", "Tanto faz"]}
+  correta={1}
+  explicacao="Com *, o método recebe um ponteiro e altera o original. Sem *, mexe numa cópia."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é um struct?", verso: "Um tipo que agrupa campos: type Bebida struct { Nome string; Preco float64 }" },
+  { frente: "Método em Go", verso: "func (b Bebida) Etiqueta() string { ... } — o (b Bebida) é o receptor." },
+  { frente: "Receptor com *", verso: "Use quando o método altera o struct: func (b *Bebida) ..." },
+  { frente: "Público × privado em Go", verso: "Nome com maiúscula é público; com minúscula, só no pacote." },
+  { frente: "Interface em Go", verso: "Uma lista de métodos. Quem tiver os métodos satisfaz, sem declarar nada." },
+]} />
+
+## Resumindo
+
+- **Structs** guardam dados; **métodos** com receptor adicionam comportamento (`*` para alterar).
+- Construtores são funções `NovoAlgo` que validam e devolvem `(*Algo, error)`.
+- **Interfaces** são satisfeitas implicitamente: se tem os métodos, serve.
+- Sem classes nem herança: composição e interfaces dão conta.

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, Copy, Play } from "lucide-react";
 import { destacar } from "../destaque";
-import { TESTAR_URL } from "../catalogo";
+import { NOME_DO_TESTADOR, TESTAR_URL, type LinguagemTestavel } from "../catalogo";
 
 const ROTULOS: Record<string, string> = {
   c: "C",
@@ -42,7 +42,7 @@ async function copiarTexto(texto: string) {
   }
 }
 
-/** Bloco de código das aulas: realce, número das linhas, Copiar e Testar no OnlineGDB. */
+/** Bloco de código das aulas: realce, número das linhas, Copiar e Testar (OnlineGDB, Programiz, playgrounds). */
 export function Codigo({
   codigo,
   linguagem: linguagemOriginal,
@@ -59,9 +59,14 @@ export function Codigo({
   const linhas = texto.split("\n");
   // Só mostra "Testar" quando o código é um programa completo (trechos soltos não rodam sozinhos).
   const testavel =
-    (!soExemplo && linguagem === "python") ||
-    (linguagem === "c" && /\bmain\s*\(/.test(texto)) ||
-    (linguagem === "java" && /static\s+void\s+main/.test(texto));
+    !soExemplo &&
+    (linguagem === "python" ||
+      linguagem === "javascript" ||
+      linguagem === "typescript" ||
+      (linguagem === "c" && /\bmain\s*\(/.test(texto)) ||
+      (linguagem === "java" && /static\s+void\s+main/.test(texto)) ||
+      (linguagem === "dart" && /\bmain\s*\(/.test(texto)) ||
+      (linguagem === "go" && /func\s+main\s*\(/.test(texto)));
   const saida = linguagem === "saida" || linguagem === "terminal";
   const comNumeros = !saida && linhas.length > 3;
 
@@ -74,7 +79,7 @@ export function Codigo({
 
   async function testar() {
     await copiarTexto(texto);
-    window.open(TESTAR_URL[linguagem as "c" | "python" | "java"], "_blank", "noopener");
+    window.open(TESTAR_URL[linguagem as LinguagemTestavel], "_blank", "noopener");
     setTestando(true);
   }
 
@@ -121,8 +126,9 @@ export function Codigo({
       </pre>
       {testando && (
         <p className="codigo-dica" role="status">
-          ✅ Código copiado! No OnlineGDB, apague o exemplo, cole com <kbd>Ctrl</kbd>+<kbd>V</kbd> e
-          clique em <b>Run</b>.{linguagem === "java" && " A classe precisa se chamar Main."}
+          ✅ Código copiado! No {NOME_DO_TESTADOR[linguagem as LinguagemTestavel]}, apague o
+          exemplo, cole com <kbd>Ctrl</kbd>+<kbd>V</kbd> e clique em <b>Run</b>.
+          {linguagem === "java" && " A classe precisa se chamar Main."}
           <button type="button" onClick={() => setTestando(false)} aria-label="Fechar dica">
             ×
           </button>

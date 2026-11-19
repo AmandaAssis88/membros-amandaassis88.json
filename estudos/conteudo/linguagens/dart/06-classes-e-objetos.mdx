@@ -1,0 +1,228 @@
+<Aquecimento perguntas={[
+  { p: "Como declarar um parâmetro nomeado obrigatório?", r: "Com required dentro das chaves: f({required String sabor})." },
+  { p: "O que significa int dobro(int n) => n * 2;?", r: "Uma função de uma linha que devolve n * 2." },
+  { p: "Qual o tipo de uma função que recebe double e devolve double?", r: "double Function(double)" },
+]} />
+
+Em Dart, **tudo é objeto**, até os números. E no Flutter, cada pedaço da tela (um botão, um texto, uma lista) é um objeto de uma classe. Se você fez a trilha de Orientação a Objetos, vai se sentir em casa: as ideias são as mesmas, com uma sintaxe bem enxuta.
+
+## A classe mais curta possível
+
+```dart
+class Smoothie {
+  final String sabor;
+  final double preco;
+
+  Smoothie(this.sabor, this.preco);
+
+  String descrever() => '$sabor: R\$ ${preco.toStringAsFixed(2)}';
+}
+
+void main() {
+  final s = Smoothie('manga', 12);
+  print(s.descrever());
+  print(s.sabor);
+}
+```
+
+```saida
+manga: R$ 12.00
+manga
+```
+
+- Os campos (`sabor`, `preco`) são `final`: depois de criados, não mudam.
+- O construtor `Smoothie(this.sabor, this.preco);` já guarda os valores recebidos nos campos. Sem corpo, sem repetição.
+- Para criar, só `Smoothie('manga', 12)` (o `new` existe, mas ninguém usa mais).
+
+## Construtor com parâmetros nomeados
+
+O padrão do Flutter:
+
+```dart
+class Pedido {
+  final String cliente;
+  final String sabor;
+  final int quantidade;
+  final bool viagem;
+
+  Pedido({
+    required this.cliente,
+    required this.sabor,
+    this.quantidade = 1,
+    this.viagem = false,
+  });
+
+  @override
+  String toString() {
+    final local = viagem ? 'para viagem' : 'na mesa';
+    return '$cliente: ${quantidade}x $sabor, $local';
+  }
+}
+
+void main() {
+  final p = Pedido(cliente: 'Ana', sabor: 'açaí', viagem: true);
+  print(p);
+}
+```
+
+```saida
+Ana: 1x açaí, para viagem
+```
+
+O `toString` é chamado quando o objeto vai para o `print`. O `@override` avisa que você está substituindo um método que já existe (todo objeto tem um `toString`).
+
+## Encapsulamento: o _ esconde
+
+Dart não tem `private`. Em vez disso, um nome que começa com **`_`** fica visível só dentro do próprio arquivo:
+
+```dart
+class Caixa {
+  double _saldo = 0;
+
+  double get saldo => _saldo;
+
+  void receber(double valor) {
+    if (valor <= 0) {
+      throw ArgumentError('Valor inválido');
+    }
+    _saldo += valor;
+  }
+}
+
+void main() {
+  final caixa = Caixa();
+  caixa.receber(12);
+  caixa.receber(13.5);
+  print('Saldo: R\$ ${caixa.saldo}');
+}
+```
+
+```saida
+Saldo: R$ 25.5
+```
+
+- `_saldo` é escondido: de outros arquivos, ninguém mexe direto.
+- `get saldo => _saldo;` é um **getter**: quem está de fora consegue **ler** o saldo (`caixa.saldo`, sem parênteses), mas não alterar.
+- O único jeito de mudar é pelo `receber`, que valida o valor.
+
+## Herança e classes abstratas
+
+```dart
+abstract class Bebida {
+  final String nome;
+  Bebida(this.nome);
+
+  double preco();
+
+  String etiqueta() => '$nome - R\$ ${preco().toStringAsFixed(2)}';
+}
+
+class Smoothie extends Bebida {
+  final bool comGranola;
+  Smoothie(super.nome, {this.comGranola = false});
+
+  @override
+  double preco() => comGranola ? 14.0 : 12.0;
+}
+
+class Cafe extends Bebida {
+  Cafe() : super('Café coado');
+
+  @override
+  double preco() => 5;
+}
+
+void main() {
+  final List<Bebida> bandeja = [Smoothie('Manga'), Smoothie('Açaí', comGranola: true), Cafe()];
+
+  for (final b in bandeja) {
+    print(b.etiqueta());
+  }
+}
+```
+
+```saida
+Manga - R$ 12.00
+Açaí - R$ 14.00
+Café coado - R$ 5.00
+```
+
+- `abstract class` é um molde que não pode ser criado direto; o método `preco()` sem corpo **obriga** as filhas a implementar.
+- `extends` herda; `super.nome` repassa o valor para o construtor da mãe.
+- A lista é de `Bebida`, mas cada item responde com o **seu** preço: polimorfismo.
+
+<Nota tipo="curiosidade" titulo="Widgets são classes">
+No Flutter, uma tela é uma classe que **estende** `StatelessWidget` ou `StatefulWidget` e implementa um método `build`. É exatamente o que você acabou de fazer com `Bebida`: a mãe define o molde, e cada tela preenche o seu `build`.
+</Nota>
+
+<Tarefa titulo="O cardápio orientado a objetos">
+
+1. Crie uma classe `Produto` com `nome` e `preco` (`final`, construtor com parâmetros nomeados e `required`).
+2. Crie uma classe `Comanda` com uma lista **escondida** `_itens`, um método `adicionar(Produto p)`, um getter `total` e um getter `quantidade`.
+3. Adicione três produtos e mostre a quantidade de itens e o total.
+
+<Dica>
+`final List<Produto> _itens = [];` dentro da `Comanda`. O total é `_itens.fold(0.0, (soma, p) => soma + p.preco)`.
+</Dica>
+
+<Resposta>
+
+```dart
+class Produto {
+  final String nome;
+  final double preco;
+
+  Produto({required this.nome, required this.preco});
+}
+
+class Comanda {
+  final List<Produto> _itens = [];
+
+  void adicionar(Produto p) => _itens.add(p);
+
+  int get quantidade => _itens.length;
+
+  double get total => _itens.fold(0.0, (soma, p) => soma + p.preco);
+}
+
+void main() {
+  final comanda = Comanda();
+  comanda.adicionar(Produto(nome: 'Smoothie de manga', preco: 12));
+  comanda.adicionar(Produto(nome: 'Pão de queijo', preco: 6));
+  comanda.adicionar(Produto(nome: 'Café', preco: 5));
+
+  print('${comanda.quantidade} itens');
+  print('Total: R\$ ${comanda.total.toStringAsFixed(2)}');
+}
+```
+
+```saida
+3 itens
+Total: R$ 23.00
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Como deixar um campo 'privado' em Dart?"
+  opcoes={["Com a palavra private", "Começando o nome com _ (underline)", "Com final"]}
+  correta={1}
+  explicacao="Nomes que começam com _ só são visíveis dentro do próprio arquivo (a biblioteca)."
+/>
+
+<Cartoes itens={[
+  { frente: "Construtor enxuto", verso: "Smoothie(this.sabor, this.preco); guarda os valores direto nos campos." },
+  { frente: "Construtor com nomeados", verso: "Pedido({required this.cliente, this.qtd = 1});" },
+  { frente: "Privado em Dart", verso: "Nome começando com _: _saldo." },
+  { frente: "Getter", verso: "double get saldo => _saldo; lê-se como campo: caixa.saldo" },
+  { frente: "abstract class", verso: "Molde que não pode ser criado direto; obriga as filhas a implementar os métodos sem corpo." },
+]} />
+
+## Resumindo
+
+- Construtores com `this.campo`, e com parâmetros nomeados no estilo Flutter.
+- `_` esconde; **getters** deixam ler sem deixar mexer.
+- `extends`, `abstract` e `@override`: herança e polimorfismo.
+- Widgets do Flutter são classes que estendem outras.

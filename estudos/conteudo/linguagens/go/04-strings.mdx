@@ -1,0 +1,268 @@
+<Aquecimento perguntas={[
+  { p: "Como adicionar um item num slice?", r: "lista = append(lista, item)" },
+  { p: "O que v, ok := mapa[chave] faz?", r: "Pega o valor e diz em ok se a chave existe (o 'comma ok')." },
+  { p: "Por que ordenar as chaves antes de percorrer um map para mostrar?", r: "Porque a ordem de um map em Go é aleatória." },
+]} />
+
+Em Go, as funções de texto ficam no pacote **`strings`**, e as de conversão no **`strconv`**. E tem um detalhe que pega muita gente: o que acontece com os **acentos**.
+
+## O pacote strings
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	digitado := "   Ana@Email.com   "
+	email := strings.ToLower(strings.TrimSpace(digitado))
+
+	fmt.Println(email)
+	fmt.Println(strings.Contains(email, "@"))
+	fmt.Println(strings.HasPrefix(email, "ana"))
+	fmt.Println(strings.HasSuffix(email, ".com"))
+	fmt.Println(strings.Index(email, "@"))
+	fmt.Println(strings.ReplaceAll(email, "email", "go"))
+	fmt.Println(strings.ToUpper("energia"))
+}
+```
+
+```saida
+ana@email.com
+true
+true
+true
+3
+ana@go.com
+ENERGIA
+```
+
+Repare no estilo: em vez de `email.toLowerCase()`, é `strings.ToLower(email)`. A função é do pacote, e a string vai como argumento.
+
+| Função | Faz |
+| --- | --- |
+| `strings.TrimSpace(s)` | tira os espaços das pontas |
+| `strings.Contains(s, x)` | tem `x`? |
+| `strings.HasPrefix` / `HasSuffix` | começa / termina com? |
+| `strings.Index(s, x)` | posição de `x` (ou `-1`) |
+| `strings.ReplaceAll(s, a, b)` | troca todas as ocorrências |
+| `strings.ToUpper` / `ToLower` | maiúsculas / minúsculas |
+
+## Quebrar, juntar e repetir
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	linha := "café;energético;chá"
+	bebidas := strings.Split(linha, ";")
+	fmt.Println(bebidas, len(bebidas))
+	fmt.Println(strings.Join(bebidas, ", "))
+
+	fmt.Println(strings.Fields("  muito   espaço   aqui  "))
+	fmt.Println(strings.Repeat("⚡", 3))
+}
+```
+
+```saida
+[café energético chá] 3
+café, energético, chá
+[muito espaço aqui]
+⚡⚡⚡
+```
+
+`strings.Fields` quebra pelos espaços e já ignora os que estão sobrando. Muito útil para limpar o que o usuário digitou.
+
+## Bytes, runes e o problema dos acentos
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	bebida := "energético"
+	fmt.Println(len(bebida))
+	fmt.Println(len([]rune(bebida)))
+}
+```
+
+```saida
+11
+10
+```
+
+"energético" tem 10 letras, mas o `len` diz 11. Por quê? Uma `string` em Go é uma sequência de **bytes**, no formato UTF-8. Letras sem acento ocupam 1 byte; o `é` ocupa **2**.
+
+Para contar e percorrer **letras** de verdade, o Go tem a **rune** (um caractere Unicode):
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	for i, letra := range "chá⚡" {
+		fmt.Printf("posição %d: %c\n", i, letra)
+	}
+}
+```
+
+```saida
+posição 0: c
+posição 1: h
+posição 2: á
+posição 4: ⚡
+```
+
+O `range` numa string percorre as **runes** (letras), mas a posição é em **bytes**: por isso pula do 2 para o 4 (o `á` ocupou dois bytes).
+
+<Nota tipo="cuidado" titulo="Cortar texto com acento">
+`bebida[0:5]` corta em **bytes** e pode partir uma letra acentuada no meio, gerando um caractere estranho. Para cortar por letras, converta: `string([]rune(bebida)[:5])`.
+</Nota>
+
+## Convertendo: strconv
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	n, err := strconv.Atoi("42")
+	fmt.Println(n+1, err)
+
+	_, err = strconv.Atoi("quarenta")
+	fmt.Println(err)
+
+	preco, _ := strconv.ParseFloat("7.5", 64)
+	fmt.Println(preco * 2)
+
+	texto := strconv.Itoa(2026)
+	fmt.Println("Ano " + texto)
+}
+```
+
+```saida
+43 <nil>
+strconv.Atoi: parsing "quarenta": invalid syntax
+15
+Ano 2026
+```
+
+- `strconv.Atoi` converte texto em inteiro e **devolve dois valores**: o número e um **erro**. Se deu certo, o erro é `nil` (nada).
+- `strconv.Itoa` faz o caminho de volta.
+
+Esse padrão (resultado + erro) é a marca registrada do Go. Ele é o assunto da próxima aula.
+
+## Montando textos grandes: strings.Builder
+
+Juntar texto com `+` dentro de um laço cria uma string nova a cada volta. Para montar textos grandes, use o `Builder`:
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	var sb strings.Builder
+	sb.WriteString("Checklist da entrega:\n")
+	for i, t := range []string{"testes", "revisão", "deploy"} {
+		fmt.Fprintf(&sb, "%d. %s\n", i+1, t)
+	}
+	fmt.Print(sb.String())
+}
+```
+
+```saida
+Checklist da entrega:
+1. testes
+2. revisão
+3. deploy
+```
+
+<Tarefa titulo="Gerador de @ do time">
+
+A partir do nome `"  maria   clara SOUZA "`, gere:
+
+1. o nome limpo, com a primeira letra de cada palavra maiúscula: `Maria Clara Souza`;
+2. as iniciais: `MCS`;
+3. um usuário em minúsculas com pontos: `@maria.clara.souza`.
+
+<Dica>
+`strings.Fields` limpa os espaços e já devolve as palavras. Para cada palavra: `strings.ToUpper(p[:1]) + strings.ToLower(p[1:])` (funciona porque as primeiras letras aqui não têm acento). Junte com `strings.Join`.
+</Dica>
+
+<Resposta>
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	partes := strings.Fields("  maria   clara SOUZA ")
+
+	var nomes, minusculas []string
+	iniciais := ""
+	for _, p := range partes {
+		nomes = append(nomes, strings.ToUpper(p[:1])+strings.ToLower(p[1:]))
+		minusculas = append(minusculas, strings.ToLower(p))
+		iniciais += strings.ToUpper(p[:1])
+	}
+
+	fmt.Println(strings.Join(nomes, " "))
+	fmt.Println(iniciais)
+	fmt.Println("@" + strings.Join(minusculas, "."))
+}
+```
+
+```saida
+Maria Clara Souza
+MCS
+@maria.clara.souza
+```
+
+Se algum nome pudesse começar com acento (como "Érica"), o certo seria trabalhar com runes: `[]rune(p)`.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta={'Por que len("café") dá 5 em Go?'}
+  opcoes={["Bug do Go", "len conta bytes, e o é ocupa 2 bytes em UTF-8", "len conta o caractere invisível do fim"]}
+  correta={1}
+  explicacao="Strings são bytes em UTF-8. Para contar letras, use len([]rune(s))."
+/>
+
+<Cartoes itens={[
+  { frente: "Onde ficam as funções de texto?", verso: "No pacote strings: strings.ToLower(s), strings.Split(s, sep)..." },
+  { frente: "strings.Fields", verso: "Quebra o texto pelos espaços, ignorando os que sobram." },
+  { frente: "byte × rune", verso: "String é uma sequência de bytes (UTF-8). Rune é um caractere: acentos podem ocupar vários bytes." },
+  { frente: "strconv.Atoi", verso: "Converte texto em int e devolve (número, erro)." },
+]} />
+
+## Resumindo
+
+- Funções de texto no pacote `strings`, chamadas como `strings.Funcao(s)`.
+- `Split`, `Join` e `Fields` para quebrar e juntar.
+- `len` conta **bytes**; para letras, `[]rune`.
+- `strconv` converte e devolve um **erro** junto: a marca do Go.

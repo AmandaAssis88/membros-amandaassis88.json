@@ -1,0 +1,321 @@
+<Aquecimento perguntas={[
+  { p: "Como um tipo satisfaz uma interface em Go?", r: "Tendo todos os métodos dela. Não precisa declarar nada." },
+  { p: "Quando usar * no receptor de um método?", r: "Quando o método precisa alterar o struct original." },
+  { p: "Em Go, o que define se um nome é público?", r: "A primeira letra: maiúscula é público; minúscula, privado do pacote." },
+]} />
+
+Chegou a hora da energia de verdade. ⚡ Esta é a aula que explica por que o Go é o energético: ele faz **muitas coisas ao mesmo tempo** com uma facilidade que poucas linguagens têm.
+
+<Chute pergunta="Um servidor recebe 10 mil pedidos por segundo. Ele atende um de cada vez, em fila?">
+
+Se atendesse, a fila não andaria nunca. Servidores atendem muitos pedidos **ao mesmo tempo**: enquanto um espera o banco de dados responder, outro já está sendo processado. Isso é **concorrência**, e em Go cada pedido costuma ganhar a sua própria **goroutine**, uma tarefa levíssima. Um programa Go roda dezenas de milhares delas sem suar.
+
+</Chute>
+
+## Goroutines: é só escrever go
+
+Coloque `go` antes de uma chamada de função, e ela passa a rodar **em paralelo** com o resto:
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+func prepararPedido(cliente string, tempo time.Duration, wg *sync.WaitGroup) {
+	defer wg.Done()
+	time.Sleep(tempo)
+	fmt.Println("Pronto o pedido de", cliente)
+}
+
+func main() {
+	var wg sync.WaitGroup
+
+	wg.Add(3)
+	go prepararPedido("Ana", 300*time.Millisecond, &wg)
+	go prepararPedido("Bia", 100*time.Millisecond, &wg)
+	go prepararPedido("Caio", 200*time.Millisecond, &wg)
+
+	fmt.Println("Três pedidos no balcão, todos ao mesmo tempo...")
+	wg.Wait()
+	fmt.Println("Todos entregues!")
+}
+```
+
+```saida
+Três pedidos no balcão, todos ao mesmo tempo...
+Pronto o pedido de Bia
+Pronto o pedido de Caio
+Pronto o pedido de Ana
+Todos entregues!
+```
+
+- `go prepararPedido(...)` dispara a função numa **goroutine** e segue em frente na hora.
+- Os três pedidos foram preparados **juntos**: o total levou uns 300 ms (o mais demorado), não 600 ms (a soma).
+- Quem fica pronto primeiro aparece primeiro: a Bia, com o pedido mais rápido.
+
+O **`sync.WaitGroup`** é o contador de pedidos pendentes: `Add(3)` diz "tem três", cada goroutine chama `Done()` quando termina (com `defer`, para não esquecer), e `Wait()` espera o contador zerar.
+
+<Nota tipo="cuidado" titulo="O main não espera ninguém">
+Quando o `main` termina, o programa acaba, e **todas** as goroutines morrem junto, prontas ou não. Sem o `wg.Wait()`, você provavelmente não veria nenhum "Pronto". É como o café fechar com pedidos ainda no liquidificador.
+</Nota>
+
+## Channels: os tubos entre as goroutines
+
+Goroutines conversam por **channels** (canais): tubos por onde os valores passam de uma para outra.
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func barista(nome string, pedidos int, bandeja chan<- string) {
+	for i := 1; i <= pedidos; i++ {
+		time.Sleep(50 * time.Millisecond)
+		bandeja <- fmt.Sprintf("lata %d do %s", i, nome)
+	}
+	close(bandeja)
+}
+
+func main() {
+	bandeja := make(chan string)
+
+	go barista("João", 3, bandeja)
+
+	for item := range bandeja {
+		fmt.Println("Recebi:", item)
+	}
+	fmt.Println("Bandeja vazia, barista fechou.")
+}
+```
+
+```saida
+Recebi: lata 1 do João
+Recebi: lata 2 do João
+Recebi: lata 3 do João
+Bandeja vazia, barista fechou.
+```
+
+| Sintaxe | Significa |
+| --- | --- |
+| `make(chan string)` | cria um canal de textos |
+| `canal <- valor` | **envia** um valor (a seta aponta para dentro do canal) |
+| `valor := <-canal` | **recebe** um valor (a seta sai do canal) |
+| `close(canal)` | avisa que não vem mais nada |
+| `for v := range canal` | recebe até o canal ser fechado |
+
+O envio **espera** alguém receber, e o recebimento **espera** alguém enviar. É assim que as goroutines se sincronizam sem precisar de mais nada.
+
+<Nota tipo="analogia" titulo="Pensa assim: a esteira do balcão">
+O channel é a esteira entre a cozinha e o balcão. O barista coloca a lata na esteira; o atendente pega do outro lado. Se ninguém pega, o barista espera; se a esteira está vazia, o atendente espera. E quando o turno acaba, o barista desliga a esteira (`close`).
+</Nota>
+
+O lema do Go resume a ideia: *"Não comunique compartilhando memória; compartilhe memória comunicando."* Em vez de várias goroutines mexendo na mesma variável, elas **passam valores** pelos canais.
+
+## Vários trabalhadores, uma fila
+
+O padrão mais usado na vida real: vários *workers* pegando tarefas de uma fila.
+
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+	"sync"
+)
+
+func main() {
+	pedidos := make(chan int)
+	resultados := make(chan string)
+	var wg sync.WaitGroup
+
+	for w := 1; w <= 3; w++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			for p := range pedidos {
+				resultados <- fmt.Sprintf("pedido %d feito pelo barista %d", p, id)
+			}
+		}(w)
+	}
+
+	go func() {
+		for p := 1; p <= 6; p++ {
+			pedidos <- p
+		}
+		close(pedidos)
+	}()
+
+	go func() {
+		wg.Wait()
+		close(resultados)
+	}()
+
+	total := 0
+	var feitos []string
+	for r := range resultados {
+		feitos = append(feitos, r)
+		total++
+	}
+	sort.Strings(feitos)
+	fmt.Println(total, "pedidos prontos")
+}
+```
+
+```saida
+6 pedidos prontos
+```
+
+Três baristas, seis pedidos: cada um pega o próximo da fila assim que fica livre. Quem fez qual pedido muda a cada execução (rode algumas vezes e imprima o `feitos` para ver), mas todos os seis sempre ficam prontos.
+
+## select: esperando o que chegar primeiro
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	pedido := make(chan string)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		pedido <- "energético gelado"
+	}()
+
+	select {
+	case p := <-pedido:
+		fmt.Println("Chegou:", p)
+	case <-time.After(500 * time.Millisecond):
+		fmt.Println("Demorou demais. Desisti e fui de água. 💧")
+	}
+}
+```
+
+```saida
+Demorou demais. Desisti e fui de água. 💧
+```
+
+O `select` espera **vários canais** e segue com o primeiro que tiver algo. Com `time.After`, vira um **tempo limite**: essencial em servidores, que não podem ficar esperando para sempre um serviço que não responde.
+
+<Nota tipo="cuidado" titulo="Concorrência tem armadilhas">
+Duas goroutines alterando a mesma variável ao mesmo tempo causam uma **condição de corrida** (*race condition*): o resultado muda a cada execução. Prefira channels; se precisar compartilhar uma variável, proteja com `sync.Mutex`. E rode os testes com `go test -race`: o Go tem um detector embutido.
+</Nota>
+
+<Nota tipo="ia" titulo="Concorrência e IA">
+Código concorrente gerado por IA costuma "funcionar" no primeiro teste e falhar de vez em quando em produção. Confira sempre: alguém fecha os canais? O `main` espera as goroutines? Duas goroutines escrevem na mesma variável? E peça à IA para explicar o fluxo, não só o código.
+</Nota>
+
+<Explique pergunta="Por que o programa precisa de um WaitGroup (ou de um channel) para esperar as goroutines?">
+Porque o go dispara a função e segue em frente na hora, sem esperar. Se o main chegar ao fim, o programa termina e todas as goroutines são interrompidas, prontas ou não. O WaitGroup conta quantas ainda estão trabalhando e faz o main esperar até a última avisar que terminou; um channel faz algo parecido, já que receber um valor espera alguém enviar.
+</Explique>
+
+<Tarefa titulo="O checador de sites">
+
+Simule um programa que confere se vários serviços estão no ar **ao mesmo tempo**. Use esta função, que finge uma requisição:
+
+```go-exemplo
+func checar(servico string) string {
+	tempo := time.Duration(len(servico)*20) * time.Millisecond
+	time.Sleep(tempo)
+	return fmt.Sprintf("%s respondeu em %v", servico, tempo)
+}
+```
+
+Para a lista `[]string{"api", "banco", "login", "pagamentos"}`, dispare uma goroutine por serviço, receba as respostas por um channel e mostre cada uma assim que chegar. No fim, mostre quanto tempo levou no total (deve ser perto do serviço mais lento, não da soma).
+
+<Dica>
+Crie `respostas := make(chan string)`, dispare `go func(s string) { respostas <- checar(s) }(s)` para cada serviço e depois receba `len(servicos)` vezes com `<-respostas`. Para medir: `inicio := time.Now()` e, no fim, `time.Since(inicio)`.
+</Dica>
+
+<Resposta>
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func checar(servico string) string {
+	tempo := time.Duration(len(servico)*20) * time.Millisecond
+	time.Sleep(tempo)
+	return fmt.Sprintf("%s respondeu em %v", servico, tempo)
+}
+
+func main() {
+	servicos := []string{"api", "banco", "login", "pagamentos"}
+	respostas := make(chan string)
+	inicio := time.Now()
+
+	for _, s := range servicos {
+		go func(s string) {
+			respostas <- checar(s)
+		}(s)
+	}
+
+	for range servicos {
+		fmt.Println(<-respostas)
+	}
+
+	fmt.Printf("Tudo checado em ~%dms (a soma seria 460ms)\n", time.Since(inicio).Round(100*time.Millisecond).Milliseconds())
+}
+```
+
+```saida
+api respondeu em 60ms
+banco respondeu em 100ms
+login respondeu em 100ms
+pagamentos respondeu em 200ms
+Tudo checado em ~200ms (a soma seria 460ms)
+```
+
+"banco" e "login" têm o mesmo tamanho, então chegam juntos e podem aparecer em qualquer ordem entre si.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que acontece com as goroutines quando a função main termina?"
+  opcoes={["Continuam rodando em segundo plano", "Param todas, prontas ou não", "O Go espera elas terminarem automaticamente"]}
+  correta={1}
+  explicacao="O fim do main encerra o programa. Use WaitGroup ou channels para esperar."
+/>
+
+<Quiz
+  pergunta="Em canal <- valor, o que acontece?"
+  opcoes={["Recebe um valor do canal", "Envia o valor para o canal", "Fecha o canal"]}
+  correta={1}
+  explicacao="A seta aponta para dentro do canal: envio. Para receber, a seta sai do canal: v := <-canal."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é uma goroutine?", verso: "Uma função rodando em paralelo, disparada com go f(). Leve: dá para ter milhares." },
+  { frente: "sync.WaitGroup", verso: "Add(n) conta as tarefas, Done() marca uma como feita, Wait() espera todas." },
+  { frente: "Channel", verso: "Tubo entre goroutines: ch <- v envia, v := <-ch recebe, close(ch) avisa que acabou." },
+  { frente: "select com time.After", verso: "Espera o primeiro canal com dado; com time.After, vira um tempo limite." },
+  { frente: "Race condition", verso: "Goroutines alterando a mesma variável ao mesmo tempo. Detectar com go test -race." },
+]} />
+
+## Resumindo
+
+- `go f()` dispara uma **goroutine**; `WaitGroup` espera todas.
+- **Channels** passam valores entre goroutines e as sincronizam.
+- Workers lendo de uma fila são o padrão do dia a dia; `select` + `time.After` dá tempo limite.
+- Cuidado com condições de corrida: prefira channels e use `-race`.
+
+## E agora?
+
+Você fechou o Go! ⚡ O próximo gole é o **Tour of Go** (go.dev/tour), o tutorial interativo oficial, e depois montar uma API pequena com o pacote `net/http`, que já vem na linguagem. E lembre: o melhor energético para o cérebro ainda é uma noite de sono. 😴

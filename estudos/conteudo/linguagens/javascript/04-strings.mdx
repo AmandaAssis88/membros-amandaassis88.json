@@ -1,0 +1,210 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre map e filter?", r: "map transforma cada item (mesmo tamanho); filter escolhe só os que passam no teste." },
+  { p: "Como transformar um objeto em texto JSON?", r: "JSON.stringify(objeto). O caminho de volta é JSON.parse(texto)." },
+  { p: "Como pegar só o nome e o total de um objeto pedido numa linha?", r: "Com desestruturação: const { nome, total } = pedido;" },
+]} />
+
+Boa parte do trabalho de um dev web é mexer com texto: nomes digitados em formulários, e-mails, buscas, URLs, mensagens. Nesta aula você aprende as ferramentas que o JavaScript dá para isso.
+
+## Uma string é uma sequência de letras
+
+```javascript
+const bebida = "Cappuccino";
+
+console.log(bebida.length);
+console.log(bebida[0]);
+console.log(bebida.at(-1));
+console.log(bebida.toUpperCase());
+console.log(bebida.toLowerCase());
+```
+
+```saida
+10
+C
+o
+CAPPUCCINO
+cappuccino
+```
+
+- `length` é o número de caracteres.
+- `[0]` pega a primeira letra; `at(-1)` pega a última (números negativos contam do fim).
+
+<Nota tipo="cuidado" titulo="Strings não mudam">
+Nenhum método altera a string original: `toUpperCase()` **devolve uma nova**. Se quiser guardar o resultado, coloque numa variável: `const grito = bebida.toUpperCase();`.
+</Nota>
+
+## Limpar, procurar e trocar
+
+```javascript
+const digitado = "   Ana@Email.com   ";
+const email = digitado.trim().toLowerCase();
+
+console.log(email);
+console.log(email.includes("@"));
+console.log(email.startsWith("ana"));
+console.log(email.endsWith(".com"));
+console.log(email.indexOf("@"));
+console.log(email.replace("email", "cafe"));
+```
+
+```saida
+ana@email.com
+true
+true
+true
+3
+ana@cafe.com
+```
+
+| Método | Faz |
+| --- | --- |
+| `trim()` | tira os espaços do começo e do fim |
+| `includes(x)` | tem `x` em algum lugar? |
+| `startsWith(x)` / `endsWith(x)` | começa / termina com `x`? |
+| `indexOf(x)` | em que posição está `x` (ou `-1` se não tem) |
+| `replace(a, b)` | troca a **primeira** ocorrência de `a` por `b` |
+| `replaceAll(a, b)` | troca **todas** |
+
+<Nota tipo="dica" titulo="trim + toLowerCase antes de comparar">
+Usuários digitam com espaços sobrando e letras maiúsculas aleatórias. Antes de comparar ou salvar um e-mail, limpe: `texto.trim().toLowerCase()`.
+</Nota>
+
+## Pedaços: slice
+
+```javascript
+const codigo = "PED-2026-0042";
+
+console.log(codigo.slice(0, 3));
+console.log(codigo.slice(4, 8));
+console.log(codigo.slice(-4));
+```
+
+```saida
+PED
+2026
+0042
+```
+
+`slice(inicio, fim)` pega do `inicio` até **antes** do `fim`. Com um número negativo, conta do fim.
+
+## Quebrar e juntar: split e join
+
+Essa dupla aparece o tempo todo:
+
+```javascript
+const linha = "café;chá;bolo;suco";
+const itens = linha.split(";");
+console.log(itens);
+
+console.log(itens.join(", "));
+
+const frase = "o café da manhã está pronto";
+const palavras = frase.split(" ");
+console.log(`${palavras.length} palavras`);
+```
+
+```saida
+[ 'café', 'chá', 'bolo', 'suco' ]
+café, chá, bolo, suco
+6 palavras
+```
+
+- `split(separador)` quebra a string num **array**.
+- `join(separador)` faz o caminho de volta: junta um array numa string.
+
+## Preenchendo e repetindo
+
+```javascript
+const numeroPedido = 42;
+console.log(String(numeroPedido).padStart(4, "0"));
+
+console.log("Café".padEnd(12, ".") + "R$ 5");
+console.log("Bolo".padEnd(12, ".") + "R$ 8");
+console.log("=".repeat(16));
+```
+
+```saida
+0042
+Café........R$ 5
+Bolo........R$ 8
+================
+```
+
+`padStart` e `padEnd` completam até um tamanho (ótimo para alinhar). `repeat` repete o texto.
+
+## Comparando e ordenando com acentos
+
+Para ordenar nomes em português do jeito certo, use `localeCompare`:
+
+```javascript
+const nomes = ["Érica", "bruno", "Ana", "Caio"];
+
+console.log([...nomes].sort());
+console.log([...nomes].sort((a, b) => a.localeCompare(b, "pt-BR")));
+```
+
+```saida
+[ 'Ana', 'Caio', 'bruno', 'Érica' ]
+[ 'Ana', 'bruno', 'Caio', 'Érica' ]
+```
+
+O `sort()` sozinho ordena pela tabela de códigos dos caracteres (maiúsculas antes de minúsculas, acentos no fim). O `localeCompare` ordena como um dicionário. O `[...nomes]` faz uma cópia, porque o `sort` mexe no array original.
+
+<Tarefa titulo="Gerador de @ para o mural">
+
+Escreva um código que, a partir do nome completo `"  Maria Clara   Souza "`, gere:
+
+1. o nome limpo, com um espaço só entre as palavras: `Maria Clara Souza`;
+2. as iniciais: `MCS`;
+3. um usuário em minúsculas, com pontos no lugar dos espaços: `@maria.clara.souza`.
+
+<Dica>
+`trim()` e depois `split(" ")` deixa pedaços vazios onde havia vários espaços: tire-os com `filter((p) => p !== "")`. Para as iniciais, `map((p) => p[0])` e `join("")`.
+</Dica>
+
+<Resposta>
+
+```javascript
+const bruto = "  Maria Clara   Souza ";
+
+const partes = bruto.trim().split(" ").filter((p) => p !== "");
+
+const nome = partes.join(" ");
+const iniciais = partes.map((p) => p[0]).join("");
+const usuario = "@" + partes.join(".").toLowerCase();
+
+console.log(nome);
+console.log(iniciais);
+console.log(usuario);
+```
+
+```saida
+Maria Clara Souza
+MCS
+@maria.clara.souza
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que 'a;b;c'.split(';') devolve?"
+  opcoes={["A string 'abc'", "O array ['a', 'b', 'c']", "O número 3"]}
+  correta={1}
+  explicacao="split quebra a string num array, usando o separador. O caminho de volta é join."
+/>
+
+<Cartoes itens={[
+  { frente: "trim()", verso: "Tira os espaços do começo e do fim." },
+  { frente: "slice(inicio, fim)", verso: "Pega um pedaço, do inicio até antes do fim. Negativos contam do fim." },
+  { frente: "split × join", verso: "split: string → array. join: array → string." },
+  { frente: "Ordenar nomes em português", verso: "lista.sort((a, b) => a.localeCompare(b, 'pt-BR'))" },
+]} />
+
+## Resumindo
+
+- Strings não mudam: os métodos devolvem uma string nova.
+- `trim`, `toLowerCase`, `includes`, `replace` e `slice` resolvem o dia a dia.
+- `split` e `join` convertem entre texto e lista.
+- Para ordenar com acentos, `localeCompare`.

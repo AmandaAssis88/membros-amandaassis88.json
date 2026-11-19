@@ -1,0 +1,268 @@
+<Aquecimento perguntas={[
+  { p: "Como encontrar o elemento com id 'titulo' na página?", r: "document.querySelector('#titulo')" },
+  { p: "Como executar uma função quando um botão for clicado?", r: "botao.addEventListener('click', funcao)" },
+  { p: "Por que usar textContent e não innerHTML para texto de usuários?", r: "Porque innerHTML interpreta como HTML e abre espaço para XSS." },
+]} />
+
+Última aula da trilha, e talvez a mais importante para quem vai trabalhar com web: como o JavaScript **espera** coisas demoradas (buscar dados de uma API, ler um arquivo) **sem travar** a página.
+
+<Chute pergunta="Se o JavaScript pedir dados para um servidor que demora 3 segundos para responder, a página fica congelada esses 3 segundos?">
+
+Não. O JavaScript faz o pedido, **segue em frente** com o resto e, quando a resposta chega, volta para tratá-la. É como pedir um café no balcão: você não fica parado olhando para a máquina, vai sentar e o barista chama o seu nome quando fica pronto.
+
+</Chute>
+
+## Síncrono × assíncrono
+
+```javascript
+console.log("1. Pedido feito");
+
+setTimeout(() => {
+  console.log("3. Café pronto!");
+}, 2000);
+
+console.log("2. Fui sentar");
+```
+
+```saida
+1. Pedido feito
+2. Fui sentar
+3. Café pronto!
+```
+
+O `setTimeout` agenda uma função para rodar **depois** de 2000 milissegundos (2 segundos). O JavaScript não espera: segue para a próxima linha e volta quando der o tempo. Por isso o "2" aparece antes do "3".
+
+## Promises: a senha do pedido
+
+Uma **Promise** (promessa) é um objeto que representa um valor que **ainda vai chegar**. É a senha que o caixa te entrega: ela não é o café, mas garante que você vai receber o café... ou um aviso de que acabou o leite.
+
+Uma Promise termina de um de dois jeitos:
+
+- **resolvida** (*fulfilled*): deu certo, e vem o valor;
+- **rejeitada** (*rejected*): deu errado, e vem o erro.
+
+```javascript
+function prepararCafe(tipo) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (tipo === "latte") {
+        reject(new Error("Acabou o leite"));
+      } else {
+        resolve(`${tipo} pronto ☕`);
+      }
+    }, 1000);
+  });
+}
+
+prepararCafe("espresso")
+  .then((cafe) => console.log(cafe))
+  .catch((erro) => console.log("Problema:", erro.message));
+
+prepararCafe("latte")
+  .then((cafe) => console.log(cafe))
+  .catch((erro) => console.log("Problema:", erro.message));
+```
+
+```saida
+espresso pronto ☕
+Problema: Acabou o leite
+```
+
+`.then` trata o sucesso; `.catch` trata o erro. Você vai **usar** Promises muito mais do que criar: quase toda biblioteca e o `fetch` já devolvem uma.
+
+## async e await: o jeito legível
+
+Encadear `.then` funciona, mas fica confuso com vários passos. O `async`/`await` deixa o código assíncrono com cara de código normal:
+
+```javascript
+function prepararCafe(tipo) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (tipo === "latte") reject(new Error("Acabou o leite"));
+      else resolve(`${tipo} pronto ☕`);
+    }, 1000);
+  });
+}
+
+async function atenderMesa() {
+  try {
+    const primeiro = await prepararCafe("espresso");
+    console.log(primeiro);
+
+    const segundo = await prepararCafe("latte");
+    console.log(segundo);
+  } catch (erro) {
+    console.log("Avisar o cliente:", erro.message);
+  } finally {
+    console.log("Mesa atendida");
+  }
+}
+
+atenderMesa();
+```
+
+```saida
+espresso pronto ☕
+Avisar o cliente: Acabou o leite
+Mesa atendida
+```
+
+- `await` **espera** a Promise terminar e entrega o valor (só pode ser usado dentro de uma função `async`).
+- Se a Promise for rejeitada, o erro cai no `catch`, como qualquer outro erro.
+- O `finally` roda **sempre**, dando certo ou errado.
+
+<Nota tipo="dica" titulo="Ao mesmo tempo, não um depois do outro">
+
+No exemplo, o segundo café só começa depois que o primeiro fica pronto. Se os pedidos não dependem um do outro, comece todos juntos com `Promise.all`:
+
+```javascript-exemplo
+const [cafe, cha] = await Promise.all([prepararCafe("espresso"), prepararCafe("chá")]);
+```
+
+</Nota>
+
+## fetch: buscando dados de uma API
+
+O `fetch` faz uma requisição HTTP e devolve uma Promise. É assim que o front-end conversa com o back-end:
+
+```javascript
+async function buscarUsuario(nome) {
+  try {
+    const resposta = await fetch(`https://api.github.com/users/${nome}`);
+
+    if (!resposta.ok) {
+      throw new Error(`Erro ${resposta.status}`);
+    }
+
+    const dados = await resposta.json();
+    console.log(`${dados.name ?? dados.login}: ${dados.public_repos} repositórios públicos`);
+  } catch (erro) {
+    console.log("Não deu para buscar:", erro.message);
+  }
+}
+
+buscarUsuario("octocat");
+```
+
+O caminho tem dois `await`:
+
+<Passos itens={[
+  { icone: "📤", titulo: "fetch(url)", texto: "manda o pedido e espera a resposta chegar" },
+  { icone: "✅", titulo: "resposta.ok", texto: "confere se o status é de sucesso (200 a 299)" },
+  { icone: "📦", titulo: "resposta.json()", texto: "lê o corpo e transforma o JSON em objeto" },
+  { icone: "🖥️", titulo: "Usar os dados", texto: "mostrar na tela, guardar, calcular" },
+]} />
+
+<Nota tipo="cuidado" titulo="O fetch não dá erro com 404">
+Se o servidor responde **404** (não encontrado) ou **500** (erro no servidor), o `fetch` **não** cai no `catch`: ele só rejeita quando a rede falha. Por isso sempre confira `resposta.ok` e lance o erro você mesmo.
+</Nota>
+
+O `??` no exemplo é o operador de **valor padrão para vazio**: se `dados.name` for `null` ou `undefined`, usa `dados.login`.
+
+<Nota tipo="ia" titulo="A IA e o código assíncrono">
+Ao pedir código que busca dados para uma IA, confira três coisas que ela costuma esquecer: o `await` (sem ele, você recebe a Promise, não o dado), a checagem de `resposta.ok` e o `try/catch`. Um `[object Promise]` na tela é o sinal clássico de `await` esquecido.
+</Nota>
+
+<Explique pergunta="Por que o JavaScript não simplesmente espera o servidor responder, travando tudo?">
+Porque no navegador o JavaScript roda numa linha só, a mesma que desenha a página e responde aos cliques. Se ele parasse esperando o servidor, a página inteira congelaria. Com o modelo assíncrono, ele faz o pedido, continua atendendo a pessoa e trata a resposta quando ela chega.
+</Explique>
+
+<Tarefa titulo="O cardápio que vem do servidor">
+
+Escreva uma função `async` `carregarCardapio()` que:
+
+1. espera a função `buscarCardapio()` abaixo (que simula uma API);
+2. mostra cada item no formato `Café - R$ 5.00`;
+3. se der erro, mostra `Cardápio indisponível: ` e a mensagem;
+4. no fim, sempre mostra `Fim do carregamento`.
+
+```javascript-exemplo
+function buscarCardapio() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { nome: "Café", preco: 5 },
+        { nome: "Pão de queijo", preco: 6 },
+      ]);
+    }, 500);
+  });
+}
+```
+
+Teste também trocando o `resolve(...)` por `reject(new Error("servidor fora do ar"))` (lembre de receber `reject` nos parâmetros).
+
+<Dica>
+Use `try { const itens = await buscarCardapio(); ... } catch (erro) { ... } finally { ... }`. Para mostrar cada item, `for...of` e `toFixed(2)`.
+</Dica>
+
+<Resposta>
+
+```javascript
+function buscarCardapio() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { nome: "Café", preco: 5 },
+        { nome: "Pão de queijo", preco: 6 },
+      ]);
+    }, 500);
+  });
+}
+
+async function carregarCardapio() {
+  try {
+    const itens = await buscarCardapio();
+    for (const item of itens) {
+      console.log(`${item.nome} - R$ ${item.preco.toFixed(2)}`);
+    }
+  } catch (erro) {
+    console.log("Cardápio indisponível:", erro.message);
+  } finally {
+    console.log("Fim do carregamento");
+  }
+}
+
+carregarCardapio();
+```
+
+```saida
+Café - R$ 5.00
+Pão de queijo - R$ 6.00
+Fim do carregamento
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que acontece se você esquecer o await em const dados = fetch(url)?"
+  opcoes={["Funciona igual, só que mais rápido", "dados recebe uma Promise, não a resposta", "O navegador trava até a resposta chegar"]}
+  correta={1}
+  explicacao="Sem await, você guarda a Promise (a 'senha do pedido'), não o resultado."
+/>
+
+<Quiz
+  pergunta="O servidor respondeu 404. O fetch cai no catch?"
+  opcoes={["Sim, sempre", "Não: é preciso conferir resposta.ok e lançar o erro", "Só se for dentro de async"]}
+  correta={1}
+  explicacao="O fetch só rejeita em falha de rede. Status de erro HTTP chegam como resposta normal, com ok = false."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é uma Promise?", verso: "Um objeto que representa um valor que ainda vai chegar: resolvida (valor) ou rejeitada (erro)." },
+  { frente: "async / await", verso: "await espera a Promise e entrega o valor; só funciona dentro de função async." },
+  { frente: "Os passos do fetch", verso: "await fetch(url) → conferir resposta.ok → await resposta.json() → usar os dados." },
+  { frente: "Tratar erro em código assíncrono", verso: "try { await ... } catch (erro) { ... } finally { ... }" },
+  { frente: "Rodar várias Promises ao mesmo tempo", verso: "await Promise.all([p1, p2])" },
+]} />
+
+## Resumindo
+
+- Código **assíncrono** não trava: faz o pedido, segue e trata a resposta depois.
+- **Promise** é a senha do pedido; `async`/`await` deixa o código legível.
+- `fetch` + `resposta.ok` + `resposta.json()`, sempre com `try/catch`.
+
+## E agora?
+
+Você fechou o JavaScript! 🥤 O próximo gole natural é o **TypeScript**, a cola zero: o mesmo JavaScript, mas com a tabela nutricional (os tipos) no rótulo, para pegar aqueles sustos de `"5" + 3` antes de o código rodar. Ele está logo ao lado, aqui na Mesa posta.

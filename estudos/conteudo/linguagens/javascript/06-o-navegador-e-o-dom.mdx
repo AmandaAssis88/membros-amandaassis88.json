@@ -1,0 +1,205 @@
+<Aquecimento perguntas={[
+  { p: "Escreva uma arrow function que devolve o triplo de um número.", r: "const triplo = (n) => n * 3;" },
+  { p: "O que é um callback?", r: "Uma função passada como argumento para outra, que a chama quando precisa." },
+  { p: "Uma variável criada com const dentro de uma função existe fora dela?", r: "Não. Ela só existe dentro do bloco onde foi criada." },
+]} />
+
+Até agora o JavaScript rodou no console. Mas ele nasceu para outra coisa: dar vida às páginas. Nesta aula você vai fazer o JavaScript **ler e mudar o HTML** e **reagir a cliques**.
+
+<Nota tipo="dica" titulo="Onde testar esta aula">
+Os exemplos desta aula precisam de uma página, então o botão **Testar** não aparece. Use o **CodePen** (codepen.io/pen): cole o HTML na caixa HTML e o JavaScript na caixa JS. Ou crie um arquivo `index.html` no VS Code e abra no navegador.
+</Nota>
+
+## O DOM: a página como uma árvore
+
+Quando o navegador lê o HTML, ele monta uma **árvore de objetos** chamada **DOM** (*Document Object Model*). Cada tag vira um objeto que o JavaScript consegue encontrar e mudar.
+
+```html
+<h1 id="titulo">Café da Unidunedev</h1>
+<p class="aviso">Aberto até as 18h</p>
+<ul id="cardapio">
+  <li>Café</li>
+  <li>Chá</li>
+</ul>
+<button id="pedir">Fazer pedido</button>
+```
+
+Na árvore, o `ul` é "pai" dos dois `li`, e todos estão dentro do `document`, a raiz.
+
+## Encontrar elementos: querySelector
+
+```javascript-exemplo
+const titulo = document.querySelector("#titulo");
+const aviso = document.querySelector(".aviso");
+const itens = document.querySelectorAll("#cardapio li");
+
+console.log(titulo.textContent);
+console.log(itens.length);
+```
+
+```saida
+Café da Unidunedev
+2
+```
+
+O `querySelector` usa os **mesmos seletores do CSS**: `#id`, `.classe`, `tag`, e combinações. Ele devolve o **primeiro** que encontra. O `querySelectorAll` devolve **todos**.
+
+## Mudar a página
+
+```javascript-exemplo
+titulo.textContent = "Café aberto! ☕";
+aviso.classList.add("destaque");
+aviso.style.color = "brown";
+
+const novo = document.createElement("li");
+novo.textContent = "Bolo de cenoura";
+document.querySelector("#cardapio").append(novo);
+```
+
+| O que | Como |
+| --- | --- |
+| Trocar o texto | `elemento.textContent = "..."` |
+| Pôr ou tirar uma classe CSS | `classList.add("x")`, `classList.remove("x")`, `classList.toggle("x")` |
+| Mudar um estilo direto | `elemento.style.color = "brown"` |
+| Criar um elemento novo | `document.createElement("li")` |
+| Colocar na página | `pai.append(filho)` |
+| Tirar da página | `elemento.remove()` |
+
+<Nota tipo="cuidado" titulo="textContent, não innerHTML">
+Existe também o `innerHTML`, que interpreta o texto **como HTML**. Se esse texto veio de um usuário, ele pode esconder um script malicioso (o ataque **XSS**, que você vê na trilha de Segurança para devs, na Cozinha). Para texto, use sempre `textContent`.
+</Nota>
+
+## Reagir a eventos
+
+Um **evento** é algo que acontece na página: um clique, uma tecla, um formulário enviado. Você "escuta" o evento e passa um **callback** (lembra da aula passada?):
+
+```javascript-exemplo
+const botao = document.querySelector("#pedir");
+let pedidos = 0;
+
+botao.addEventListener("click", () => {
+  pedidos++;
+  botao.textContent = `Pedidos: ${pedidos}`;
+});
+```
+
+A cada clique, o navegador chama a sua função. Eventos comuns:
+
+| Evento | Quando acontece |
+| --- | --- |
+| `click` | clicou |
+| `input` | o texto de um campo mudou |
+| `submit` | um formulário foi enviado |
+| `keydown` | apertou uma tecla |
+
+## Formulários
+
+Um exemplo completo: um campo e um botão que adicionam itens na lista.
+
+```html
+<form id="form-pedido">
+  <input id="campo" placeholder="O que vai querer?" />
+  <button>Adicionar</button>
+</form>
+<ul id="lista"></ul>
+```
+
+```javascript-exemplo
+const form = document.querySelector("#form-pedido");
+const campo = document.querySelector("#campo");
+const lista = document.querySelector("#lista");
+
+form.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+
+  const texto = campo.value.trim();
+  if (texto === "") return;
+
+  const item = document.createElement("li");
+  item.textContent = texto;
+  lista.append(item);
+
+  campo.value = "";
+  campo.focus();
+});
+```
+
+- `evento.preventDefault()` impede o comportamento padrão do formulário, que é **recarregar a página**.
+- `campo.value` é o que a pessoa digitou (sempre uma string).
+- No fim, limpamos o campo e devolvemos o cursor para ele.
+
+<Nota tipo="curiosidade" titulo="E o React?">
+Em projetos grandes, mexer no DOM na mão vira bagunça. Frameworks como **React** (que a Unidunedev usa) deixam você descrever **como a tela deve ficar** a partir dos dados, e eles mesmos atualizam o DOM. Mas tudo isso é JavaScript por baixo: entender o DOM ajuda muito a entender o React.
+</Nota>
+
+<Tarefa titulo="Contador de cafés do dia">
+
+Monte uma página com um número grande (começando em 0) e três botões: **+1 café**, **−1 café** e **Zerar**. O número nunca pode ficar negativo. Bônus: quando passar de 5, coloque a classe `alerta` no número (e pinte de vermelho no CSS).
+
+<Dica>
+Guarde o valor numa variável `let cafes = 0`. Crie uma função `atualizar()` que escreve o valor no elemento e liga ou desliga a classe com `classList.toggle("alerta", cafes > 5)`. Cada botão muda `cafes` e chama `atualizar()`.
+</Dica>
+
+<Resposta>
+
+```html
+<p id="total">0</p>
+<button id="mais">+1 café</button>
+<button id="menos">−1 café</button>
+<button id="zerar">Zerar</button>
+
+<style>
+  #total { font-size: 3rem; }
+  .alerta { color: red; }
+</style>
+```
+
+```javascript-exemplo
+const total = document.querySelector("#total");
+let cafes = 0;
+
+function atualizar() {
+  total.textContent = cafes;
+  total.classList.toggle("alerta", cafes > 5);
+}
+
+document.querySelector("#mais").addEventListener("click", () => {
+  cafes++;
+  atualizar();
+});
+
+document.querySelector("#menos").addEventListener("click", () => {
+  if (cafes > 0) cafes--;
+  atualizar();
+});
+
+document.querySelector("#zerar").addEventListener("click", () => {
+  cafes = 0;
+  atualizar();
+});
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Num formulário, por que chamar evento.preventDefault() no submit?"
+  opcoes={["Para apagar o que foi digitado", "Para impedir que a página recarregue", "Para validar o e-mail"]}
+  correta={1}
+  explicacao="O comportamento padrão do submit é enviar e recarregar a página. preventDefault impede isso, e o seu JavaScript cuida do resto."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é o DOM?", verso: "A árvore de objetos que o navegador monta a partir do HTML, e que o JavaScript consegue ler e mudar." },
+  { frente: "querySelector × querySelectorAll", verso: "O primeiro elemento que casa com o seletor CSS; todos os que casam." },
+  { frente: "Como reagir a um clique?", verso: "elemento.addEventListener('click', () => { ... })" },
+  { frente: "textContent × innerHTML", verso: "textContent trata como texto (seguro); innerHTML interpreta como HTML (risco de XSS)." },
+]} />
+
+## Resumindo
+
+- O **DOM** é a página em forma de árvore de objetos.
+- `querySelector` encontra; `textContent`, `classList` e `append` mudam.
+- `addEventListener` liga um callback a um evento (`click`, `submit`, `input`).
+- Em formulários, `preventDefault()` e `campo.value`.

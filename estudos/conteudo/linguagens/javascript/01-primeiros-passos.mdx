@@ -1,0 +1,177 @@
+Bem-vindo ao JavaScript! 🥤 Ele é o refrigerante de cola da programação: está em **todo lugar**, todo mundo já tomou (mesmo sem saber) e, de vez em quando, dá um susto. Todo site que você abre roda JavaScript, e ele também roda em servidores, apps e até em robôs.
+
+## Onde o JavaScript roda
+
+| Lugar | Para quê |
+| --- | --- |
+| **Navegador** | Deixar páginas interativas: botões, formulários, animações |
+| **Node.js** | Servidores, APIs e ferramentas de linha de comando |
+| **Apps** | Celular (React Native) e computador (Electron, como o VS Code) |
+
+Nas primeiras aulas, a gente roda no **Programiz** (um Node.js online): clique em **Testar**, apague o exemplo de lá, cole e clique em **Run**. Também dá para rodar direto no navegador: aperte **F12**, abra a aba **Console** e cole o código.
+
+## Seu primeiro programa
+
+```javascript
+console.log("Olá, mundo!");
+```
+
+```saida
+Olá, mundo!
+```
+
+Uma linha só. O `console.log` mostra o que estiver entre os parênteses. O `;` no fim é opcional em JavaScript, mas a maioria das equipes usa.
+
+<Nota tipo="curiosidade" titulo="JavaScript não é Java">
+Os nomes são parecidos por puro marketing: em 1995, Java estava na moda, e o JavaScript (criado em 10 dias por Brendan Eich) pegou carona no nome. As duas linguagens são bem diferentes. É como dizer que cachorro-quente é um tipo de cachorro.
+</Nota>
+
+## Variáveis: let e const
+
+```javascript
+const nome = "Ana";
+let pontos = 10;
+pontos = pontos + 5;
+
+console.log(nome, "tem", pontos, "pontos");
+```
+
+```saida
+Ana tem 15 pontos
+```
+
+| Palavra | Pode mudar o valor depois? | Quando usar |
+| --- | --- | --- |
+| `const` | Não | **Por padrão**: a maioria das variáveis nunca muda |
+| `let` | Sim | Quando o valor vai mudar (contadores, totais) |
+| `var` | Sim | Jeito antigo, com regras confusas. Evite |
+
+<Nota tipo="dica" titulo="Comece sempre com const">
+Use `const` em tudo e troque para `let` só quando precisar mudar o valor. Assim, quem lê o código sabe na hora o que é fixo e o que muda.
+</Nota>
+
+## Os tipos de valor
+
+JavaScript descobre o tipo sozinho (tipagem **dinâmica**), como Python:
+
+```javascript
+const produto = "Café";
+const preco = 5.5;
+const quantidade = 2;
+const temEstoque = true;
+const cupom = null;
+let observacao;
+
+console.log(typeof produto, typeof preco, typeof temEstoque);
+console.log(cupom, observacao);
+```
+
+```saida
+string number boolean
+null undefined
+```
+
+| Tipo | Exemplo | Observação |
+| --- | --- | --- |
+| `string` | `"Café"` ou `'Café'` | texto |
+| `number` | `5.5`, `2` | inteiros e decimais são o **mesmo** tipo |
+| `boolean` | `true`, `false` | letra minúscula |
+| `null` | `null` | "vazio de propósito" |
+| `undefined` | (nada atribuído) | "ainda não tem valor" |
+
+## Template strings: textos com variáveis
+
+Com **crases** (`` ` ``) e `${ }`, você coloca valores no meio do texto, como as f-strings do Python:
+
+```javascript
+const item = "cappuccino";
+const valor = 9;
+const qtd = 2;
+
+console.log(`Pedido: ${qtd}x ${item} = R$ ${(valor * qtd).toFixed(2)}`);
+```
+
+```saida
+Pedido: 2x cappuccino = R$ 18.00
+```
+
+O `toFixed(2)` deixa o número com duas casas decimais.
+
+## Contas e o primeiro susto
+
+```javascript
+console.log(7 / 2);
+console.log(7 % 2);
+console.log(0.1 + 0.2);
+console.log("5" + 3);
+console.log("5" * 3);
+```
+
+```saida
+3.5
+1
+0.30000000000000004
+53
+15
+```
+
+- `7 / 2` dá `3.5`: em JavaScript, a divisão nunca corta as casas decimais.
+- `0.1 + 0.2` não dá exatamente `0.3`: é um detalhe de como os computadores guardam decimais (acontece em quase toda linguagem). Para dinheiro, trabalhe com centavos inteiros.
+- `"5" + 3` dá `"53"`: com texto, o `+` **junta**. Mas `"5" * 3` dá `15`: o `*` converte o texto em número. Esse "jeitinho" do JavaScript de converter tipos sozinho é a origem de muitos bugs, e é por isso que existe o **TypeScript**, a próxima trilha.
+
+<Nota tipo="cuidado" titulo="Converta antes de somar">
+Valores que vêm de formulários chegam como texto. Antes de fazer contas, converta: `Number("5")` dá `5`. Se o texto não for número, `Number("abc")` dá `NaN` (*Not a Number*).
+</Nota>
+
+<Tarefa titulo="Comanda da cafeteria">
+
+Crie variáveis para o nome do cliente, o produto, o preço unitário e a quantidade. Mostre a comanda assim (com os seus valores):
+
+```saida
+Cliente: Bia
+2x Pão de queijo
+Total: R$ 12.00
+```
+
+<Dica>
+Use `const` para tudo (nada muda), template strings com `${ }` e `toFixed(2)` no total.
+</Dica>
+
+<Resposta>
+
+```javascript
+const cliente = "Bia";
+const produto = "Pão de queijo";
+const preco = 6;
+const quantidade = 2;
+
+console.log(`Cliente: ${cliente}`);
+console.log(`${quantidade}x ${produto}`);
+console.log(`Total: R$ ${(preco * quantidade).toFixed(2)}`);
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual o resultado de console.log('2' + 2) em JavaScript?"
+  opcoes={["4", "22", "Erro"]}
+  correta={1}
+  explicacao="Com uma string no meio, o + junta textos. O resultado é a string '22'."
+/>
+
+<Cartoes itens={[
+  { frente: "let × const", verso: "const não pode receber outro valor; let pode. Comece com const." },
+  { frente: "Como colocar variáveis no meio de um texto?", verso: "Template string: crases e ${variavel}." },
+  { frente: "null × undefined", verso: "null é vazio de propósito; undefined é 'ainda não recebeu valor'." },
+  { frente: "Onde o JavaScript roda?", verso: "No navegador, no Node.js (servidores) e em apps." },
+]} />
+
+## Resumindo
+
+- JavaScript roda no navegador, no servidor (Node.js) e em apps.
+- `console.log` mostra valores; `const` por padrão, `let` quando muda; esqueça o `var`.
+- Tipos: `string`, `number`, `boolean`, `null`, `undefined`.
+- Template strings: `` `Olá, ${nome}` ``.
+- Cuidado com a conversão automática: `"5" + 3` é `"53"`.

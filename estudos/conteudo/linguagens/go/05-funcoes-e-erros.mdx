@@ -1,0 +1,293 @@
+<Aquecimento perguntas={[
+  { p: "Por que len(\"é\") dá 2 em Go?", r: "Porque len conta bytes, e o é ocupa 2 bytes em UTF-8." },
+  { p: "O que strconv.Atoi devolve?", r: "Dois valores: o número e um erro (nil se deu certo)." },
+  { p: "Qual função quebra um texto pelos espaços, ignorando os que sobram?", r: "strings.Fields." },
+]} />
+
+Esta é a aula mais "Go" de todas. O Go não tem `try/catch`. Em vez disso, funções **devolvem o erro como um valor**, e você confere na hora. Parece estranho no começo, mas tem um motivo: erro em Go não fica escondido.
+
+## Declarando funções
+
+```go
+package main
+
+import "fmt"
+
+func precoComDesconto(preco float64, percentual float64) float64 {
+	return preco - preco*percentual/100
+}
+
+func saudar(nome string) {
+	fmt.Println("Bora codar,", nome)
+}
+
+func main() {
+	fmt.Println(precoComDesconto(20, 10))
+	saudar("Caio")
+}
+```
+
+```saida
+18
+Bora codar, Caio
+```
+
+- O tipo vem **depois** do nome do parâmetro: `preco float64`.
+- O tipo de retorno vem depois dos parênteses.
+- Quando parâmetros seguidos têm o mesmo tipo, dá para escrever uma vez só: `func somar(a, b int) int`.
+
+## Vários retornos
+
+Uma função Go pode devolver **mais de um valor**:
+
+```go
+package main
+
+import "fmt"
+
+func dividirConta(total float64, pessoas int) (float64, float64) {
+	cadaUm := total / float64(pessoas)
+	gorjeta := total * 0.1
+	return cadaUm, gorjeta
+}
+
+func main() {
+	cadaUm, gorjeta := dividirConta(60, 4)
+	fmt.Printf("Cada um: R$ %.2f | Gorjeta: R$ %.2f\n", cadaUm, gorjeta)
+}
+```
+
+```saida
+Cada um: R$ 15.00 | Gorjeta: R$ 6.00
+```
+
+## O padrão do Go: valor, erro
+
+É exatamente isso que o Go usa para erros: o **último** retorno é do tipo `error`.
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func dividirConta(total float64, pessoas int) (float64, error) {
+	if pessoas <= 0 {
+		return 0, errors.New("precisa de pelo menos uma pessoa para pagar")
+	}
+	return total / float64(pessoas), nil
+}
+
+func main() {
+	valor, err := dividirConta(60, 4)
+	if err != nil {
+		fmt.Println("Erro:", err)
+		return
+	}
+	fmt.Printf("Cada um paga R$ %.2f\n", valor)
+
+	_, err = dividirConta(60, 0)
+	if err != nil {
+		fmt.Println("Erro:", err)
+	}
+}
+```
+
+```saida
+Cada um paga R$ 15.00
+Erro: precisa de pelo menos uma pessoa para pagar
+```
+
+- Deu certo: devolve o valor e `nil` (nenhum erro).
+- Deu errado: devolve um valor qualquer (normalmente o valor zero) e o erro.
+- Quem chama confere **logo em seguida**: `if err != nil { ... }`.
+
+<Nota tipo="analogia" titulo="Pensa assim: a lata com o lacre">
+Cada função entrega a lata **e** o lacre. Antes de beber, você olha o lacre: está rompido (`err != nil`)? Então não bebe, trata o problema. O `try/catch` de outras linguagens é como beber primeiro e descobrir depois.
+</Nota>
+
+Você vai escrever `if err != nil` **muitas** vezes. É o meme mais famoso do Go, e os devs Go têm orgulho dele: cada erro é tratado no lugar exato onde aconteceu.
+
+## Embrulhando erros com contexto
+
+Quando um erro passa por várias funções, vale ir acrescentando **contexto**:
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func lerQuantidade(texto string) (int, error) {
+	n, err := strconv.Atoi(texto)
+	if err != nil {
+		return 0, fmt.Errorf("quantidade inválida %q: %w", texto, err)
+	}
+	return n, nil
+}
+
+func main() {
+	_, err := lerQuantidade("três")
+	fmt.Println(err)
+}
+```
+
+```saida
+quantidade inválida "três": strconv.Atoi: parsing "três": invalid syntax
+```
+
+- `fmt.Errorf` cria um erro com formatação; o `%q` mostra o texto entre aspas.
+- O `%w` **embrulha** o erro original. A mensagem vira uma trilha: dá para ler exatamente onde e por que falhou.
+
+## Funções como valores
+
+```go
+package main
+
+import "fmt"
+
+func aplicarEmTodos(precos []float64, transformar func(float64) float64) []float64 {
+	resultado := make([]float64, 0, len(precos))
+	for _, p := range precos {
+		resultado = append(resultado, transformar(p))
+	}
+	return resultado
+}
+
+func main() {
+	precos := []float64{7.5, 10, 12}
+	dobro := func(p float64) float64 { return p * 2 }
+
+	fmt.Println(aplicarEmTodos(precos, dobro))
+	fmt.Println(aplicarEmTodos(precos, func(p float64) float64 { return p - 1 }))
+}
+```
+
+```saida
+[15 20 24]
+[6.5 9 11]
+```
+
+`func(float64) float64` é o tipo "função que recebe e devolve `float64`". Funções podem ir em variáveis e ser passadas como argumento.
+
+## defer: deixa para o final
+
+```go
+package main
+
+import "fmt"
+
+func virarANoite() {
+	fmt.Println("Abrindo o notebook")
+	defer fmt.Println("Fechando o notebook (e indo dormir, por favor)")
+
+	fmt.Println("Codando...")
+	fmt.Println("Corrigindo o bug das 3h da manhã...")
+}
+
+func main() {
+	virarANoite()
+}
+```
+
+```saida
+Abrindo o notebook
+Codando...
+Corrigindo o bug das 3h da manhã...
+Fechando o notebook (e indo dormir, por favor)
+```
+
+O `defer` agenda uma chamada para quando a função **terminar**, aconteça o que acontecer. É usado para fechar arquivos e conexões logo depois de abrir: `defer arquivo.Close()`. Assim, ninguém esquece.
+
+<Nota tipo="curiosidade" titulo="E o panic?">
+O Go tem `panic`, que derruba o programa, mas ele é reservado para erros que **não deveriam acontecer nunca** (um bug, um índice fora do slice). Para erros esperados (entrada inválida, arquivo que não existe, servidor fora do ar), o jeito Go é sempre devolver um `error`.
+</Nota>
+
+<Tarefa titulo="O caixa da lanchonete">
+
+Escreva uma função `comprar(saldo float64, latas int, preco float64) (float64, error)` que devolve o saldo depois da compra. Ela deve devolver erro quando:
+
+- `latas` for menor ou igual a 0: `"quantidade precisa ser positiva"`;
+- o saldo não der: `"saldo insuficiente: faltam R$ X"` (com o valor que falta, com 2 casas).
+
+Teste com: saldo 20 e 2 latas de 7.50; saldo 10 e 3 latas; e 0 latas.
+
+<Dica>
+Use `errors.New` para a mensagem fixa e `fmt.Errorf("saldo insuficiente: faltam R$ %.2f", falta)` para a que tem o valor. No `main`, confira `if err != nil` a cada chamada.
+</Dica>
+
+<Resposta>
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func comprar(saldo float64, latas int, preco float64) (float64, error) {
+	if latas <= 0 {
+		return saldo, errors.New("quantidade precisa ser positiva")
+	}
+	total := float64(latas) * preco
+	if total > saldo {
+		return saldo, fmt.Errorf("saldo insuficiente: faltam R$ %.2f", total-saldo)
+	}
+	return saldo - total, nil
+}
+
+func main() {
+	testes := []struct {
+		saldo float64
+		latas int
+	}{{20, 2}, {10, 3}, {20, 0}}
+
+	for _, t := range testes {
+		novo, err := comprar(t.saldo, t.latas, 7.5)
+		if err != nil {
+			fmt.Println("Erro:", err)
+			continue
+		}
+		fmt.Printf("Compra feita! Saldo: R$ %.2f\n", novo)
+	}
+}
+```
+
+```saida
+Compra feita! Saldo: R$ 5.00
+Erro: saldo insuficiente: faltam R$ 12.50
+Erro: quantidade precisa ser positiva
+```
+
+O `[]struct{ ... }{ ... }` é uma lista de casos de teste "na hora", um jeito muito comum em Go. Você vai entender o `struct` na próxima aula.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual é o jeito Go de tratar um erro?"
+  opcoes={["try { } catch (e) { }", "Conferir o erro devolvido: if err != nil { }", "Ignorar e deixar o panic avisar"]}
+  correta={1}
+  explicacao="Funções devolvem o erro como último valor, e quem chama confere logo em seguida."
+/>
+
+<Cartoes itens={[
+  { frente: "Assinatura de uma função Go", verso: "func nome(a int, b string) (int, error) { ... }" },
+  { frente: "O padrão de erro do Go", verso: "valor, err := f(); if err != nil { trata e retorna }" },
+  { frente: "Criar erros", verso: "errors.New(\"mensagem\") ou fmt.Errorf(\"... %w\", err) para embrulhar." },
+  { frente: "O que faz o defer?", verso: "Agenda uma chamada para quando a função terminar (fechar arquivos, conexões)." },
+  { frente: "panic × error", verso: "panic para bugs que não deviam acontecer; error para problemas esperados." },
+]} />
+
+## Resumindo
+
+- Tipos **depois** dos nomes; vários retornos são normais.
+- Erros são **valores**: `(resultado, error)` e `if err != nil` logo depois.
+- `fmt.Errorf` com `%w` acrescenta contexto ao erro.
+- `defer` para limpar no fim; `panic` só para bugs.

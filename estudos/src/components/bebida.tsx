@@ -340,6 +340,116 @@ export function Bebida({ trilha, tamanho = 120 }: { trilha: TrilhaId; tamanho?: 
           />
         </g>
       )}
+
+      {trilha === "javascript" && (
+        <g>
+          <ellipse cx="60" cy="104" rx="22" ry="4" fill="#000" opacity="0.12" />
+          <rect x="38" y="26" width="44" height="76" rx="9" fill="#c8102e" />
+          <ellipse cx="60" cy="27" rx="20" ry="4" fill="#d9d9de" />
+          <ellipse cx="60" cy="26" rx="14" ry="2.6" fill="#b8b8c0" />
+          <rect x="38" y="52" width="44" height="26" fill="#f7df1e" />
+          <text
+            x="60"
+            y="71"
+            textAnchor="middle"
+            fontFamily="JetBrains Mono, monospace"
+            fontWeight="800"
+            fontSize="17"
+            fill="#1b1b1b"
+          >
+            {"JS"}
+          </text>
+          <path
+            d="M44 34v12M44 84v10"
+            stroke="#fff"
+            strokeOpacity="0.35"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <g className="lata-bolhas" fill="#fff" opacity="0.7">
+            <circle cx="30" cy="40" r="2.5" />
+            <circle cx="26" cy="58" r="1.8" />
+            <circle cx="92" cy="48" r="2.2" />
+          </g>
+        </g>
+      )}
+
+      {trilha === "typescript" && (
+        <g>
+          <ellipse cx="60" cy="104" rx="22" ry="4" fill="#000" opacity="0.12" />
+          <rect x="38" y="26" width="44" height="76" rx="9" fill="#1b1b1f" />
+          <ellipse cx="60" cy="27" rx="20" ry="4" fill="#d9d9de" />
+          <ellipse cx="60" cy="26" rx="14" ry="2.6" fill="#b8b8c0" />
+          <rect x="38" y="52" width="44" height="26" fill="#3178c6" />
+          <text
+            x="60"
+            y="71"
+            textAnchor="middle"
+            fontFamily="JetBrains Mono, monospace"
+            fontWeight="800"
+            fontSize="17"
+            fill="#ffffff"
+          >
+            {"TS"}
+          </text>
+          <path
+            d="M44 34v12M44 84v10"
+            stroke="#fff"
+            strokeOpacity="0.35"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <text
+            x="60"
+            y="94"
+            textAnchor="middle"
+            fontFamily="DM Sans, sans-serif"
+            fontWeight="700"
+            fontSize="8"
+            fill="#9aa4b5"
+          >
+            ZERO
+          </text>
+          <g className="lata-bolhas" fill="#fff" opacity="0.6">
+            <circle cx="30" cy="44" r="2.2" />
+            <circle cx="92" cy="40" r="1.8" />
+          </g>
+        </g>
+      )}
+
+      {trilha === "dart" && (
+        <g>
+          <ellipse cx="60" cy="106" rx="22" ry="4" fill="#000" opacity="0.12" />
+          <path d="M70 6l-6 26" stroke="#ff8fb1" strokeWidth="5" strokeLinecap="round" />
+          <path d="M34 34h52l-7 70H41z" fill="#e8f4ff" />
+          <path d="M37 60h46l-2 22H39z" fill="#0175c2" />
+          <path d="M35.5 44h49l-1.4 16h-46.2z" fill="#40c4ff" />
+          <path d="M39 82h42l-2 20H41z" fill="#13b9fd" />
+          <path d="M30 34c0-10 13-16 30-16s30 6 30 16z" fill="#ffffff" opacity="0.95" />
+          <path className="dart-losango" d="M60 64l8 8-8 8-8-8z" fill="#ffffff" opacity="0.9" />
+        </g>
+      )}
+
+      {trilha === "go" && (
+        <g>
+          <ellipse cx="60" cy="106" rx="18" ry="4" fill="#000" opacity="0.12" />
+          <rect x="42" y="16" width="36" height="88" rx="8" fill="#141a14" />
+          <ellipse cx="60" cy="17" rx="16" ry="3.4" fill="#d9d9de" />
+          <ellipse cx="60" cy="16" rx="11" ry="2.2" fill="#b8b8c0" />
+          <path className="go-raio" d="M64 32L50 60h10l-6 26 16-32H60z" fill="#7cff4f" />
+          <text
+            x="60"
+            y="98"
+            textAnchor="middle"
+            fontFamily="JetBrains Mono, monospace"
+            fontWeight="800"
+            fontSize="11"
+            fill="#00add8"
+          >
+            GO
+          </text>
+        </g>
+      )}
     </svg>
   );
 }
@@ -355,6 +465,21 @@ const ITENS: Record<TrilhaId, string[]> = {
   sql: ["SELECT", "*", "WHERE", "JOIN", "id", "ORDER BY", "COUNT", "▤", "INSERT", ";"],
   seguranca: ["🔒", "hash", "2FA", "✓", ".env", "OWASP", "🔑", "sal", "✓", "https"],
   ciberseguranca: ["🛡", "CTF", "flag{ }", "🔍", "SOC", "log", "🛡", "nmap", "blue", "red"],
+  javascript: ["=>", "{ }", "let", "===", "fetch", "async", "[ ]", "null", "?.", "console"],
+  typescript: [
+    ": string",
+    "interface",
+    "<T>",
+    ": number",
+    "type",
+    "?",
+    "readonly",
+    "| null",
+    "as",
+    "enum",
+  ],
+  dart: ["void main()", "final", "Widget", "=>", "async", "?", "List", "late", "setState", "{ }"],
+  go: ["func", ":=", "go", "chan", "defer", "err != nil", "{ }", "struct", "<-", "fmt"],
   poo: ["class", "{ }", "self", "this", "new", "▣", "extends", "▣", "obj.", "{ }"],
   git: ["commit", "●", "main", "merge", "●─●", "push", "PR #1", "●", "branch", "pull"],
   produto: ["GET", "200", "→", "JSON", "←", "/api", "POST", "201", "→", "{ }"],

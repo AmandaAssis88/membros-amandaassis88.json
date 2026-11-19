@@ -1,0 +1,230 @@
+<Aquecimento perguntas={[
+  { p: "O que o TypeScript faz dentro de um if (typeof x === 'number')?", r: "Narrowing: ele sabe que x é number dentro do bloco." },
+  { p: "Para que serve o operador ???", r: "Usar o valor da direita quando o da esquerda for null ou undefined." },
+  { p: "O que significa Promise<Pedido>?", r: "Uma Promise que vai entregar um Pedido: um generic." },
+]} />
+
+Até aqui você usou o Playground. Agora vamos levar o TypeScript para um projeto de verdade no seu computador, do jeito que as equipes trabalham.
+
+## Instalando e rodando
+
+Você precisa do **Node.js** instalado. Num projeto novo:
+
+```terminal
+npm init -y
+npm install --save-dev typescript
+npx tsc --init
+```
+
+- `npm install --save-dev typescript` instala o compilador **só para desenvolvimento** (ele não vai para produção: o que vai é o JavaScript gerado).
+- `npx tsc --init` cria o arquivo `tsconfig.json`, com as configurações.
+
+Crie um `src/index.ts` e compile:
+
+```terminal
+npx tsc
+node dist/index.js
+```
+
+O `tsc` lê o `tsconfig.json`, confere os tipos de todos os arquivos e gera os `.js`.
+
+<Nota tipo="dica" titulo="Sem compilar, para testar rápido">
+As versões recentes do Node.js já conseguem rodar um `.ts` simples direto (`node index.ts`), apagando os tipos na hora, sem conferir. E em projetos com **Vite** (como a Unidunedev), você nem roda o `tsc` na mão: o Vite cuida de tudo, e o `tsc` entra só para conferir os tipos (`tsc --noEmit`).
+</Nota>
+
+## O tsconfig.json
+
+Um exemplo enxuto das opções que mais importam:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["src"]
+}
+```
+
+| Opção | Faz |
+| --- | --- |
+| `target` | Para qual versão do JavaScript gerar o código |
+| `strict` | Liga **todas** as verificações rigorosas. Deixe sempre `true` |
+| `outDir` / `rootDir` | Onde ficam os `.js` gerados / os `.ts` |
+| `noUncheckedIndexedAccess` | `lista[0]` passa a ser `T \| undefined`: obriga a conferir se o item existe |
+
+<Nota tipo="cuidado" titulo="Nunca desligue o strict">
+Sem `strict`, o TypeScript deixa passar `null` e `undefined` em qualquer lugar e aceita parâmetros sem tipo. Fica um JavaScript com enfeite. Se o projeto é novo, `strict: true` desde o primeiro dia.
+</Nota>
+
+## any × unknown
+
+Às vezes o tipo realmente é desconhecido. Há dois jeitos de dizer isso, e só um é bom:
+
+```typescript-exemplo
+let a: any = JSON.parse('{"preco": 5}');
+a.qualquerCoisa.quebra();
+
+let u: unknown = JSON.parse('{"preco": 5}');
+u.preco;
+```
+
+```saida
+'u' is of type 'unknown'.
+```
+
+- `any` **desliga** o TypeScript para aquela variável. Qualquer coisa passa, inclusive bugs. O `a.qualquerCoisa.quebra()` compila e só explode quando roda.
+- `unknown` diz "não sei o que é, **então confira antes de usar**". O TypeScript obriga a estreitar o tipo primeiro:
+
+```typescript
+function lerPreco(valor: unknown): number {
+  if (typeof valor === "object" && valor !== null && "preco" in valor && typeof valor.preco === "number") {
+    return valor.preco;
+  }
+  throw new Error("Formato inválido");
+}
+
+console.log(lerPreco(JSON.parse('{"preco": 5}')));
+```
+
+```saida
+5
+```
+
+<Nota tipo="ia" titulo="O any é o atalho preferido da IA (e do dev cansado)">
+Quando o TypeScript reclama, é tentador (para você e para a IA) "resolver" com `any` ou com `as`. Isso não corrige nada: só desliga o alarme. Ao revisar código gerado por IA, procure `any`, `as any` e `// @ts-ignore`. Cada um é um ponto onde os tipos pararam de proteger você. Peça: *"Tipe isso sem usar any"*.
+</Nota>
+
+## Tipos de bibliotecas
+
+Quase toda biblioteca popular já vem com os tipos, ou tem um pacote separado com eles:
+
+```terminal
+npm install express
+npm install --save-dev @types/express
+```
+
+Os pacotes `@types/...` vêm do **DefinitelyTyped**, um repositório mantido pela comunidade. Com eles, o editor sabe o formato de cada função da biblioteca.
+
+## Utility types: transformando tipos
+
+O TypeScript vem com tipos prontos que criam um tipo novo a partir de outro:
+
+```typescript
+interface Produto {
+  id: number;
+  nome: string;
+  preco: number;
+  descricao: string;
+}
+
+type NovoProduto = Omit<Produto, "id">;
+type AtualizacaoDeProduto = Partial<NovoProduto>;
+type ResumoDoProduto = Pick<Produto, "nome" | "preco">;
+
+const novo: NovoProduto = { nome: "Mocha", preco: 11, descricao: "Café com chocolate" };
+const mudanca: AtualizacaoDeProduto = { preco: 12 };
+const resumo: ResumoDoProduto = { nome: novo.nome, preco: mudanca.preco ?? novo.preco };
+
+console.log(resumo);
+```
+
+```saida
+{ nome: 'Mocha', preco: 12 }
+```
+
+| Utility | Faz |
+| --- | --- |
+| `Partial<T>` | Todos os campos viram opcionais (ótimo para "atualizar só alguns campos") |
+| `Omit<T, "x">` | Tira o campo `x` (ótimo para "criar sem o id, que o banco gera") |
+| `Pick<T, "x" \| "y">` | Pega só os campos `x` e `y` |
+| `Record<K, V>` | Um objeto com chaves do tipo `K` e valores do tipo `V` |
+
+Assim, quando a `interface Produto` muda, os outros tipos mudam junto. Uma fonte de verdade só.
+
+<Explique pergunta="Qual a diferença entre usar any e unknown para um valor que você não conhece?">
+Com any, o TypeScript para de conferir aquela variável: tudo compila, inclusive acessar campos que não existem, e o erro só aparece rodando. Com unknown, o TypeScript continua conferindo e não deixa usar o valor até você provar o tipo dele com typeof, in ou uma validação. any esconde o problema; unknown obriga a tratar.
+</Explique>
+
+<Tarefa titulo="Configurando o seu primeiro projeto">
+
+No seu computador:
+
+1. Crie uma pasta `cafe-ts`, rode `npm init -y`, instale o TypeScript e gere o `tsconfig.json`.
+2. Ajuste o `tsconfig.json` com `"strict": true`, `"rootDir": "src"` e `"outDir": "dist"`.
+3. Crie `src/index.ts` com a `interface Produto` da aula 3 e uma função que recebe uma lista de produtos e devolve o mais barato.
+4. Rode `npx tsc` e depois `node dist/index.js`.
+5. Bônus: coloque um erro de tipo de propósito e veja o `tsc` recusar.
+
+<Dica>
+Se o `tsc` reclamar que não encontrou arquivos, confira o `"include": ["src"]` e o caminho do arquivo. O mais barato é um `reduce` guardando o menor até agora.
+</Dica>
+
+<Resposta>
+
+```typescript
+interface Produto {
+  nome: string;
+  preco: number;
+}
+
+function maisBarato(produtos: Produto[]): Produto | undefined {
+  if (produtos.length === 0) return undefined;
+  return produtos.reduce((menor, p) => (p.preco < menor.preco ? p : menor));
+}
+
+const cardapio: Produto[] = [
+  { nome: "Café", preco: 5 },
+  { nome: "Chá", preco: 4 },
+  { nome: "Latte", preco: 8 },
+];
+
+const barato = maisBarato(cardapio);
+console.log(barato ? `Mais barato: ${barato.nome}` : "Cardápio vazio");
+```
+
+```saida
+Mais barato: Chá
+```
+
+Repare no `if (produtos.length === 0)`: sem ele, o `reduce` numa lista vazia quebraria. O tipo de retorno `Produto | undefined` obriga quem chama a tratar esse caso.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual a configuração mais importante para o TypeScript proteger de verdade?"
+  opcoes={["target: ES2022", "strict: true", "outDir: dist"]}
+  correta={1}
+  explicacao="strict liga as verificações rigorosas, como tratar null e undefined. Sem ele, muitos bugs passam."
+/>
+
+<Quiz
+  pergunta="A IA 'resolveu' um erro de tipo trocando o tipo da variável para any. O que fazer?"
+  opcoes={["Aceitar: o erro sumiu", "Recusar e tipar direito (ou usar unknown e conferir)", "Desligar o strict"]}
+  correta={1}
+  explicacao="any só desliga o alarme. O bug continua lá, esperando para aparecer em produção."
+/>
+
+<Cartoes itens={[
+  { frente: "Comandos para começar", verso: "npm install --save-dev typescript, npx tsc --init, npx tsc" },
+  { frente: "any × unknown", verso: "any desliga a verificação; unknown obriga a conferir o tipo antes de usar." },
+  { frente: "Para que serve @types/...?", verso: "Pacotes com os tipos de bibliotecas que não trazem tipos próprios." },
+  { frente: "Partial, Omit e Pick", verso: "Todos opcionais; tira campos; pega só alguns campos." },
+]} />
+
+## Resumindo
+
+- `typescript` como dependência de desenvolvimento, `tsconfig.json` e `npx tsc`.
+- **`strict: true`** sempre.
+- Prefira `unknown` a `any`, e desconfie de `any`, `as` e `@ts-ignore`.
+- Utility types derivam tipos de uma fonte só.
+
+## E agora?
+
+Você fechou o TypeScript! 🥤 O melhor treino agora é usar: abra um arquivo `.ts` ou `.tsx` do projeto da Unidunedev, passe o mouse sobre as variáveis e veja os tipos. E se quiser exercícios com correção, o link de prática logo abaixo tem dezenas deles.

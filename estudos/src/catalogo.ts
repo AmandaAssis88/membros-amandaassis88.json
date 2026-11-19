@@ -11,6 +11,10 @@ export type TrilhaId =
   | "c"
   | "python"
   | "java"
+  | "javascript"
+  | "typescript"
+  | "dart"
+  | "go"
   | "poo"
   | "git"
   | "ia"
@@ -67,17 +71,36 @@ export type Trilha = {
   /** Onde praticar no fim da trilha (no lugar dos desafios do repositório estudos) */
   pratica?: { titulo: string; texto: string; url: string; rotulo: string };
   /** Linguagem usada no botão "Testar" dos códigos */
-  linguagem?: "c" | "python" | "java";
+  linguagem?: LinguagemTestavel;
   aulas: Aula[];
 };
 
 export const ESTUDOS_REPO_URL = "https://github.com/unidunedev/estudos";
 export const ONBOARDING_URL = "https://onboarding.unidunedev.workers.dev";
 
-export const TESTAR_URL: Record<"c" | "python" | "java", string> = {
+export type LinguagemTestavel =
+  "c" | "python" | "java" | "javascript" | "typescript" | "dart" | "go";
+
+/** Onde o botão "Testar" abre o código (copiado para a área de transferência). */
+export const TESTAR_URL: Record<LinguagemTestavel, string> = {
   c: "https://www.onlinegdb.com/online_c_compiler",
   python: "https://www.onlinegdb.com/online_python_compiler",
   java: "https://www.onlinegdb.com/online_java_compiler",
+  javascript: "https://www.programiz.com/javascript/online-compiler/",
+  typescript: "https://www.typescriptlang.org/play",
+  dart: "https://dartpad.dev/",
+  go: "https://go.dev/play/",
+};
+
+/** O nome do lugar onde o código roda, para o aviso depois do "Testar". */
+export const NOME_DO_TESTADOR: Record<LinguagemTestavel, string> = {
+  c: "OnlineGDB",
+  python: "OnlineGDB",
+  java: "OnlineGDB",
+  javascript: "Programiz",
+  typescript: "TypeScript Playground",
+  dart: "DartPad",
+  go: "Go Playground",
 };
 
 export const GRUPOS: { id: Trilha["grupo"]; pasta: string; titulo: string; texto: string }[] = [
@@ -587,6 +610,344 @@ export const TRILHAS: Trilha[] = [
         titulo: "Herança e coleções",
         resumo: "extends, @Override e ArrayList.",
         minutos: 15,
+      },
+    ],
+  },
+  {
+    id: "javascript",
+    nome: "JavaScript",
+    pasta: "linguagens/javascript",
+    grupo: "linguagens",
+    bebida: "Refrigerante de cola",
+    emoji: "🥤",
+    frase: "Está em todo lugar, todo mundo já tomou e, de vez em quando, dá um susto.",
+    linguagem: "javascript",
+    pratica: {
+      titulo: "Exercícios com correção",
+      texto:
+        "A trilha de JavaScript do Exercism é gratuita, roda no navegador e tem mentoria voluntária. Resolva sem IA e compare depois.",
+      url: "https://exercism.org/tracks/javascript",
+      rotulo: "Abrir o Exercism",
+    },
+    documentacao: [
+      {
+        titulo: "Guia de JavaScript da MDN",
+        url: "https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Guide",
+        texto: "A referência mais usada da web, com boa parte em português.",
+      },
+      {
+        titulo: "Introdução ao DOM (MDN)",
+        url: "https://developer.mozilla.org/pt-BR/docs/Web/API/Document_Object_Model/Introduction",
+        texto: "Como o JavaScript lê e muda a página, com exemplos.",
+      },
+    ],
+    sobre:
+      "A linguagem da web: todo site que você abre roda JavaScript. Também roda em servidores (Node.js) e apps. É fácil começar, mas tem seus sustos, e conhecê-los é metade do caminho.",
+    aprender: [
+      "let, const, tipos e template strings",
+      "Arrays, objetos, JSON e map/filter/reduce",
+      "Funções, arrow functions e callbacks",
+      "DOM, eventos, Promises, async/await e fetch",
+    ],
+    aulas: [
+      {
+        slug: "primeiros-passos",
+        arquivo: "01-primeiros-passos",
+        titulo: "Primeiros passos",
+        resumo: "console.log, let e const, tipos e o primeiro susto.",
+        minutos: 12,
+      },
+      {
+        slug: "decisoes-e-repeticoes",
+        arquivo: "02-decisoes-e-repeticoes",
+        titulo: "Decisões e repetições",
+        resumo: "if, === (nunca ==), ternário, for e for...of.",
+        minutos: 12,
+      },
+      {
+        slug: "arrays-e-objetos",
+        arquivo: "03-arrays-e-objetos",
+        titulo: "Arrays e objetos",
+        resumo: "map, filter, reduce e o JSON das APIs.",
+        minutos: 18,
+      },
+      {
+        slug: "strings",
+        arquivo: "04-strings",
+        titulo: "Strings",
+        resumo: "Limpar, procurar, cortar, quebrar e juntar textos.",
+        minutos: 12,
+      },
+      {
+        slug: "funcoes",
+        arquivo: "05-funcoes",
+        titulo: "Funções",
+        resumo: "function, arrow functions, valores padrão e callbacks.",
+        minutos: 15,
+      },
+      {
+        slug: "o-navegador-e-o-dom",
+        arquivo: "06-o-navegador-e-o-dom",
+        titulo: "O navegador e o DOM",
+        resumo: "querySelector, eventos e formulários.",
+        minutos: 18,
+      },
+      {
+        slug: "assincrono-e-fetch",
+        arquivo: "07-assincrono-e-fetch",
+        titulo: "Assíncrono e fetch",
+        resumo: "Promises, async/await e buscar dados de uma API.",
+        minutos: 18,
+      },
+    ],
+  },
+  {
+    id: "typescript",
+    nome: "TypeScript",
+    pasta: "linguagens/typescript",
+    grupo: "linguagens",
+    bebida: "Cola zero",
+    emoji: "🥤",
+    frase: "A mesma cola, agora com a tabela nutricional no rótulo.",
+    linguagem: "typescript",
+    pratica: {
+      titulo: "Exercícios com correção",
+      texto:
+        "A trilha de TypeScript do Exercism é gratuita e roda no navegador. Resolva sem IA e compare depois.",
+      url: "https://exercism.org/tracks/typescript",
+      rotulo: "Abrir o Exercism",
+    },
+    documentacao: [
+      {
+        titulo: "The TypeScript Handbook",
+        url: "https://www.typescriptlang.org/docs/handbook/intro.html",
+        texto: "O guia oficial, do básico aos tipos avançados.",
+      },
+      {
+        titulo: "TypeScript Playground",
+        url: "https://www.typescriptlang.org/play",
+        texto: "Teste tipos no navegador e veja o JavaScript gerado ao lado.",
+      },
+    ],
+    sobre:
+      "TypeScript é JavaScript com tipos, conferidos antes de rodar. Pega na hora erros como somar texto com número e transforma o editor num copiloto. É o padrão nos projetos profissionais de front-end e Node.js. Faça a trilha de JavaScript antes.",
+    aprender: [
+      "Anotações de tipo e inferência",
+      "Funções tipadas, unions e type",
+      "Interfaces, generics e narrowing",
+      "tsconfig, strict e por que fugir do any",
+    ],
+    aulas: [
+      {
+        slug: "por-que-typescript",
+        arquivo: "01-por-que-typescript",
+        titulo: "Por que TypeScript?",
+        resumo: "O rótulo, o fiscal e o primeiro erro pego antes de rodar.",
+        minutos: 10,
+      },
+      {
+        slug: "tipos-basicos-e-funcoes",
+        arquivo: "02-tipos-basicos-e-funcoes",
+        titulo: "Tipos básicos e funções",
+        resumo: "Arrays, parâmetros, opcionais e unions.",
+        minutos: 15,
+      },
+      {
+        slug: "interfaces-e-types",
+        arquivo: "03-interfaces-e-types",
+        titulo: "Interfaces e types",
+        resumo: "Descrevendo objetos, extends, readonly e classes.",
+        minutos: 18,
+      },
+      {
+        slug: "generics-e-narrowing",
+        arquivo: "04-generics-e-narrowing",
+        titulo: "Generics e narrowing",
+        resumo: "O pote com etiqueta e o nulo sob controle.",
+        minutos: 18,
+      },
+      {
+        slug: "typescript-no-projeto",
+        arquivo: "05-typescript-no-projeto",
+        titulo: "TypeScript no projeto",
+        resumo: "tsconfig, strict, any × unknown e utility types.",
+        minutos: 15,
+      },
+    ],
+  },
+  {
+    id: "dart",
+    nome: "Dart",
+    pasta: "linguagens/dart",
+    grupo: "linguagens",
+    bebida: "Smoothie",
+    emoji: "🥤",
+    frase: "Tudo batido num copo só: um código, apps para várias telas.",
+    linguagem: "dart",
+    pratica: {
+      titulo: "Exercícios com correção",
+      texto:
+        "A trilha de Dart do Exercism é gratuita e roda no navegador. Depois, o codelab oficial do Flutter monta um app inteiro.",
+      url: "https://exercism.org/tracks/dart",
+      rotulo: "Abrir o Exercism",
+    },
+    documentacao: [
+      {
+        titulo: "A linguagem Dart (dart.dev)",
+        url: "https://dart.dev/language",
+        texto: "O tour oficial pela linguagem, com exemplos que rodam no DartPad.",
+      },
+      {
+        titulo: "Documentação do Flutter",
+        url: "https://docs.flutter.dev/",
+        texto: "Instalação, widgets e o codelab 'Your first Flutter app'.",
+      },
+    ],
+    sobre:
+      "Dart é a linguagem do Flutter, o kit do Google para criar apps de Android, iPhone, web e computador com um código só. É tipada, com null safety, e tem a cara de Java e JavaScript juntos. A trilha termina com o seu primeiro app rodando.",
+    aprender: [
+      "final, tipos, interpolação e null safety",
+      "Listas, mapas, switch moderno e strings",
+      "Parâmetros nomeados e classes no estilo Flutter",
+      "Future, async/await e o primeiro widget",
+    ],
+    aulas: [
+      {
+        slug: "primeiros-passos",
+        arquivo: "01-primeiros-passos",
+        titulo: "Primeiros passos",
+        resumo: "main, var, final, const, tipos e null safety.",
+        minutos: 15,
+      },
+      {
+        slug: "decisoes-e-repeticoes",
+        arquivo: "02-decisoes-e-repeticoes",
+        titulo: "Decisões e repetições",
+        resumo: "if, switch moderno, for e for-in.",
+        minutos: 12,
+      },
+      {
+        slug: "listas-e-mapas",
+        arquivo: "03-listas-e-mapas",
+        titulo: "Listas e mapas",
+        resumo: "List, Map, Set, where, fold e coleções com if e for.",
+        minutos: 15,
+      },
+      {
+        slug: "strings",
+        arquivo: "04-strings",
+        titulo: "Strings",
+        resumo: "Limpar, cortar, converter com tryParse e textos de várias linhas.",
+        minutos: 10,
+      },
+      {
+        slug: "funcoes",
+        arquivo: "05-funcoes",
+        titulo: "Funções",
+        resumo: "=>, parâmetros nomeados, required e callbacks.",
+        minutos: 12,
+      },
+      {
+        slug: "classes-e-objetos",
+        arquivo: "06-classes-e-objetos",
+        titulo: "Classes e objetos",
+        resumo: "Construtores enxutos, _, getters e herança.",
+        minutos: 18,
+      },
+      {
+        slug: "assincrono-e-flutter",
+        arquivo: "07-assincrono-e-flutter",
+        titulo: "Assíncrono e Flutter",
+        resumo: "Future, async/await e o seu primeiro app.",
+        minutos: 20,
+      },
+    ],
+  },
+  {
+    id: "go",
+    nome: "Go",
+    pasta: "linguagens/go",
+    grupo: "linguagens",
+    bebida: "Energético",
+    emoji: "⚡",
+    frase: "Leve, rápido e feito para aguentar muita coisa ao mesmo tempo.",
+    linguagem: "go",
+    pratica: {
+      titulo: "Exercícios com correção",
+      texto:
+        "A trilha de Go do Exercism é gratuita, roda no navegador e tem mentoria voluntária. Resolva sem IA e compare depois.",
+      url: "https://exercism.org/tracks/go",
+      rotulo: "Abrir o Exercism",
+    },
+    documentacao: [
+      {
+        titulo: "A Tour of Go",
+        url: "https://go.dev/tour/",
+        texto: "O tutorial interativo oficial, com exercícios no navegador.",
+      },
+      {
+        titulo: "Effective Go",
+        url: "https://go.dev/doc/effective_go",
+        texto: "Como escrever Go do jeito Go: o guia de estilo e boas práticas.",
+      },
+    ],
+    sobre:
+      "Go é simples, compilado e muito rápido, e deixa fazer milhares de coisas ao mesmo tempo com facilidade. Por isso é a linguagem de ferramentas como Docker e Kubernetes e de muitos back-ends. Pouca sintaxe, muita energia.",
+    aprender: [
+      ":=, tipos, Printf e o único laço: for",
+      "Slices, maps e strings (com runes)",
+      "Vários retornos e erros como valores",
+      "Structs, interfaces, goroutines e channels",
+    ],
+    aulas: [
+      {
+        slug: "primeiros-passos",
+        arquivo: "01-primeiros-passos",
+        titulo: "Primeiros passos",
+        resumo: "package main, :=, tipos, valor zero e Printf.",
+        minutos: 15,
+      },
+      {
+        slug: "decisoes-e-repeticoes",
+        arquivo: "02-decisoes-e-repeticoes",
+        titulo: "Decisões e repetições",
+        resumo: "if, switch sem break e o único laço do Go.",
+        minutos: 12,
+      },
+      {
+        slug: "slices-e-maps",
+        arquivo: "03-slices-e-maps",
+        titulo: "Slices e maps",
+        resumo: "append, fatiar, comma ok e a ordem aleatória dos maps.",
+        minutos: 15,
+      },
+      {
+        slug: "strings",
+        arquivo: "04-strings",
+        titulo: "Strings",
+        resumo: "O pacote strings, bytes × runes e strconv.",
+        minutos: 12,
+      },
+      {
+        slug: "funcoes-e-erros",
+        arquivo: "05-funcoes-e-erros",
+        titulo: "Funções e erros",
+        resumo: "Vários retornos, if err != nil e defer.",
+        minutos: 18,
+      },
+      {
+        slug: "structs-e-interfaces",
+        arquivo: "06-structs-e-interfaces",
+        titulo: "Structs e interfaces",
+        resumo: "Métodos, ponteiros no receptor e interfaces implícitas.",
+        minutos: 18,
+      },
+      {
+        slug: "goroutines-e-channels",
+        arquivo: "07-goroutines-e-channels",
+        titulo: "Goroutines e channels",
+        resumo: "A energia de verdade: muita coisa ao mesmo tempo.",
+        minutos: 20,
       },
     ],
   },

@@ -1,0 +1,236 @@
+<Aquecimento perguntas={[
+  { p: "Como deixar um campo privado em Dart?", r: "Começando o nome com _ (underline)." },
+  { p: "O que é um getter?", r: "Um método que se lê como campo: double get total => ...; e usa-se comanda.total." },
+  { p: "No Flutter, o que é um widget?", r: "Uma classe: cada pedaço da tela é um objeto que estende outra classe e implementa o build." },
+]} />
+
+Última aula! Primeiro, como o Dart **espera** coisas demoradas (buscar dados, ler um arquivo) sem travar o app. Depois, o momento esperado: ver tudo isso virar **tela de app** com o Flutter.
+
+## Future: o pedido que ainda vai ficar pronto
+
+Um `Future` representa um valor que **ainda vai chegar**. É a senha do pedido no balcão: você não fica parado em frente ao liquidificador; vai sentar, e chamam o seu nome quando fica pronto.
+
+```dart
+Future<String> baterSmoothie(String sabor) {
+  return Future.delayed(
+    const Duration(seconds: 1),
+    () => 'Smoothie de $sabor pronto 🥤',
+  );
+}
+
+void main() {
+  print('1. Pedido feito');
+  baterSmoothie('manga').then((s) => print('3. $s'));
+  print('2. Fui sentar');
+}
+```
+
+```saida
+1. Pedido feito
+2. Fui sentar
+3. Smoothie de manga pronto 🥤
+```
+
+O Dart não espera o `Future`: segue para a próxima linha e volta quando o smoothie fica pronto. Por isso o "2" aparece antes do "3".
+
+## async e await
+
+O jeito legível de esperar, igualzinho ao JavaScript:
+
+```dart
+Future<String> baterSmoothie(String sabor) async {
+  await Future.delayed(const Duration(seconds: 1));
+  if (sabor == 'kiwi') {
+    throw Exception('Acabou o kiwi');
+  }
+  return 'Smoothie de $sabor pronto 🥤';
+}
+
+Future<void> main() async {
+  try {
+    final primeiro = await baterSmoothie('manga');
+    print(primeiro);
+
+    final segundo = await baterSmoothie('kiwi');
+    print(segundo);
+  } catch (erro) {
+    print('Avisar o cliente: $erro');
+  } finally {
+    print('Mesa atendida');
+  }
+}
+```
+
+```saida
+Smoothie de manga pronto 🥤
+Avisar o cliente: Exception: Acabou o kiwi
+Mesa atendida
+```
+
+- Uma função `async` devolve `Future<Tipo>`.
+- `await` espera o `Future` e entrega o valor (só dentro de funções `async`).
+- Erros caem no `catch`, e o `finally` roda sempre.
+
+<Nota tipo="dica" titulo="Vários ao mesmo tempo">
+
+Se os pedidos não dependem um do outro, comece todos juntos e espere o grupo:
+
+```dart-exemplo
+final prontos = await Future.wait([baterSmoothie('manga'), baterSmoothie('açaí')]);
+```
+
+</Nota>
+
+<Nota tipo="curiosidade" titulo="E para buscar dados de uma API?">
+Em apps, a busca de dados usa o pacote **http** (ou o **dio**): `final resposta = await http.get(Uri.parse(url));`. A ideia é a mesma do `fetch` do JavaScript: esperar a resposta, conferir o status e converter o JSON (com `jsonDecode`).
+</Nota>
+
+## Flutter: o Dart vira tela
+
+No Flutter, **tudo é widget**: um texto, um botão, um espaçamento, a tela inteira. Você monta a interface **encaixando widgets uns dentro dos outros**, como copos dentro de uma bandeja.
+
+Clique em **Testar** neste exemplo: o DartPad roda Flutter também, e você vai ver um app de verdade no painel da direita.
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MaterialApp(home: TelaDoSmoothie()));
+}
+
+class TelaDoSmoothie extends StatefulWidget {
+  const TelaDoSmoothie({super.key});
+
+  @override
+  State<TelaDoSmoothie> createState() => _TelaDoSmoothieState();
+}
+
+class _TelaDoSmoothieState extends State<TelaDoSmoothie> {
+  int _copos = 0;
+
+  void _pedir() {
+    setState(() {
+      _copos++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Smoothie da Unidunedev')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('🥤', style: TextStyle(fontSize: 64)),
+            Text('$_copos copo(s) pedidos', style: const TextStyle(fontSize: 24)),
+            if (_copos >= 3) const Text('Ganhou granola grátis!'),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pedir,
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+```
+
+Olha quanta coisa das aulas anteriores está aí:
+
+| No código | Você viu na aula |
+| --- | --- |
+| `Text('...', style: ...)`, `onPressed: _pedir` | Parâmetros nomeados (aula 5) |
+| `class ... extends StatefulWidget`, `@override` | Classes e herança (aula 6) |
+| `_copos`, `_pedir` | `_` deixa privado (aula 6) |
+| `if (_copos >= 3) const Text(...)` dentro da lista | `if` dentro de coleções (aula 3) |
+| `'$_copos copo(s) pedidos'` | Interpolação (aula 1) |
+| `onPressed: _pedir` | Função passada como valor (aula 5) |
+
+## Stateless e Stateful
+
+| Widget | Quando usar |
+| --- | --- |
+| `StatelessWidget` | A tela não muda sozinha: só mostra o que recebeu (um cartão de produto, um título) |
+| `StatefulWidget` | A tela guarda um **estado** que muda (um contador, um formulário, um carrinho) |
+
+O segredo está no **`setState`**: ele muda o valor **e avisa o Flutter** para chamar o `build` de novo. Sem o `setState`, o `_copos` até mudaria, mas a tela continuaria mostrando o número antigo.
+
+<Passos itens={[
+  { icone: "👆", titulo: "Toque", texto: "o usuário aperta o botão" },
+  { icone: "⚙️", titulo: "_pedir()", texto: "chama o setState e muda _copos" },
+  { icone: "🔁", titulo: "build de novo", texto: "o Flutter redesenha com o valor novo" },
+  { icone: "📱", titulo: "Tela atualizada", texto: "em milissegundos" },
+]} />
+
+<Nota tipo="ia" titulo="Flutter com IA">
+A IA escreve telas Flutter muito bem, mas confira três pontos: se ela esqueceu o `setState` (a tela não atualiza), se usou widgets ou parâmetros **antigos** (o Flutter muda rápido; o analisador marca o que está obsoleto) e se colocou chamadas `await` direto dentro do `build` (que deve só desenhar, nunca buscar dados).
+</Nota>
+
+<Explique pergunta="Por que o Flutter precisa do setState para atualizar a tela?">
+Porque o Flutter só redesenha um widget quando o build dele é chamado de novo. Mudar a variável sozinha não avisa ninguém. O setState faz as duas coisas: muda o estado e marca o widget para ser reconstruído, então o build roda outra vez com o valor novo e a tela mostra a mudança.
+</Explique>
+
+<Tarefa titulo="Turbinando o app do smoothie">
+
+No exemplo do Flutter, no DartPad:
+
+1. Adicione um segundo botão que **diminui** a quantidade (sem deixar ficar negativa).
+2. Mostre o total a pagar, a **R$ 12,00** por copo, com duas casas decimais.
+3. Bônus: troque o texto da promoção por `Faltam N para a granola grátis!` enquanto `_copos` for menor que 3.
+
+<Dica>
+Crie um método `_cancelar()` com `setState(() { if (_copos > 0) _copos--; });`. Para o botão, um `TextButton(onPressed: _cancelar, child: const Text('Cancelar um'))` dentro da `Column`. O total é `(_copos * 12).toStringAsFixed(2)`. No bônus, use o ternário dentro do `Text`.
+</Dica>
+
+<Resposta>
+
+Os trechos que mudam (o resto continua igual):
+
+```dart-exemplo
+void _cancelar() {
+  setState(() {
+    if (_copos > 0) _copos--;
+  });
+}
+```
+
+```dart-exemplo
+children: [
+  const Text('🥤', style: TextStyle(fontSize: 64)),
+  Text('$_copos copo(s) pedidos', style: const TextStyle(fontSize: 24)),
+  Text('Total: R\$ ${(_copos * 12).toStringAsFixed(2)}'),
+  Text(_copos >= 3 ? 'Ganhou granola grátis!' : 'Faltam ${3 - _copos} para a granola grátis!'),
+  TextButton(onPressed: _cancelar, child: const Text('Cancelar um')),
+],
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que acontece se você mudar uma variável de estado sem chamar setState?"
+  opcoes={["O app quebra", "A variável muda, mas a tela continua mostrando o valor antigo", "O Flutter chama o setState sozinho"]}
+  correta={1}
+  explicacao="Só o setState avisa o Flutter para rodar o build de novo e redesenhar a tela."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é um Future?", verso: "Um valor que ainda vai chegar, como a senha do pedido." },
+  { frente: "async / await em Dart", verso: "Funções async devolvem Future<T>; await espera e entrega o valor." },
+  { frente: "No Flutter, tudo é...", verso: "Widget: texto, botão, espaçamento e a tela inteira." },
+  { frente: "Stateless × Stateful", verso: "Stateless só mostra; Stateful guarda um estado que muda." },
+  { frente: "Para que serve o setState?", verso: "Mudar o estado e avisar o Flutter para redesenhar o widget." },
+]} />
+
+## Resumindo
+
+- `Future`, `async` e `await` para esperar sem travar; `try/catch` para os erros.
+- No Flutter, a tela é uma **árvore de widgets** montada com parâmetros nomeados.
+- `StatefulWidget` + `setState` para telas que mudam.
+
+## E agora?
+
+Você fechou o Dart! 🥤 O próximo gole é o próprio **Flutter**: o *codelab* oficial "Your first Flutter app" (em docs.flutter.dev) monta um app completo, passo a passo. E se quiser treinar a linguagem com exercícios corrigidos, o link de prática está logo abaixo.

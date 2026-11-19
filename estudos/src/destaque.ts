@@ -30,17 +30,29 @@ const PALAVRAS: Record<string, { chaves: string[]; tipos: string[] }> = {
   },
   javascript: {
     chaves:
-      "const let var function return if else for while do switch case default break continue new class extends import from export async await try catch finally throw this of in typeof null undefined true false".split(
+      "const let var function return if else for while do switch case default break continue new class extends implements import from export async await try catch finally throw this of in typeof instanceof null undefined true false interface type enum readonly as keyof private public".split(
         " ",
       ),
-    tipos: "console fetch JSON Promise Array Object Math document window".split(" "),
+    tipos:
+      "console fetch JSON Promise Array Object Math document window string number boolean any unknown never void Record".split(
+        " ",
+      ),
   },
   dart: {
     chaves:
       "final var const class extends return if else for while switch case break continue new import async await void true false null this super required late".split(
         " ",
       ),
-    tipos: "int double String bool List Map Future Widget Text print".split(" "),
+    tipos: "int double num String bool List Map Set Future Stream Widget Text print dynamic".split(
+      " ",
+    ),
+  },
+  go: {
+    chaves:
+      "package import func return if else for range switch case default break continue go defer chan select type struct interface map var const nil true false".split(
+        " ",
+      ),
+    tipos: "int int64 float64 string bool byte rune error fmt strings make len append".split(" "),
   },
   kotlin: {
     chaves:
@@ -87,7 +99,9 @@ function montarRegex(linguagem: string) {
     linguagem === "c" ? "(?<preproc>#\\s*\\w+(?:\\s*<[^>\\n]*>)?)" : null,
     linguagem === "python"
       ? '(?<texto>[fF]?"""[\\s\\S]*?"""|[fF]?"(?:\\\\.|[^"\\\\\\n])*"|[fF]?\'(?:\\\\.|[^\'\\\\\\n])*\')'
-      : "(?<texto>\"(?:\\\\.|[^\"\\\\\\n])*\"|'(?:\\\\.|[^'\\\\\\n])*')",
+      : linguagem === "javascript" || linguagem === "go"
+        ? "(?<texto>\"(?:\\\\.|[^\"\\\\\\n])*\"|'(?:\\\\.|[^'\\\\\\n])*'|`[^`]*`)"
+        : "(?<texto>\"(?:\\\\.|[^\"\\\\\\n])*\"|'(?:\\\\.|[^'\\\\\\n])*')",
     "(?<numero>\\b\\d+(?:\\.\\d+)?[fFlL]?\\b)",
     linguagem === "java" || linguagem === "python" ? "(?<anotacao>@\\w+)" : null,
     "(?<palavra>[A-Za-zÀ-ú_][\\wÀ-ú-]*)",

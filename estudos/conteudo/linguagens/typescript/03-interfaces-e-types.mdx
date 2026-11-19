@@ -1,0 +1,262 @@
+<Aquecimento perguntas={[
+  { p: "Como dizer que um parâmetro é opcional?", r: "Com ? depois do nome: apelido?: string." },
+  { p: "O que é o tipo 'P' | 'M' | 'G'?", r: "Um union: aceita só um desses três textos." },
+  { p: "Qual o tipo de retorno de uma função que não devolve nada?", r: "void." },
+]} />
+
+No dia a dia, quase todo dado é um **objeto**: um pedido, um usuário, um produto. Esta é a aula em que o TypeScript mais paga o próprio café: descrever o **formato** desses objetos uma vez e deixar o editor conferir todo o resto.
+
+## Descrevendo um objeto com interface
+
+```typescript
+interface Produto {
+  nome: string;
+  preco: number;
+  categoria: "bebida" | "comida";
+  descricao?: string;
+}
+
+const cappuccino: Produto = {
+  nome: "Cappuccino",
+  preco: 9,
+  categoria: "bebida",
+};
+
+console.log(`${cappuccino.nome}: R$ ${cappuccino.preco}`);
+```
+
+```saida
+Cappuccino: R$ 9
+```
+
+A `interface` é o **molde** do objeto: que campos ele tem e de que tipo. O `?` em `descricao?` diz que esse campo é opcional.
+
+Agora, o TypeScript confere tudo:
+
+```typescript-exemplo
+const bolo: Produto = {
+  nome: "Bolo",
+  precco: 8,
+  categoria: "comida",
+};
+
+const torta: Produto = {
+  nome: "Torta",
+  preco: 10,
+  categoria: "sobremesa",
+};
+```
+
+```saida
+Object literal may only specify known properties, but 'precco' does not exist in type 'Produto'. Did you mean to write 'preco'?
+Type '"sobremesa"' is not assignable to type '"bebida" | "comida"'.
+```
+
+Um erro de digitação e um valor fora da lista, pegos antes de rodar. Ele até sugere `preco`.
+
+## Objetos dentro de objetos e listas de objetos
+
+```typescript
+interface Produto {
+  nome: string;
+  preco: number;
+}
+
+interface ItemDoPedido {
+  produto: Produto;
+  quantidade: number;
+}
+
+interface Pedido {
+  id: number;
+  cliente: string;
+  itens: ItemDoPedido[];
+  status: "aberto" | "preparando" | "entregue";
+}
+
+function totalDoPedido(pedido: Pedido): number {
+  return pedido.itens.reduce((soma, item) => soma + item.produto.preco * item.quantidade, 0);
+}
+
+const pedido: Pedido = {
+  id: 42,
+  cliente: "Bia",
+  status: "aberto",
+  itens: [
+    { produto: { nome: "Café", preco: 5 }, quantidade: 2 },
+    { produto: { nome: "Pão de queijo", preco: 6 }, quantidade: 1 },
+  ],
+};
+
+console.log(`Pedido ${pedido.id}: R$ ${totalDoPedido(pedido)}`);
+```
+
+```saida
+Pedido 42: R$ 16
+```
+
+Dentro de `totalDoPedido`, ao digitar `item.`, o editor mostra `produto` e `quantidade`; ao digitar `item.produto.`, mostra `nome` e `preco`. Você nunca mais precisa abrir outro arquivo para lembrar o nome de um campo.
+
+## interface ou type?
+
+Dá para descrever o mesmo objeto com `type`:
+
+```typescript-exemplo
+type Produto = {
+  nome: string;
+  preco: number;
+};
+```
+
+| | `interface` | `type` |
+| --- | --- | --- |
+| Descrever objetos | ✅ | ✅ |
+| Unions (`"P" \| "M"`) | ❌ | ✅ |
+| Estender outro (herança) | `extends` | `&` |
+
+Para objetos, os dois funcionam e a diferença é pequena. Uma convenção comum: **`interface` para objetos, `type` para o resto** (unions, apelidos). O mais importante é seguir o padrão que o projeto já usa.
+
+## Estendendo: um tipo a partir do outro
+
+```typescript
+interface Pessoa {
+  nome: string;
+  email: string;
+}
+
+interface Barista extends Pessoa {
+  especialidade: string;
+}
+
+const joao: Barista = {
+  nome: "João",
+  email: "joao@cafe.dev",
+  especialidade: "latte art",
+};
+
+console.log(`${joao.nome} faz ${joao.especialidade}`);
+```
+
+```saida
+João faz latte art
+```
+
+`Barista` tem tudo de `Pessoa` e mais a `especialidade`. É a herança que você viu na trilha de Orientação a Objetos, só que para tipos.
+
+## readonly: campos que não mudam
+
+```typescript-exemplo
+interface Pedido {
+  readonly id: number;
+  cliente: string;
+}
+
+const p: Pedido = { id: 1, cliente: "Ana" };
+p.cliente = "Bia";
+p.id = 2;
+```
+
+```saida
+Cannot assign to 'id' because it is a read-only property.
+```
+
+O `readonly` protege campos que nunca deveriam mudar, como um identificador.
+
+## Classes com tipos
+
+As classes do JavaScript ganham tipos e modificadores de acesso, como em Java:
+
+```typescript
+class Caixa {
+  private saldo: number = 0;
+
+  constructor(public readonly operador: string) {}
+
+  receber(valor: number): void {
+    if (valor <= 0) throw new Error("Valor inválido");
+    this.saldo += valor;
+  }
+
+  verSaldo(): number {
+    return this.saldo;
+  }
+}
+
+const caixa = new Caixa("Ana");
+caixa.receber(15);
+caixa.receber(9);
+console.log(`${caixa.operador}: R$ ${caixa.verSaldo()}`);
+```
+
+```saida
+Ana: R$ 24
+```
+
+- `private saldo`: só a própria classe mexe. `caixa.saldo = 1000` dá erro de compilação. Encapsulamento!
+- `constructor(public readonly operador: string)` é um atalho: cria o campo `operador` e já guarda o valor recebido.
+
+<Nota tipo="curiosidade" titulo="Os dados que vêm da API">
+Quando o front-end recebe um JSON do servidor, o TypeScript **não sabe** o formato dele. Por isso, é comum criar uma `interface` com o formato esperado (`const dados: Pedido = await resposta.json()`). Mas lembre: o tipo é uma **promessa sua**, não uma verificação. Se o servidor mandar outra coisa, o TypeScript não vai perceber, porque os tipos somem antes de rodar. Para conferir de verdade, os projetos usam bibliotecas de validação como a **Zod**.
+</Nota>
+
+<Tarefa titulo="O cardápio tipado">
+
+1. Crie uma `interface ItemCardapio` com `nome` (texto), `preco` (número), `vegano` (booleano) e `calorias` (número, **opcional**).
+2. Crie um array com três itens, um deles sem `calorias`.
+3. Escreva uma função `opcoesVeganas(itens: ItemCardapio[]): string[]` que devolve só os nomes dos itens veganos.
+
+<Dica>
+O array é `const cardapio: ItemCardapio[] = [ ... ]`. A função é `filter` + `map`, como na trilha de JavaScript, só que com os tipos anotados.
+</Dica>
+
+<Resposta>
+
+```typescript
+interface ItemCardapio {
+  nome: string;
+  preco: number;
+  vegano: boolean;
+  calorias?: number;
+}
+
+const cardapio: ItemCardapio[] = [
+  { nome: "Café coado", preco: 5, vegano: true, calorias: 5 },
+  { nome: "Pão de queijo", preco: 6, vegano: false, calorias: 120 },
+  { nome: "Salada de frutas", preco: 12, vegano: true },
+];
+
+function opcoesVeganas(itens: ItemCardapio[]): string[] {
+  return itens.filter((item) => item.vegano).map((item) => item.nome);
+}
+
+console.log(opcoesVeganas(cardapio));
+```
+
+```saida
+[ 'Café coado', 'Salada de frutas' ]
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Uma interface tem o campo telefone?: string. O que isso significa?"
+  opcoes={["O telefone é obrigatório", "O objeto pode ter ou não o campo telefone", "O telefone pode ser qualquer tipo"]}
+  correta={1}
+  explicacao="O ? torna o campo opcional. Quando existir, precisa ser string."
+/>
+
+<Cartoes itens={[
+  { frente: "Para que serve uma interface?", verso: "Descrever o formato de um objeto: quais campos ele tem e de que tipo." },
+  { frente: "interface × type", verso: "Os dois descrevem objetos; type também faz unions. Convenção comum: interface para objetos." },
+  { frente: "extends", verso: "interface Barista extends Pessoa: tem tudo de Pessoa e mais o que for declarado." },
+  { frente: "readonly e private", verso: "readonly: não pode ser alterado depois de criado. private: só a própria classe acessa." },
+]} />
+
+## Resumindo
+
+- `interface` descreve o formato de objetos; `?` para campos opcionais.
+- Objetos dentro de objetos e arrays de objetos: `itens: ItemDoPedido[]`.
+- `extends` reaproveita um tipo; `readonly` e `private` protegem.
+- Dados de fora (APIs) precisam de validação: o tipo é só uma promessa.

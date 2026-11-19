@@ -1,0 +1,219 @@
+Bem-vindo ao Dart! 🥤 Ele é o **smoothie** do cardápio: várias frutas batidas num copo só. Com o **Flutter**, o mesmo código Dart vira app de **Android, iPhone, web e computador**. Uma receita, quatro copos.
+
+<Nota tipo="curiosidade" titulo="Dart é a linguagem do Flutter">
+Dart foi criado pelo Google em 2011, mas ficou famoso mesmo com o **Flutter**, o kit do Google para criar apps. Hoje, quase todo mundo que aprende Dart é para fazer apps com Flutter, e é isso que esta trilha prepara: as primeiras aulas são Dart puro, e a última mostra como ele vira tela de app.
+</Nota>
+
+## Onde testar
+
+Clique em **Testar**: ele abre o **DartPad**, o site oficial. Apague o exemplo de lá, cole o código e clique em **Run**. A saída aparece no painel à direita.
+
+## Seu primeiro programa
+
+```dart
+void main() {
+  print('Olá, mundo!');
+}
+```
+
+```saida
+Olá, mundo!
+```
+
+- Todo programa Dart começa pela função **`main`**, como em C e Java.
+- `print` mostra o valor na tela.
+- Cada instrução termina com **`;`** (obrigatório, diferente do JavaScript).
+- Textos podem usar aspas simples ou duplas; o estilo oficial do Dart prefere as **simples**.
+
+## Variáveis: var, final e const
+
+```dart
+void main() {
+  var cliente = 'Ana';
+  final pedido = 42;
+  const taxa = 0.1;
+
+  cliente = 'Bia';
+  print('$cliente fez o pedido $pedido');
+}
+```
+
+```saida
+Bia fez o pedido 42
+```
+
+| Palavra | Pode mudar? | Quando o valor é definido |
+| --- | --- | --- |
+| `var` | Sim | — |
+| `final` | Não | Quando o programa roda (pode vir de um cálculo, da hora atual...) |
+| `const` | Não | Antes de rodar: precisa ser um valor fixo, escrito no código |
+
+<Nota tipo="dica" titulo="Prefira final">
+Como no JavaScript com `const`: comece com `final` e use `var` só quando o valor precisa mudar. O `const` é para valores fixos de verdade (e, no Flutter, deixa a tela mais rápida).
+</Nota>
+
+## Os tipos
+
+Dart é **tipado**: cada variável tem um tipo, conferido antes de rodar. Você pode escrever o tipo ou deixar o Dart descobrir (o `var` e o `final` inferem):
+
+```dart
+void main() {
+  String produto = 'Smoothie de manga';
+  double preco = 12.5;
+  int quantidade = 2;
+  bool gelado = true;
+
+  var total = preco * quantidade;
+  print('$quantidade x $produto = R\$ $total (gelado: $gelado)');
+}
+```
+
+```saida
+2 x Smoothie de manga = R$ 25.0 (gelado: true)
+```
+
+| Tipo | Exemplo |
+| --- | --- |
+| `int` | `2`, `-7` (inteiros) |
+| `double` | `12.5`, `25.0` (decimais) |
+| `String` | `'Café'` |
+| `bool` | `true`, `false` |
+
+Repare no `R\$`: dentro do texto, o `$` serve para colocar variáveis, então para mostrar um cifrão de verdade é preciso a barra antes.
+
+## Interpolação: variáveis no texto
+
+```dart
+void main() {
+  final nome = 'Caio';
+  final preco = 9.0;
+  final qtd = 3;
+
+  print('Olá, $nome!');
+  print('Total: R\$ ${(preco * qtd).toStringAsFixed(2)}');
+}
+```
+
+```saida
+Olá, Caio!
+Total: R$ 27.00
+```
+
+- `$nome` para uma variável simples.
+- `${ ... }` para uma expressão (uma conta, um método).
+- `toStringAsFixed(2)` deixa duas casas decimais.
+
+## Contas
+
+```dart
+void main() {
+  print(7 / 2);
+  print(7 ~/ 2);
+  print(7 % 2);
+  print(int.parse('5') + 3);
+}
+```
+
+```saida
+3.5
+3
+1
+8
+```
+
+- `/` sempre dá `double`; `~/` é a divisão **inteira** (corta a parte decimal).
+- `int.parse('5')` converte texto em número. Diferente do JavaScript, `'5' + 3` **não compila**: o Dart não mistura tipos sozinho.
+
+## Null safety: o nulo sob controle
+
+Em Dart, uma variável **não pode** ser nula, a não ser que você diga, com um `?` no tipo:
+
+```dart
+void main() {
+  String nome = 'Ana';
+  String? apelido;
+
+  print(nome.length);
+  print(apelido);
+  print(apelido ?? 'sem apelido');
+
+  apelido = 'Aninha';
+  print(apelido.length);
+}
+```
+
+```saida
+3
+null
+sem apelido
+6
+```
+
+- `String` nunca é nulo. `String?` pode ser.
+- `??` usa o valor da direita quando o da esquerda é nulo.
+- Antes da linha `apelido = 'Aninha'`, escrever `apelido.length` **não compila**: o Dart sabe que ali ele pode ser nulo.
+
+<Nota tipo="cuidado" titulo="O ponto de exclamação">
+Você vai ver `apelido!` em códigos por aí: o `!` diz "confia, não é nulo". Se for, o app **quebra**. Use só quando tiver certeza absoluta; na dúvida, trate com `if` ou `??`.
+</Nota>
+
+<Tarefa titulo="A comanda do smoothie">
+
+Crie variáveis para o nome do cliente, o sabor, o preço e a quantidade, e um `String?` para uma observação que pode não existir. Mostre:
+
+```saida
+Cliente: Bia
+2x Smoothie de morango
+Total: R$ 24.00
+Obs: sem observações
+```
+
+<Dica>
+Use `final` para tudo, `${(preco * quantidade).toStringAsFixed(2)}` para o total e `observacao ?? 'sem observações'`.
+</Dica>
+
+<Resposta>
+
+```dart
+void main() {
+  final cliente = 'Bia';
+  final sabor = 'morango';
+  final preco = 12.0;
+  final quantidade = 2;
+  final String? observacao = null;
+
+  print('Cliente: $cliente');
+  print('${quantidade}x Smoothie de $sabor');
+  print('Total: R\$ ${(preco * quantidade).toStringAsFixed(2)}');
+  print('Obs: ${observacao ?? 'sem observações'}');
+}
+```
+
+Repare no `${quantidade}x`: com chaves, o Dart sabe onde o nome da variável termina (sem elas, ele procuraria uma variável chamada `quantidadex`).
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual a diferença entre String e String? em Dart?"
+  opcoes={["Nenhuma", "String nunca é nulo; String? pode ser nulo", "String? é um texto opcional de uma letra"]}
+  correta={1}
+  explicacao="É o null safety: o ? no tipo diz que a variável aceita null, e o Dart obriga a tratar esse caso."
+/>
+
+<Cartoes itens={[
+  { frente: "Por onde começa um programa Dart?", verso: "Pela função void main() { ... }" },
+  { frente: "var × final × const", verso: "var muda; final não muda (definido ao rodar); const não muda (fixo no código)." },
+  { frente: "Interpolação em Dart", verso: "'Olá, $nome' e '${a + b}' para expressões." },
+  { frente: "/ × ~/", verso: "/ dá double (3.5); ~/ é divisão inteira (3)." },
+  { frente: "Null safety", verso: "Tipos não aceitam null, a não ser com ?: String? apelido;" },
+]} />
+
+## Resumindo
+
+- Dart é a linguagem do **Flutter**: um código, apps para várias plataformas.
+- Tudo começa no `main`; `;` no fim de cada instrução.
+- `final` por padrão; tipos `int`, `double`, `String`, `bool`.
+- Interpolação com `$` e `${}`; `~/` para divisão inteira.
+- **Null safety**: só tipos com `?` aceitam nulo.

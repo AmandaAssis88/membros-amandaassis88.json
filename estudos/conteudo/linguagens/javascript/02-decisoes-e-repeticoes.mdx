@@ -1,0 +1,207 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre let e const?", r: "const não pode receber outro valor; let pode. Comece sempre com const." },
+  { p: "Quanto dá '5' + 3 em JavaScript? E '5' * 3?", r: "'53' (o + junta textos) e 15 (o * converte para número)." },
+  { p: "Como colocar uma variável no meio de um texto?", r: "Com template string: crases e ${variavel}." },
+]} />
+
+Decisões e repetições funcionam como na trilha de Lógica. A diferença está nos detalhes do JavaScript, principalmente num que pega todo iniciante: **comparar com `===`**.
+
+## if, else if e else
+
+```javascript
+const media = 6.5;
+
+if (media >= 7) {
+  console.log("Aprovado");
+} else if (media >= 5) {
+  console.log("Recuperação");
+} else {
+  console.log("Reprovado");
+}
+```
+
+```saida
+Recuperação
+```
+
+A condição vai entre **parênteses** e o bloco entre **chaves**, como em C e Java.
+
+## === e não ==
+
+JavaScript tem dois jeitos de comparar igualdade, e só um é seguro:
+
+```javascript
+console.log(5 == "5");
+console.log(5 === "5");
+console.log(0 == "");
+console.log(0 === "");
+```
+
+```saida
+true
+false
+true
+false
+```
+
+- `==` converte os tipos antes de comparar (o "jeitinho" da aula passada). Por isso `0 == ""` dá `true`, um resultado que ninguém espera.
+- `===` compara **valor e tipo**. Número 5 e texto "5" são diferentes.
+
+<Nota tipo="cuidado" titulo="Regra simples">
+Use **sempre** `===` e `!==`. Esqueça que o `==` existe. Quase todo guia de estilo e ferramenta de lint pede isso.
+</Nota>
+
+| Operador | Significa |
+| --- | --- |
+| `===`, `!==` | igual, diferente (valor e tipo) |
+| `<`, `>`, `<=`, `>=` | comparações |
+| `&&` | e |
+| `\|\|` | ou |
+| `!` | não |
+
+## Verdadeiro e falso "de mentirinha"
+
+No `if`, qualquer valor vira verdadeiro ou falso. Estes são **falsos** (*falsy*): `false`, `0`, `""` (texto vazio), `null`, `undefined` e `NaN`. Todo o resto é verdadeiro (*truthy*), inclusive `"0"` e `[]`.
+
+```javascript
+const nomeDigitado = "";
+
+if (!nomeDigitado) {
+  console.log("Digite o seu nome");
+}
+```
+
+```saida
+Digite o seu nome
+```
+
+## O operador ternário
+
+Para escolher entre dois valores numa linha:
+
+```javascript
+const idade = 17;
+const ingresso = idade >= 18 ? "inteira" : "meia";
+console.log(`Ingresso: ${ingresso}`);
+```
+
+```saida
+Ingresso: meia
+```
+
+Lê-se: "a condição é verdadeira? Então isto; senão, aquilo".
+
+## Repetições
+
+### for clássico
+
+```javascript
+for (let i = 1; i <= 3; i++) {
+  console.log(`Volta ${i}`);
+}
+```
+
+```saida
+Volta 1
+Volta 2
+Volta 3
+```
+
+As três partes: início (`let i = 1`), condição (`i <= 3`) e passo (`i++`, que soma 1).
+
+### while
+
+```javascript
+let xicaras = 3;
+while (xicaras > 0) {
+  console.log(`Ainda tem ${xicaras} xícara(s)`);
+  xicaras--;
+}
+console.log("Acabou o café!");
+```
+
+```saida
+Ainda tem 3 xícara(s)
+Ainda tem 2 xícara(s)
+Ainda tem 1 xícara(s)
+Acabou o café!
+```
+
+### for...of: passando por cada item
+
+Para percorrer uma lista, o jeito mais limpo é o `for...of`:
+
+```javascript
+const pedidos = ["café", "chá", "bolo"];
+
+for (const pedido of pedidos) {
+  console.log(`Preparando ${pedido}`);
+}
+```
+
+```saida
+Preparando café
+Preparando chá
+Preparando bolo
+```
+
+<Nota tipo="dica" titulo="of, não in">
+Existe também o `for...in`, mas ele percorre as **chaves** (posições), não os valores. Para listas, use `for...of`.
+</Nota>
+
+<Tarefa titulo="Promoção da hora do lanche">
+
+Percorra a lista de preços `[4.5, 12, 8, 20, 6]` e, para cada um, mostre o preço com desconto: **10%** para itens a partir de R$ 10, sem desconto para os outros. No fim, mostre o total com desconto.
+
+<Dica>
+Use `for...of`, um `if` (ou ternário) para escolher o desconto e uma variável `let total = 0` que vai somando.
+</Dica>
+
+<Resposta>
+
+```javascript
+const precos = [4.5, 12, 8, 20, 6];
+let total = 0;
+
+for (const preco of precos) {
+  const final = preco >= 10 ? preco * 0.9 : preco;
+  total += final;
+  console.log(`R$ ${preco.toFixed(2)} → R$ ${final.toFixed(2)}`);
+}
+
+console.log(`Total: R$ ${total.toFixed(2)}`);
+```
+
+```saida
+R$ 4.50 → R$ 4.50
+R$ 12.00 → R$ 10.80
+R$ 8.00 → R$ 8.00
+R$ 20.00 → R$ 18.00
+R$ 6.00 → R$ 6.00
+Total: R$ 47.30
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual comparação é a mais segura em JavaScript?"
+  opcoes={["idade == 18", "idade === 18", "idade = 18"]}
+  correta={1}
+  explicacao="=== compara valor e tipo. == converte tipos e surpreende; = é atribuição, não comparação."
+/>
+
+<Cartoes itens={[
+  { frente: "== × ===", verso: "== converte tipos antes de comparar; === compara valor e tipo. Use sempre ===." },
+  { frente: "Valores falsy", verso: "false, 0, '', null, undefined e NaN." },
+  { frente: "Ternário", verso: "condicao ? valorSeSim : valorSeNao" },
+  { frente: "Percorrer uma lista", verso: "for (const item of lista) { ... }" },
+]} />
+
+## Resumindo
+
+- `if` / `else if` / `else` com parênteses e chaves.
+- **Sempre** `===` e `!==`.
+- Valores *falsy*: `false`, `0`, `""`, `null`, `undefined`, `NaN`.
+- `for`, `while` e `for...of` (para listas).
