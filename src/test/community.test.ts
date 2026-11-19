@@ -62,7 +62,7 @@ describe("Community rules", () => {
       }).success,
     ).toBe(false);
   });
-  it("generates only the seven requested public passport fields", () => {
+  it("generates the public passport fields plus the style vote", () => {
     const data = registrationSchema.parse({
       ...profile,
       ideia_projeto: "Vitrine para compartilhar projetos",
@@ -70,7 +70,11 @@ describe("Community rules", () => {
       sugestao_nome: "",
       estilo_artistico: "clean",
     });
-    expect(makePassport(data, "2026-11-12")).toEqual({ ...profile, entrouEm: "2026-11-12" });
+    expect(makePassport(data, "2026-11-12")).toEqual({
+      ...profile,
+      entrouEm: "2026-11-12",
+      estilo: "clean",
+    });
   });
   it("does not include underscore example files in member list", () => {
     expect(loadMembers().some((m) => m.github === "seu-username")).toBe(false);

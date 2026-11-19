@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { voltarAoInicio } from "@/lib/draft";
 import { ORG_URL, COMECE_POR_AQUI_URL, ESTUDOS_URL, CRIADOR } from "@/config";
-import { type Member, avatarUrl } from "@/lib/community";
+import { type Member, avatarUrl, NOME_DO_ESTILO } from "@/lib/community";
 import { useMembroAtual } from "@/lib/identidade";
 
 export function Header() {
@@ -106,6 +106,16 @@ export function MemberCard({
     <article className={`member-card ${highlight ? "highlight-member" : ""}`}>
       {highlight && (
         <span className="member-badge">{badge ?? "Aparece após o PR aprovado ✨"}</span>
+      )}
+      {member.estilo && (
+        <span className="faixa-estilo-moldura">
+          <span
+            className={`faixa-estilo faixa-estilo--${member.estilo}`}
+            title={`Votou no estilo ${NOME_DO_ESTILO[member.estilo]} para o nosso projeto`}
+          >
+            {NOME_DO_ESTILO[member.estilo]}
+          </span>
+        </span>
       )}
       <img
         className="member-avatar"

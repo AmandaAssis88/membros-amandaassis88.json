@@ -76,7 +76,7 @@ const guardianSteps = [
   },
   {
     title: "Confira o passaporte",
-    text: "Na aba Files changed, verifique se só o arquivo membros/username.json foi adicionado, se o nome bate com o GitHub e se os campos github, nome, avatar, periodo, areas, frase e entrouEm estão presentes. Veja se o JSON é válido e não contém informação privada.",
+    text: "Na aba Files changed, verifique se só o arquivo membros/username.json foi adicionado, se o nome bate com o GitHub e se os campos github, nome, avatar, periodo, areas, frase e entrouEm estão presentes (estilo é opcional). Veja se o JSON é válido e não contém informação privada.",
   },
   {
     title: "Faça uma revisão acolhedora",

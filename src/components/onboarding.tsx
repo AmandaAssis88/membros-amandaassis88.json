@@ -297,7 +297,7 @@ export function Onboarding() {
       setSaving(false);
     }
   };
-  const preview: Member = { ...data, entrouEm: "" };
+  const preview: Member = { ...data, entrouEm: "", estilo: data.estilo_artistico };
   if (passport)
     return (
       <Final

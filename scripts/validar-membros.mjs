@@ -30,6 +30,8 @@ const PERIODOS = [
   "Prefiro não informar",
 ];
 
+const ESTILOS = ["gamificado", "floresta", "clean", "lofi", "terminal", "brutalismo"];
+
 const membro = z
   .object({
     github: z
@@ -58,6 +60,9 @@ const membro = z
       .min(1, "escolha pelo menos uma área"),
     frase: z.string().max(80, "a frase pode ter até 80 caracteres"),
     entrouEm: z.string().regex(/^\d{4}-\d{2}(-\d{2})?$/, "use o formato AAAA-MM-DD"),
+    estilo: z
+      .enum(ESTILOS, { errorMap: () => ({ message: `estilos válidos: ${ESTILOS.join(", ")}` }) })
+      .optional(),
   })
   .strict();
 

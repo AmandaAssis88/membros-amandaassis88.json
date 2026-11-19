@@ -85,7 +85,7 @@ export const STYLES = [
   },
 ] as const;
 
-type StyleId = (typeof STYLES)[number]["id"];
+export type StyleId = (typeof STYLES)[number]["id"];
 
 type Message = { who: string; avatar: string; tag?: string; text: string; meta?: string };
 
@@ -226,7 +226,7 @@ const PREVIEW: Record<
   },
 };
 
-function ChatPreview({ style, projectName }: { style: StyleId; projectName: string }) {
+export function ChatPreview({ style, projectName }: { style: StyleId; projectName: string }) {
   const p = PREVIEW[style];
   const name = projectName || "Nosso projeto";
 
@@ -343,6 +343,49 @@ function MatrixRain() {
   );
 }
 
+/** O cenário de fundo de cada estilo (floresta, HUD, lofi, matrix, formas). */
+export function CenaDoEstilo({ id }: { id: StyleId }) {
+  return (
+    <>
+      {id === "floresta" && (
+        <>
+          <img
+            className="forest-image"
+            src={forest}
+            alt=""
+            width={1920}
+            height={1024}
+            loading="lazy"
+          />
+          <div className="fireflies" aria-hidden="true">
+            {Array.from({ length: 14 }, (_, i) => (
+              <span key={i} />
+            ))}
+          </div>
+        </>
+      )}
+      {id === "gamificado" && (
+        <div className="hud" aria-hidden="true">
+          <span>
+            PLAYER_01 · READY TO START
+            <div className="xp-bar" />
+          </span>
+          <span>XP 000 / 100</span>
+        </div>
+      )}
+      {id === "lofi" && <LofiScene />}
+      {id === "terminal" && <MatrixRain />}
+      {id === "brutalismo" && (
+        <div className="brutal-shapes" aria-hidden="true">
+          <span className="b-square" />
+          <span className="b-circle" />
+          <span className="b-star">✦</span>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function StylePicker({
   value,
   onChange,
@@ -360,41 +403,7 @@ export function StylePicker({
           className={`style-card ${s.className} ${value === s.id ? "selected" : ""}`}
           aria-label={`Estilo ${s.name}`}
         >
-          {s.id === "floresta" && (
-            <>
-              <img
-                className="forest-image"
-                src={forest}
-                alt=""
-                width={1920}
-                height={1024}
-                loading="lazy"
-              />
-              <div className="fireflies" aria-hidden="true">
-                {Array.from({ length: 14 }, (_, i) => (
-                  <span key={i} />
-                ))}
-              </div>
-            </>
-          )}
-          {s.id === "gamificado" && (
-            <div className="hud" aria-hidden="true">
-              <span>
-                PLAYER_01 · READY TO START
-                <div className="xp-bar" />
-              </span>
-              <span>XP 000 / 100</span>
-            </div>
-          )}
-          {s.id === "lofi" && <LofiScene />}
-          {s.id === "terminal" && <MatrixRain />}
-          {s.id === "brutalismo" && (
-            <div className="brutal-shapes" aria-hidden="true">
-              <span className="b-square" />
-              <span className="b-circle" />
-              <span className="b-star">✦</span>
-            </div>
-          )}
+          <CenaDoEstilo id={s.id} />
           {value === s.id && (
             <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="style-check">
               <Check size={23} />

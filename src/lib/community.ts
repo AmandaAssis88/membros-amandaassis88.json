@@ -30,6 +30,24 @@ export const IDEIAS = [
   "Vitrine para compartilhar projetos",
   "Outra ideia",
 ] as const;
+// Estilos votados na inscrição (o design do app/chat que vamos construir juntos).
+export const ESTILOS = [
+  "gamificado",
+  "floresta",
+  "clean",
+  "lofi",
+  "terminal",
+  "brutalismo",
+] as const;
+export type Estilo = (typeof ESTILOS)[number];
+export const NOME_DO_ESTILO: Record<Estilo, string> = {
+  gamificado: "Gamificado",
+  floresta: "Floresta",
+  clean: "Clean",
+  lofi: "Lo-fi Café",
+  terminal: "Terminal",
+  brutalismo: "Brutalismo",
+};
 // Avatar: link https:// (DiceBear, GitHub...) ou um dos arquivos de public/avatares/
 const LOCAL_AVATAR = /^\/avatares\/[a-z]+\/\d{2}\.svg$/;
 export function isValidAvatar(value: string) {
@@ -61,7 +79,7 @@ export const registrationSchema = profileSchema
     ideia_projeto: z.enum(IDEIAS),
     ideia_texto: z.string().max(600),
     sugestao_nome: z.string().max(80),
-    estilo_artistico: z.enum(["gamificado", "floresta", "clean", "lofi", "terminal", "brutalismo"]),
+    estilo_artistico: z.enum(ESTILOS),
   })
   .superRefine((v, ctx) => {
     if (v.ideia_projeto === "Outra ideia" && !v.ideia_texto.trim())
@@ -72,10 +90,27 @@ export const registrationSchema = profileSchema
       });
   });
 export type Registration = z.infer<typeof registrationSchema>;
-export type Member = z.infer<typeof profileSchema> & { entrouEm: string };
+/** O card público. `estilo` é o voto no design do projeto; cards antigos não têm. */
+export type Member = z.infer<typeof profileSchema> & {
+  entrouEm: string;
+  estilo?: Estilo | undefined;
+};
+const memberSchema = profileSchema.extend({
+  entrouEm: z.string(),
+  estilo: z.enum(ESTILOS).optional(),
+});
 export function makePassport(data: Registration, date: string): Member {
   const { github, nome, avatar, periodo, areas, frase } = data;
-  return { github, nome, avatar, periodo, areas, frase, entrouEm: date };
+  return {
+    github,
+    nome,
+    avatar,
+    periodo,
+    areas,
+    frase,
+    entrouEm: date,
+    estilo: data.estilo_artistico,
+  };
 }
 export type MemberSort = "recentes" | "nome";
 
@@ -92,7 +127,7 @@ export function loadMembers(): Member[] {
   return Object.entries(files)
     .filter(([path]) => !path.split("/").at(-1)?.startsWith("_"))
     .flatMap(([path, value]) => {
-      const parsed = profileSchema.extend({ entrouEm: z.string() }).safeParse(value);
+      const parsed = memberSchema.safeParse(value);
       if (!parsed.success && import.meta.env.DEV) {
         // Só em desenvolvimento: explica por que um card não apareceu no mural
         console.warn(`[mural] ${path} ignorado:`, parsed.error.flatten().fieldErrors);

@@ -11,13 +11,16 @@ import {
   Rocket,
   ListChecks,
   Target,
+  Vote,
 } from "lucide-react";
 
 import { EntradaGitHub } from "@/components/entrada-github";
 import { MemberCard } from "@/components/community-ui";
+import { CenaDoEstilo, ChatPreview, STYLES } from "@/components/style-picker";
 import { ESTUDOS_URL } from "@/config";
 import { aulasDaMissao } from "@/lib/aulas-missoes";
-import { pageHead } from "@/lib/community";
+import { NOME_DO_ESTILO, pageHead } from "@/lib/community";
+import { readSavedPassport } from "@/lib/draft";
 import { linkDosMeusPRs, sair, useMembroAtual } from "@/lib/identidade";
 import { LINGUAGENS_MISSAO, lerEscolhasMissoes, procurarMissao } from "@/lib/missoes";
 
@@ -53,6 +56,11 @@ function Jornada() {
   const linguagem = LINGUAGENS_MISSAO.find((l) => l.id === escolhas.linguagem);
   const aulas = missao ? aulasDaMissao(missao, escolhas.linguagem) : [];
   const primeiroNome = membro.nome.split(" ")[0];
+  // O voto fica no card do mural; quem se inscreveu neste navegador também tem o passaporte guardado.
+  const passaporte = readSavedPassport();
+  const voto =
+    membro.estilo ?? (passaporte?.github === membro.github ? passaporte.estilo : undefined);
+  const estilo = voto ? STYLES.find((s) => s.id === voto) : undefined;
 
   return (
     <main className="content-page jornada">
@@ -235,6 +243,40 @@ function Jornada() {
           </div>
         </li>
       </ol>
+
+      <section className="jornada-voto" aria-labelledby="jornada-voto-titulo">
+        <p className="section-kicker">O PROJETO QUE VAMOS CONSTRUIR JUNTOS</p>
+        {estilo ? (
+          <>
+            <h2 id="jornada-voto-titulo">
+              Você votou no estilo <em>{NOME_DO_ESTILO[estilo.id]}</em>
+            </h2>
+            <p>
+              Lá na inscrição, você ajudou a escolher a cara do app que a comunidade vai criar. Esse
+              é o chat do jeitinho que você votou. Quando o projeto começar, a galera toda vai
+              colocar a mão no código, inclusive você. O estilo final sai da soma dos votos.
+            </p>
+            <div className={`voto-vitrine ${estilo.className}`}>
+              <CenaDoEstilo id={estilo.id} />
+              <span className="voto-selo">
+                <Vote size={14} aria-hidden="true" /> Seu voto
+              </span>
+              <div className="voto-chat">
+                <ChatPreview style={estilo.id} projectName="" />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 id="jornada-voto-titulo">O seu voto no estilo do projeto</h2>
+            <p>
+              Na inscrição, você votou na cara do app que a comunidade vai criar junta. O seu card é
+              de antes de o voto aparecer no mural, então ele ainda não aparece aqui. Assim que o
+              seu card for atualizado, o chat no estilo que você escolheu aparece neste espaço.
+            </p>
+          </>
+        )}
+      </section>
 
       <p className="jornada-nota">
         <Compass size={14} aria-hidden="true" /> A sua missão e a linguagem ficam guardadas neste
