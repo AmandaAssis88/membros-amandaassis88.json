@@ -24,7 +24,26 @@ Agora responda rápido:
 - Se o seu colega mexeu na introdução e você mexeu na conclusão, como juntar as duas?
 - Aquele parágrafo bom que você apagou na terça... em qual arquivo ele ficou?
 
-Com texto já é confuso. Com código, onde um projeto tem dezenas de arquivos e várias pessoas mexendo ao mesmo tempo, vira caos. Foi para acabar com isso que nasceu o **controle de versão**.
+Com texto já é confuso. Com código, onde um projeto tem dezenas de arquivos e várias pessoas mexendo ao mesmo tempo, vira caos.
+
+## Como se trabalhava antes do Git
+
+Antes do controle de versão, muita equipe fazia assim: a cada funcionalidade nova, compactava a pasta inteira do projeto.
+
+```texto
+projeto_v1.zip
+projeto_v2.zip
+projeto_final.zip
+projeto_final_2.zip
+```
+
+E os problemas vinham em fila:
+
+- **O cliente pede para tirar uma funcionalidade.** Qual `.zip` ainda não tinha ela? Você abre um por um e compara pasta por pasta até achar a última versão que funcionava.
+- **Ninguém sabe o que mudou entre dois `.zip`.** Só abrindo os dois e procurando a diferença no olho.
+- **Equipe na mesma pasta da nuvem.** Várias pessoas mandando arquivos para o mesmo Google Drive: qual é a versão mais nova? E se a Ana sobe o `login.py` dela por cima do que o Bruno tinha acabado de salvar, o trabalho do Bruno some.
+
+Foi para acabar com isso que nasceu o **controle de versão**.
 
 <Nota tipo="analogia" titulo="Pensa assim: o caderno de receitas da cozinha">
 
@@ -73,7 +92,9 @@ Linus Torvalds, o mesmo criador do Linux, em 2005. A equipe do Linux tinha milha
 
 <Nota tipo="analogia">
 
-O **Git** é o caderno de receitas que fica na sua cozinha. O **GitHub** é a central do restaurante, onde todas as cozinhas da rede guardam uma cópia do caderno, deixam bilhetes umas para as outras e aprovam receitas novas antes de colocar no cardápio.
+Pense no **Git** como uma **máquina do tempo** do seu projeto: você volta para qualquer momento salvo sem estragar o presente. E no **GitHub** como uma **rede social de devs**: lá você publica os projetos, segue pessoas, contribui com o código dos outros e monta o portfólio que recrutadores e clientes vão olhar.
+
+Ou, na linguagem da nossa cozinha: o **Git** é o caderno de receitas que fica na sua cozinha. O **GitHub** é a central do restaurante, onde todas as cozinhas da rede guardam uma cópia do caderno, deixam bilhetes umas para as outras e aprovam receitas novas antes de colocar no cardápio.
 
 </Nota>
 
@@ -105,6 +126,12 @@ O Drive guarda arquivos na nuvem e até tem um histórico simples, mas não foi 
 
 Abra o **Terminal** e digite `git --version`. Se o Git não estiver instalado, o próprio Mac oferece para instalar as "ferramentas de linha de comando". Aceite e espere terminar.
 
+Se você usa o **Homebrew** (o gerenciador de pacotes mais popular do Mac), também pode instalar ou atualizar por ele:
+
+```terminal
+brew install git
+```
+
 </Aba>
 <Aba rotulo="Linux">
 
@@ -127,7 +154,7 @@ git --version
 git version 2.47.0
 ```
 
-O número pode ser diferente. O importante é aparecer `git version`.
+O número pode ser diferente. O importante é aparecer `git version`. Se quiser ver a lista dos comandos principais, rode `git --help`.
 
 ## Contando ao Git quem é você
 

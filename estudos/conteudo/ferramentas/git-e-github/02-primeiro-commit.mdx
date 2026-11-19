@@ -169,6 +169,25 @@ git commit -m "Adiciona bolo de cenoura ao cardápio"
 
 </Nota>
 
+<Nota tipo="cuidado" titulo="Nome de arquivo com espaço">
+
+Se o arquivo tiver espaço no nome, use aspas: `git add "lista de compras.txt"`. Sem as aspas, o Git entende que são três arquivos: `lista`, `de` e `compras.txt`. Por isso muita gente prefere nomes sem espaço, como `lista-de-compras.txt`.
+
+</Nota>
+
+## O mesmo ciclo no VS Code
+
+Tudo que você fez no terminal dá para fazer com cliques, na aba **Source Control** (o ícone de ramificação na barra lateral):
+
+<Passos itens={[
+  { icone: "👀", titulo: "Changes", texto: "é o seu git status" },
+  { icone: "➕", titulo: "Botão +", texto: "ao lado do arquivo: git add" },
+  { icone: "✍️", titulo: "Caixa de mensagem", texto: "escreva e clique em Commit" },
+  { icone: "☁️", titulo: "Sync Changes", texto: "envia e traz do GitHub" },
+]} />
+
+Use o que for mais confortável. Mas aprenda pelo terminal primeiro: os comandos são os mesmos em qualquer editor, em qualquer sistema e em qualquer servidor, e é por eles que você entende o que o botão está fazendo.
+
 ## Mensagens de commit que ajudam
 
 Daqui a três meses, você (ou um colega) vai ler o histórico tentando entender o que aconteceu. Compare:

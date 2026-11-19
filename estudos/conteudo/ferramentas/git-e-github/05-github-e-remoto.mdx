@@ -190,6 +190,7 @@ O commit guarda uma versão do projeto no histórico do seu computador, mesmo se
 - **`remote origin already exists`**: você já cadastrou o origin. Confira com `git remote -v`.
 - **`src refspec main does not match any`**: você ainda não fez nenhum commit, ou a sua branch se chama `master`. Faça um commit, ou use `git push -u origin master`.
 - **`Authentication failed`**: você digitou a senha da conta. Use o Credential Manager, o `gh auth login` ou um token.
+- **`Permission denied` ou `403` no Windows, mesmo fazendo login**: o Windows pode ter guardado uma credencial antiga (de outra conta ou de um token vencido). Abra o **Gerenciador de Credenciais** do Windows (procure no menu Iniciar), vá em **Credenciais do Windows**, remova as entradas que mencionam `git` ou `github.com` e rode o `git push` de novo: ele vai pedir o login do zero.
 - **`rejected (fetch first)`**: faltou um `git pull` antes do push.
 
 <Tarefa titulo="A cafeteria na nuvem">
