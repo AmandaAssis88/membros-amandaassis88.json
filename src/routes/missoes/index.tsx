@@ -244,9 +244,14 @@ function MissoesDaComunidade() {
                 <p className="mis-cinema-chamada">{missao.chamada}</p>
                 <p className="mis-cinema-historia">{missao.historia}</p>
                 <p className="mis-cinema-conceitos">
+                  <span className="mis-cinema-nivel">{missao.nivel}</span>
                   {missao.conceitos.slice(0, 3).map((conceito) => (
                     <span key={conceito}>{conceito}</span>
                   ))}
+                </p>
+                <p className="mis-cinema-estudo">
+                  Não sabe algum desses ainda? Tudo bem: cada missão mostra as aulas do Café de
+                  Estudos para chegar lá.
                 </p>
                 <div className="mis-cinema-acoes">
                   <button type="button" className="mis-cinema-botao" onClick={() => setEtapa(1)}>

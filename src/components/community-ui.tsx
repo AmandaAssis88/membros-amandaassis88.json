@@ -6,8 +6,10 @@ import { Logo } from "@/components/logo";
 import { voltarAoInicio } from "@/lib/draft";
 import { ORG_URL, COMECE_POR_AQUI_URL, ESTUDOS_URL, CRIADOR } from "@/config";
 import { type Member, avatarUrl } from "@/lib/community";
+import { useMembroAtual } from "@/lib/identidade";
 
 export function Header() {
+  const membro = useMembroAtual();
   return (
     <header className="site-header">
       <Link to="/" className="brand" aria-label="Unidunedev, início" onClick={voltarAoInicio}>
@@ -28,6 +30,12 @@ export function Header() {
         <a className="nav-github" href={ORG_URL} target="_blank" rel="noreferrer">
           <Github size={16} /> GitHub
         </a>
+        {membro && (
+          <Link to="/jornada" className="nav-eu" aria-label={`Minha jornada (@${membro.github})`}>
+            <img src={membro.avatar} alt="" width={30} height={30} />
+            <span className="nav-longo">Minha jornada</span>
+          </Link>
+        )}
       </nav>
     </header>
   );

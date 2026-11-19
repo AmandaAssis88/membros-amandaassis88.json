@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DesafioPrRouteImport } from './routes/desafio-pr'
+import { Route as JornadaRouteImport } from './routes/jornada'
 import { Route as MuralRouteImport } from './routes/mural'
 import { Route as MissoesIndexRouteImport } from './routes/missoes/index'
 import { Route as MissoesSlugRouteImport } from './routes/missoes/$slug'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const DesafioPrRoute = DesafioPrRouteImport.update({
   id: '/desafio-pr',
   path: '/desafio-pr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JornadaRoute = JornadaRouteImport.update({
+  id: '/jornada',
+  path: '/jornada',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MuralRoute = MuralRouteImport.update({
@@ -44,6 +50,7 @@ const MissoesSlugRoute = MissoesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/desafio-pr': typeof DesafioPrRoute
+  '/jornada': typeof JornadaRoute
   '/mural': typeof MuralRoute
   '/missoes/$slug': typeof MissoesSlugRoute
   '/missoes/': typeof MissoesIndexRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/desafio-pr': typeof DesafioPrRoute
+  '/jornada': typeof JornadaRoute
   '/mural': typeof MuralRoute
   '/missoes/$slug': typeof MissoesSlugRoute
   '/missoes': typeof MissoesIndexRoute
@@ -59,22 +67,32 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/desafio-pr': typeof DesafioPrRoute
+  '/jornada': typeof JornadaRoute
   '/mural': typeof MuralRoute
   '/missoes/$slug': typeof MissoesSlugRoute
   '/missoes/': typeof MissoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/desafio-pr' | '/mural' | '/missoes/$slug' | '/missoes/'
+  fullPaths:
+    '/' | '/desafio-pr' | '/jornada' | '/mural' | '/missoes/$slug' | '/missoes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/desafio-pr' | '/mural' | '/missoes/$slug' | '/missoes'
+  to:
+    '/' | '/desafio-pr' | '/jornada' | '/mural' | '/missoes/$slug' | '/missoes'
   id:
-    '__root__' | '/' | '/desafio-pr' | '/mural' | '/missoes/$slug' | '/missoes/'
+    | '__root__'
+    | '/'
+    | '/desafio-pr'
+    | '/jornada'
+    | '/mural'
+    | '/missoes/$slug'
+    | '/missoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DesafioPrRoute: typeof DesafioPrRoute
+  JornadaRoute: typeof JornadaRoute
   MuralRoute: typeof MuralRoute
   MissoesSlugRoute: typeof MissoesSlugRoute
   MissoesIndexRoute: typeof MissoesIndexRoute
@@ -94,6 +112,13 @@ declare module '@tanstack/react-router' {
       path: '/desafio-pr'
       fullPath: '/desafio-pr'
       preLoaderRoute: typeof DesafioPrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jornada': {
+      id: '/jornada'
+      path: '/jornada'
+      fullPath: '/jornada'
+      preLoaderRoute: typeof JornadaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mural': {
@@ -123,6 +148,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DesafioPrRoute: DesafioPrRoute,
+  JornadaRoute: JornadaRoute,
   MuralRoute: MuralRoute,
   MissoesSlugRoute: MissoesSlugRoute,
   MissoesIndexRoute: MissoesIndexRoute,

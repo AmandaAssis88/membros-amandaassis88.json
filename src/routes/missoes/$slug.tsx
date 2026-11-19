@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { CenaPalcoMissao } from "@/components/cena-palco-missao";
 import { ESTUDOS_URL } from "@/config";
+import { aulasDaMissao } from "@/lib/aulas-missoes";
 import { pageHead } from "@/lib/community";
 import { orientacaoDaMissao } from "@/lib/orientacoes-missoes";
 import { codigoInicialDaMissao } from "@/lib/codigos-iniciais";
@@ -239,6 +240,30 @@ function DetalhesDaMissao() {
               </p>
             </section>
           )}
+
+          <section className="mis-bloco mis-estudar" aria-labelledby="mis-estudar-titulo">
+            <p className="mis-eyebrow">ANTES DE COMEÇAR</p>
+            <h2 id="mis-estudar-titulo">O que estudar para essa missão</h2>
+            <p>
+              {linguagem
+                ? `Aulas curtas da trilha de ${linguagem.nome} no Café de Estudos, na ordem em que você vai usar:`
+                : "Escolha uma linguagem acima para ver a trilha dela. Enquanto isso, a base de lógica serve para todas:"}
+            </p>
+            <ul className="mis-estudar-lista">
+              {aulasDaMissao(missao, escolhas.linguagem).map((aula) => (
+                <li key={aula.url}>
+                  <a href={aula.url} target="_blank" rel="noreferrer">
+                    <BookOpen size={15} aria-hidden="true" />
+                    <span>
+                      <strong>{aula.titulo}</strong>
+                      <small>para: {aula.conceito}</small>
+                    </span>
+                    <ExternalLink size={12} aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
 
           <section className="mis-bloco">
             <p className="mis-eyebrow">UM PASSO DE CADA VEZ</p>

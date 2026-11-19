@@ -15,6 +15,7 @@ import {
   Github,
   LoaderCircle,
 } from "lucide-react";
+import { EntradaGitHub } from "@/components/entrada-github";
 import { Button } from "@/components/ui/button";
 import {
   MemberCard,
@@ -62,7 +63,7 @@ const initial: Registration = {
   estilo_artistico: "clean",
 };
 
-function Welcome({ onStart }: { onStart: () => void }) {
+function Welcome({ onStart }: { onStart: (github?: string) => void }) {
   return (
     <>
       <section className="hero">
@@ -98,11 +99,8 @@ function Welcome({ onStart }: { onStart: () => void }) {
             Aqui, ninguém precisa saber tudo — só ter vontade
             <br className="hidden sm:block" /> de começar.
           </p>
-          <div className="hero-actions">
-            <Button className="coffee-cta" onClick={onStart}>
-              Começar <Coffee size={16} />
-              <ArrowRight size={16} />
-            </Button>
+          <EntradaGitHub onInscrever={onStart} />
+          <div className="hero-actions hero-actions--secundarias">
             <Button asChild variant="outline" className="mis-home-hero-cta">
               <Link to="/missoes">
                 Explorar missões <Sparkles size={16} />
@@ -110,7 +108,7 @@ function Welcome({ onStart }: { onStart: () => void }) {
             </Button>
           </div>
           <p className="small-note">
-            <Clock size={12} /> Uns 5 minutinhos. O café ainda vai estar quente.
+            <Clock size={12} /> Inscrição em uns 5 minutinhos. O café ainda vai estar quente.
           </p>
         </div>
       </section>
@@ -336,7 +334,12 @@ export function Onboarding() {
           transition={{ duration: 0.25 }}
         >
           {step === 0 ? (
-            <Welcome onStart={() => go(1)} />
+            <Welcome
+              onStart={(github) => {
+                if (github) update("github", github);
+                go(1);
+              }}
+            />
           ) : step === 3 ? (
             <section className="styles-page">
               <p className="section-kicker">ETAPA 04 · A PERSONALIDADE DO NOSSO PROJETO</p>
