@@ -58,8 +58,8 @@ const MAPA = [
   { id: "cardapio", icone: "☕", nome: "Balcão" },
   { id: "acucareiro", icone: "🧊", nome: "Açucareiro" },
   { id: "mesa", icone: "🍽️", nome: "Mesa posta" },
-  { id: "cozinha", icone: "👨‍🍳", nome: "Cozinha" },
   { id: "profissoes", icone: "🥐", nome: "Padaria" },
+  { id: "cozinha", icone: "👨‍🍳", nome: "Cozinha" },
   { id: "para-viagem", icone: "🛍️", nome: "Para viagem" },
   { id: "salao", icone: "🪑", nome: "Salão" },
 ];
@@ -234,6 +234,19 @@ export function Inicio() {
         />
       </section>
 
+      <section className="cardapio padaria secao-cafe" id="profissoes">
+        <div className="secao-topo">
+          <p className="kicker">🥐 PADARIA DAS PROFISSÕES</p>
+          <h2>E pra acompanhar?</h2>
+          <p>
+            Sobremesas e pães: cada área da tecnologia, o que ela faz e onde fica no produto. Quanto
+            mais pesado o prato, mais desafiadora a trilha. Comece pelo pão francês: ele mostra o
+            mapa inteiro.
+          </p>
+        </div>
+        <GrupoDoCardapio grupo={grupoDe("profissoes")} concluidas={concluidas} />
+      </section>
+
       <section className="cardapio secao-cafe" id="cozinha">
         <div className="secao-topo">
           <p className="kicker">👨‍🍳 A COZINHA</p>
@@ -247,19 +260,6 @@ export function Inicio() {
             { icone: "🍽️", nome: "Design System", item: "A louça e o uniforme" },
           ]}
         />
-      </section>
-
-      <section className="cardapio padaria secao-cafe" id="profissoes">
-        <div className="secao-topo">
-          <p className="kicker">🥐 PADARIA DAS PROFISSÕES</p>
-          <h2>E pra acompanhar?</h2>
-          <p>
-            Sobremesas e pães: cada área da tecnologia, o que ela faz e onde fica no produto. Quanto
-            mais pesado o prato, mais desafiadora a trilha. Comece pelo pão francês: ele mostra o
-            mapa inteiro.
-          </p>
-        </div>
-        <GrupoDoCardapio grupo={grupoDe("profissoes")} concluidas={concluidas} />
       </section>
 
       <section className="cardapio secao-cafe" id="para-viagem">
