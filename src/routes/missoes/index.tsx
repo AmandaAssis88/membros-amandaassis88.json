@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { useState } from "react";
 import {
   ArrowLeft,
@@ -28,7 +30,11 @@ import {
   type LinguagemMissao,
 } from "@/lib/missoes";
 
+// ?etapa=historias abre direto na escolha das histórias (ex.: "Trocar de missão" na jornada).
+const searchSchema = z.object({ etapa: z.literal("historias").optional().catch(undefined) });
+
 export const Route = createFileRoute("/missoes/")({
+  validateSearch: zodValidator(searchSchema),
   head: () =>
     pageHead(
       "Escolha seu desafio · Unidunedev",
@@ -58,7 +64,8 @@ function MissoesDaComunidade() {
     const i = EM_CARTAZ.findIndex((m) => m.id === antigas.missaoId);
     return Math.max(i, 0);
   });
-  const [etapa, setEtapa] = useState(-1);
+  const search = Route.useSearch();
+  const [etapa, setEtapa] = useState(search.etapa === "historias" ? 0 : -1);
   const missao = EM_CARTAZ[indice] ?? EM_CARTAZ[0];
 
   function proximaCena(diferenca: number) {

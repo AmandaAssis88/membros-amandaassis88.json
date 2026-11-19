@@ -9,6 +9,8 @@ import {
   ExternalLink,
   GitPullRequest,
   Rocket,
+  ListChecks,
+  Target,
 } from "lucide-react";
 
 import { EntradaGitHub } from "@/components/entrada-github";
@@ -121,11 +123,49 @@ function Jornada() {
                     </p>
                   </div>
                 </div>
+
+                <div className="jornada-tarefa">
+                  <h3>
+                    <Target size={15} aria-hidden="true" /> Sua tarefa
+                  </h3>
+                  <p>
+                    {missao.objetivo}
+                    {linguagem ? ` Você vai escrever em ${linguagem.nome}.` : ""}
+                  </p>
+
+                  <h3>
+                    <ListChecks size={15} aria-hidden="true" /> O que fazer, passo a passo
+                  </h3>
+                  <ol className="jornada-passos">
+                    {missao.passos.map((passo) => (
+                      <li key={passo}>{passo}</li>
+                    ))}
+                  </ol>
+
+                  <details className="jornada-pronto">
+                    <summary>Como sei que terminei?</summary>
+                    <ul>
+                      {missao.criterios.map((criterio) => (
+                        <li key={criterio}>
+                          <Check size={14} aria-hidden="true" /> {criterio}
+                        </li>
+                      ))}
+                    </ul>
+                    <p>
+                      <strong>Quer ir além?</strong> {missao.extra}
+                    </p>
+                  </details>
+                </div>
+
                 <div className="jornada-acoes">
                   <Link to="/missoes/$slug" params={{ slug: missao.id }} className="entrada-botao">
                     Continuar a missão <ArrowRight size={15} aria-hidden="true" />
                   </Link>
-                  <Link to="/missoes" className="entrada-botao entrada-botao--leve">
+                  <Link
+                    to="/missoes"
+                    search={{ etapa: "historias" }}
+                    className="entrada-botao entrada-botao--leve"
+                  >
                     Trocar de missão
                   </Link>
                 </div>
@@ -138,7 +178,7 @@ function Jornada() {
                   uma, a linguagem, e constrói no seu ritmo.
                 </p>
                 <div className="jornada-acoes">
-                  <Link to="/missoes" className="entrada-botao">
+                  <Link to="/missoes" search={{ etapa: "historias" }} className="entrada-botao">
                     <Rocket size={15} aria-hidden="true" /> Ver as missões
                   </Link>
                 </div>

@@ -465,3 +465,107 @@
     transition: none;
   }
 }
+
+/* Jornada: detalhes da missão atual */
+.jornada-tarefa {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--background);
+  border: 1px solid var(--border);
+}
+.jornada-tarefa h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.jornada-tarefa h3 svg {
+  color: var(--caramel);
+}
+.jornada-tarefa > p {
+  margin: 0 0 16px;
+  color: var(--foreground);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.jornada-passos {
+  list-style: decimal;
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 6px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.jornada-passos li::marker {
+  color: var(--primary);
+  font-weight: 700;
+}
+.jornada-pronto {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+.jornada-pronto summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+.jornada-pronto ul {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.jornada-pronto li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+.jornada-pronto li svg {
+  color: var(--sage);
+  flex: none;
+  transform: translateY(2px);
+}
+.jornada-pronto p {
+  margin: 10px 0 0 !important;
+  font-size: 14px !important;
+}
+@media (max-width: 760px) {
+  .jornada-tarefa {
+    padding: 14px;
+  }
+}
+
+/* O reset do Tailwind tira números e marcadores; nas missões eles ajudam a seguir a ordem. */
+.mis-bloco ol.mis-roteiro {
+  list-style: decimal;
+}
+.mis-bloco ol.mis-roteiro li::marker {
+  color: #8a5a7a;
+  font-weight: 700;
+}
+.mis-bloco ul:not([class]) {
+  list-style: none;
+  padding-left: 0;
+}
+.mis-bloco ul:not([class]) li {
+  position: relative;
+  padding-left: 28px;
+}
+.mis-bloco ul:not([class]) li::before {
+  content: "✓";
+  position: absolute;
+  left: 4px;
+  color: #3f7a59;
+  font-weight: 700;
+}
