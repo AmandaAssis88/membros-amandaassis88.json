@@ -722,3 +722,20 @@
 .voto-vitrine.terminal-style {
   padding-bottom: 76px;
 }
+
+/* Mural: @username leva ao perfil do GitHub */
+.member-username a {
+  position: relative;
+  z-index: 1;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.member-username a:hover,
+.member-username a:focus-visible {
+  color: var(--primary);
+  border-bottom-color: currentColor;
+}

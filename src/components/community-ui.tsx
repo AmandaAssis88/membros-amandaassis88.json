@@ -126,7 +126,20 @@ export function MemberCard({
         height={76}
       />
       <h3>{member.nome || "Seu nome aqui"}</h3>
-      <p className="member-username">@{member.github || "seu-username"}</p>
+      <p className="member-username">
+        {member.github ? (
+          <a
+            href={`https://github.com/${member.github}`}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Perfil de ${member.nome || member.github} no GitHub (abre em nova aba)`}
+          >
+            @{member.github}
+          </a>
+        ) : (
+          "@seu-username"
+        )}
+      </p>
       <p className="member-period">
         {member.periodo === "Prefiro não informar"
           ? "☕ Na comunidade"
