@@ -1,0 +1,269 @@
+/* ==========================================================================
+   Blocos de memorização das aulas + "Hora de revisar" na home
+   ========================================================================== */
+
+.memo {
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid var(--borda);
+  background: var(--cartao);
+}
+.memo > * + * {
+  margin-top: 10px;
+}
+.memo-selo {
+  display: inline-block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--t-tinta);
+}
+.memo-intro {
+  color: var(--tinta-suave);
+  font-size: 15px;
+}
+.memo-pergunta {
+  display: block;
+  font-family: "Nunito", sans-serif;
+  font-weight: 800;
+  font-size: 19px;
+  line-height: 1.4;
+  color: var(--tinta);
+}
+
+/* Aquecimento: lista de perguntas que abrem a resposta */
+.memo-aquecimento {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--t-acento) 22%, transparent),
+      transparent 55%
+    ),
+    var(--cartao);
+}
+.memo-perguntas,
+.prosa .memo-perguntas {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin-left: 0;
+  list-style: none;
+  counter-reset: memo;
+}
+.memo-perguntas li {
+  counter-increment: memo;
+}
+.memo-perguntas details {
+  border-radius: 12px;
+  background: var(--papel-2);
+  border: 1px solid var(--borda);
+}
+.memo-perguntas summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+.memo-perguntas summary::-webkit-details-marker {
+  display: none;
+}
+.memo-perguntas summary::before {
+  content: counter(memo) ". ";
+  color: var(--t-tinta);
+}
+.memo-perguntas summary::after {
+  content: " · ver resposta";
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--tinta-suave);
+}
+.memo-perguntas details[open] summary::after {
+  content: "";
+}
+.memo-perguntas details p {
+  padding: 0 14px 12px;
+  color: var(--tinta);
+}
+
+/* Chute primeiro e Explique: caixa com revelar */
+.memo-chute {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: color-mix(in srgb, var(--t-tinta) 45%, transparent);
+}
+.memo-explique textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 84px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--borda);
+  background: var(--papel);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.memo-explique textarea:focus {
+  outline: 2px solid var(--t-tinta);
+  outline-offset: 1px;
+}
+.memo-revelar {
+  border-radius: 12px;
+  background: var(--t-suave);
+  border: 1px solid color-mix(in srgb, var(--t-tinta) 18%, transparent);
+}
+.memo-revelar summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 14px;
+  font-weight: 700;
+  color: var(--t-tinta);
+}
+.memo-revelar summary::-webkit-details-marker {
+  display: none;
+}
+.memo-revelar summary::before {
+  content: "👀 ";
+}
+.memo-revelar > div {
+  padding: 0 14px 14px;
+}
+.memo-revelar > div > * + * {
+  margin-top: 10px;
+}
+
+/* Cartões frente e verso */
+.memo-cartoes {
+  background: var(--espresso);
+  border-color: transparent;
+  color: var(--creme);
+}
+.memo-cartoes .memo-selo {
+  color: var(--t-acento);
+}
+.memo-cartoes .memo-intro {
+  color: #d9c8b4;
+}
+.memo-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+.memo-cartao {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 124px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--creme);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+.memo-cartao:hover {
+  transform: translateY(-2px);
+}
+.memo-cartao.virado {
+  background: color-mix(in srgb, var(--t-acento) 22%, transparent);
+  border-color: color-mix(in srgb, var(--t-acento) 60%, transparent);
+  animation: memo-virar 0.3s ease;
+}
+.memo-cartao-lado {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t-acento);
+}
+.memo-cartao-texto {
+  font-size: 15px;
+  line-height: 1.5;
+}
+@keyframes memo-virar {
+  from {
+    transform: rotateY(90deg);
+  }
+  to {
+    transform: rotateY(0);
+  }
+}
+
+/* Home: Hora de revisar */
+.revisar {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px clamp(16px, 4vw, 48px) 8px;
+}
+.revisar-topo {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.revisar-topo h2 {
+  font-size: clamp(26px, 3.4vw, 34px);
+}
+.revisar-topo p:not(.kicker) {
+  color: var(--tinta-suave);
+  max-width: 680px;
+}
+.revisar-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+.revisar-lista li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--borda);
+  background: var(--cartao);
+}
+.revisar-lista a {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  color: var(--tinta);
+  text-decoration: none;
+}
+.revisar-lista small {
+  color: var(--tinta-suave);
+  font-size: 12px;
+}
+.revisar-lista button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--t-tinta);
+  background: transparent;
+  color: var(--t-tinta);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.revisar-lista button:hover {
+  background: var(--t-tinta);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memo-cartao,
+  .memo-cartao.virado {
+    transition: none;
+    animation: none;
+  }
+}

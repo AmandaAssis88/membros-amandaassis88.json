@@ -1,0 +1,244 @@
+<Chute pergunta="Git e GitHub são a mesma coisa?">
+
+Não! **Git** é um programa que roda no seu computador e guarda o histórico do seu código. **GitHub** é um site que guarda esse histórico na nuvem e ajuda as pessoas a trabalharem juntas. Dá para usar Git sem GitHub, mas o GitHub foi feito para o Git. Nesta aula você vai entender por que essa dupla existe.
+
+</Chute>
+
+## Uma cena que você já viveu
+
+Você está fazendo o trabalho final da faculdade. Na pasta, depois de umas semanas, aparece isto:
+
+```texto
+trabalho_final.docx
+trabalho_final_v2.docx
+trabalho_final_v2_corrigido.docx
+trabalho_final_v3_AGORA_VAI.docx
+trabalho_final_v3_AGORA_VAI_professor_comentou.docx
+trabalho_final_FINAL_mesmo.docx
+```
+
+Agora responda rápido:
+
+- Qual é a versão mais nova?
+- O que mudou entre a v2 e a v3?
+- Se o seu colega mexeu na introdução e você mexeu na conclusão, como juntar as duas?
+- Aquele parágrafo bom que você apagou na terça... em qual arquivo ele ficou?
+
+Com texto já é confuso. Com código, onde um projeto tem dezenas de arquivos e várias pessoas mexendo ao mesmo tempo, vira caos.
+
+## Como se trabalhava antes do Git
+
+Antes do controle de versão, muita equipe fazia assim: a cada funcionalidade nova, compactava a pasta inteira do projeto.
+
+```texto
+projeto_v1.zip
+projeto_v2.zip
+projeto_final.zip
+projeto_final_2.zip
+```
+
+E os problemas vinham em fila:
+
+- **O cliente pede para tirar uma funcionalidade.** Qual `.zip` ainda não tinha ela? Você abre um por um e compara pasta por pasta até achar a última versão que funcionava.
+- **Ninguém sabe o que mudou entre dois `.zip`.** Só abrindo os dois e procurando a diferença no olho.
+- **Equipe na mesma pasta da nuvem.** Várias pessoas mandando arquivos para o mesmo Google Drive: qual é a versão mais nova? E se a Ana sobe o `login.py` dela por cima do que o Bruno tinha acabado de salvar, o trabalho do Bruno some.
+
+Foi para acabar com isso que nasceu o **controle de versão**.
+
+<Nota tipo="analogia" titulo="Pensa assim: o caderno de receitas da cozinha">
+
+Imagine uma cozinha de restaurante com um caderno de receitas. Toda vez que alguém melhora uma receita, ele **não apaga a anterior**: escreve uma nova página com a data, o nome de quem mudou e um bilhete dizendo o que mudou ("menos sal no molho, os clientes reclamaram").
+
+Se a mudança der errado, é só voltar algumas páginas. O Git é esse caderno, só que para o seu código.
+
+</Nota>
+
+## O que é controle de versão
+
+Controle de versão é um sistema que **registra cada mudança** nos arquivos de um projeto, para que você possa:
+
+<Passos itens={[
+  { icone: "📸", titulo: "Guardar momentos", texto: "uma 'foto' do projeto quando algo funciona" },
+  { icone: "🔍", titulo: "Comparar", texto: "ver exatamente o que mudou entre duas fotos" },
+  { icone: "⏪", titulo: "Voltar", texto: "desfazer um erro sem perder o resto" },
+  { icone: "🤝", titulo: "Juntar", texto: "combinar o trabalho de várias pessoas" },
+]} />
+
+Cada "foto" que o Git guarda se chama **commit**. Um commit diz: *quem* mudou, *quando*, *o quê* (as linhas exatas) e *por quê* (a mensagem que a pessoa escreveu).
+
+```terminal
+a3f9c21  Ana     ter 14:02   Corrige o cálculo do troco
+7be0d14  Bruno   ter 10:47   Adiciona tela de cardápio
+1c44e8a  Ana     seg 18:30   Primeira versão do sistema da cafeteria
+```
+
+Isso acima é um histórico de verdade, com o mais novo em cima. Esse código esquisito no começo (`a3f9c21`) é a **identidade** do commit, como o número de um pedido.
+
+<Nota tipo="curiosidade" titulo="Quem criou o Git?">
+
+Linus Torvalds, o mesmo criador do Linux, em 2005. A equipe do Linux tinha milhares de pessoas mandando código e a ferramenta que eles usavam deixou de ser gratuita. Ele escreveu o Git em poucas semanas. Hoje praticamente toda empresa de tecnologia do mundo usa Git.
+
+</Nota>
+
+## Git × GitHub: quem é quem
+
+| | Git | GitHub |
+| --- | --- | --- |
+| O que é | Um programa | Um site (e uma empresa) |
+| Onde roda | No seu computador | Na nuvem |
+| Para que serve | Guardar o histórico do código | Guardar o histórico online, compartilhar e colaborar |
+| Precisa de internet? | Não | Sim |
+| Parecidos | (é único) | GitLab, Bitbucket |
+
+<Nota tipo="analogia">
+
+Pense no **Git** como uma **máquina do tempo** do seu projeto: você volta para qualquer momento salvo sem estragar o presente. E no **GitHub** como uma **rede social de devs**: lá você publica os projetos, segue pessoas, contribui com o código dos outros e monta o portfólio que recrutadores e clientes vão olhar.
+
+Ou, na linguagem da nossa cozinha: o **Git** é o caderno de receitas que fica na sua cozinha. O **GitHub** é a central do restaurante, onde todas as cozinhas da rede guardam uma cópia do caderno, deixam bilhetes umas para as outras e aprovam receitas novas antes de colocar no cardápio.
+
+</Nota>
+
+## Por que isso importa para a sua carreira
+
+- **Toda vaga** de tecnologia (front, back, mobile, dados, QA, DevOps) espera que você saiba o básico de Git.
+- O seu **GitHub vira portfólio**: quem recruta olha os seus repositórios e os seus commits.
+- Projetos de **código aberto** (open source) acontecem no GitHub. Contribuir com eles é uma das melhores formas de aprender e ser visto.
+- Na comunidade Unidunedev, o **Desafio 1** já é um Pull Request no GitHub. No fim desta trilha você vai entender cada passo dele.
+
+<Explique pergunta="Se um colega disser 'eu salvo meus arquivos no Google Drive, então já tenho controle de versão', o que você responderia?">
+
+O Drive guarda arquivos na nuvem e até tem um histórico simples, mas não foi feito para código: ele não mostra linha por linha o que mudou em vários arquivos ao mesmo tempo, não tem uma mensagem explicando o porquê de cada mudança e não sabe juntar o trabalho de duas pessoas que mexeram no mesmo arquivo. O Git faz tudo isso, e funciona até sem internet.
+
+</Explique>
+
+## Instalando o Git
+
+<Abas>
+<Aba rotulo="Windows">
+
+1. Acesse [git-scm.com/download/win](https://git-scm.com/download/win) e baixe o instalador.
+2. Pode ir clicando em **Next**. Se aparecer a opção de editor padrão, escolha o **VS Code**.
+3. Na tela "Adjusting the name of the initial branch", escolha **Override** e escreva `main`.
+4. Abra o programa **Git Bash** (ele vem junto) ou o terminal do VS Code.
+
+</Aba>
+<Aba rotulo="Mac">
+
+Abra o **Terminal** e digite `git --version`. Se o Git não estiver instalado, o próprio Mac oferece para instalar as "ferramentas de linha de comando". Aceite e espere terminar.
+
+Se você usa o **Homebrew** (o gerenciador de pacotes mais popular do Mac), também pode instalar ou atualizar por ele:
+
+```terminal
+brew install git
+```
+
+</Aba>
+<Aba rotulo="Linux">
+
+No Ubuntu, Debian e parecidos:
+
+```terminal
+sudo apt install git
+```
+
+</Aba>
+</Abas>
+
+Para conferir se deu certo:
+
+```terminal
+git --version
+```
+
+```saida
+git version 2.47.0
+```
+
+O número pode ser diferente. O importante é aparecer `git version`. Se quiser ver a lista dos comandos principais, rode `git --help`.
+
+## Contando ao Git quem é você
+
+Todo commit leva o nome e o e-mail de quem fez. Configure isso **uma vez** no seu computador:
+
+```terminal
+git config --global user.name "Seu Nome"
+git config --global user.email "seu-email@exemplo.com"
+git config --global init.defaultBranch main
+```
+
+- `--global` quer dizer "vale para todos os projetos deste computador".
+- Use o **mesmo e-mail da sua conta do GitHub**, para os commits aparecerem no seu perfil.
+- A última linha faz todo projeto novo começar com o nome `main`, que é o padrão atual.
+
+Para ver o que ficou guardado:
+
+```terminal
+git config --global --list
+```
+
+<Nota tipo="cuidado" titulo="Esse nome e e-mail ficam públicos">
+
+Tudo que vai para o GitHub mostra o nome e o e-mail do commit. Se não quiser expor o seu e-mail pessoal, o GitHub oferece um e-mail "noreply" nas configurações de e-mail da sua conta. Você aprende a usar ele na aula sobre o GitHub.
+
+</Nota>
+
+<Nota tipo="ia" titulo="E a IA, já não faz isso por mim?">
+
+Ferramentas de IA escrevem código, mas quem decide o que entra no projeto, revisa e desfaz quando dá errado é você, e isso acontece pelo Git. Saber ler um histórico e um Pull Request é o que te permite conferir o que a IA (ou um colega) mudou.
+
+</Nota>
+
+<Tarefa titulo="Deixe a sua cozinha pronta">
+
+1. Instale o Git.
+2. Rode `git --version` e confira a resposta.
+3. Configure `user.name`, `user.email` e `init.defaultBranch`.
+4. Rode `git config --global --list` e confira se as três informações aparecem.
+
+<Dica>
+
+Se o terminal disser que `git` não é reconhecido, feche e abra o terminal de novo depois de instalar. No Windows, use o **Git Bash** se o terminal comum continuar sem achar o Git.
+
+</Dica>
+
+<Resposta>
+
+```saida
+user.name=Seu Nome
+user.email=seu-email@exemplo.com
+init.defaultbranch=main
+```
+
+Se as três linhas aparecerem (a ordem pode mudar), está tudo certo!
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que é um commit?"
+  opcoes={["Um arquivo de configuração do GitHub", "Uma 'foto' do projeto com autor, data e mensagem", "Um comando para baixar código da internet"]}
+  correta={1}
+  explicacao="Um commit é um momento salvo no histórico: o que mudou, quem mudou, quando e por quê."
+/>
+
+<Quiz
+  pergunta="Você está num avião, sem internet. Dá para fazer commits?"
+  opcoes={["Sim, o Git funciona no seu computador", "Não, o Git precisa do GitHub", "Só se o repositório for público"]}
+  correta={0}
+  explicacao="O Git é local. Você pode fazer quantos commits quiser offline e mandar para o GitHub quando a internet voltar."
+/>
+
+<Cartoes itens={[
+  { frente: "Para que serve o controle de versão?", verso: "Guardar cada mudança do projeto para comparar, voltar no tempo e juntar o trabalho de várias pessoas." },
+  { frente: "Git ou GitHub: qual roda no seu computador?", verso: "O Git. O GitHub é um site que guarda o histórico na nuvem e ajuda na colaboração." },
+  { frente: "O que todo commit registra?", verso: "Quem mudou, quando, o que mudou (linha por linha) e por quê (a mensagem)." },
+  { frente: "Por que usar o mesmo e-mail no Git e no GitHub?", verso: "Para os seus commits aparecerem ligados ao seu perfil." },
+]} />
+
+## Resumindo
+
+- **Controle de versão** acaba com o `trabalho_final_v3_AGORA_VAI`: cada mudança vira um commit no histórico.
+- **Git** roda no seu computador. **GitHub** guarda na nuvem e ajuda a trabalhar em equipe.
+- Um **commit** guarda quem, quando, o quê e por quê.
+- Configure `user.name` e `user.email` uma vez, de preferência com o e-mail do GitHub.

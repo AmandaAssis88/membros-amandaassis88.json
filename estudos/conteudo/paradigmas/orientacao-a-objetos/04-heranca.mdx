@@ -1,0 +1,397 @@
+<Aquecimento perguntas={[
+  { p: "O que é encapsulamento, em uma frase?", r: "Esconder os dados do objeto e expor só ações que conferem as regras." },
+  { p: "Por que um setSaldo que aceita qualquer valor é um problema?", r: "Ele deixa qualquer um quebrar a regra do saldo, como uma gaveta de caixa aberta." },
+  { p: "Como fazer um atributo só de leitura em Python?", r: "Guardar em _atributo e expor com @property, sem setter." },
+]} />
+
+O cardápio da cafeteria cresceu: tem café, chá, chocolate quente... Todas são **bebidas**: têm nome e preço e aparecem no cardápio. Mas cada uma tem algo só dela: o café tem intensidade, o chá tem tempo de infusão. Como evitar copiar e colar o que é comum?
+
+<Chute pergunta="Se Cafe herda de Bebida, um Cafe pode ser usado em qualquer lugar onde se espera uma Bebida?">
+
+Sim! Essa é a ideia central da herança: um café **é uma** bebida. Tudo o que funciona com bebidas (mostrar no cardápio, somar no pedido) funciona com um café. O contrário não vale: nem toda bebida é um café.
+
+</Chute>
+
+## O problema: copiar e colar
+
+```python-exemplo
+class Cafe:
+    def __init__(self, nome, preco, intensidade):
+        self.nome = nome
+        self.preco = preco
+        self.intensidade = intensidade
+
+    def no_cardapio(self):
+        return f"{self.nome} ... R$ {self.preco:.2f}"
+
+
+class Cha:
+    def __init__(self, nome, preco, minutos):
+        self.nome = nome
+        self.preco = preco
+        self.minutos = minutos
+
+    def no_cardapio(self):
+        return f"{self.nome} ... R$ {self.preco:.2f}"
+```
+
+O `nome`, o `preco` e o `no_cardapio` estão **duplicados**. Se o dono pedir para o cardápio mostrar "R$" depois do valor, você vai ter que mudar em todas as classes, e vai esquecer uma.
+
+<Nota tipo="analogia" titulo="Pensa assim: a receita base">
+
+Toda confeitaria tem uma **massa base**. O bolo de cenoura, o de chocolate e o de laranja partem dela e cada um acrescenta o seu toque. Se a massa base melhora, todos os bolos melhoram juntos. Na herança, a classe mãe é a massa base, e as filhas acrescentam o que é delas.
+
+</Nota>
+
+## Herança: a classe filha recebe tudo da mãe
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Bebida:
+    def __init__(self, nome, preco):
+        self.nome = nome
+        self.preco = preco
+
+    def no_cardapio(self):
+        return f"{self.nome} ... R$ {self.preco:.2f}"
+
+
+class Cafe(Bebida):
+    def __init__(self, nome, preco, intensidade):
+        super().__init__(nome, preco)
+        self.intensidade = intensidade
+
+
+class Cha(Bebida):
+    def __init__(self, nome, preco, minutos):
+        super().__init__(nome, preco)
+        self.minutos = minutos
+
+    def no_cardapio(self):
+        return super().no_cardapio() + f" (infusão de {self.minutos} min)"
+
+
+cardapio = [
+    Cafe("Espresso", 6, 5),
+    Cha("Chá de hibisco", 7, 4),
+    Bebida("Água", 3),
+]
+for bebida in cardapio:
+    print(bebida.no_cardapio())
+```
+
+- `class Cafe(Bebida)`: o `Cafe` **herda** de `Bebida`.
+- `super().__init__(nome, preco)`: chama o construtor da mãe para ela cuidar do que é dela.
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.List;
+
+class Bebida {
+    protected String nome;
+    protected double preco;
+
+    Bebida(String nome, double preco) {
+        this.nome = nome;
+        this.preco = preco;
+    }
+
+    String noCardapio() {
+        return String.format("%s ... R$ %.2f", nome, preco);
+    }
+}
+
+class Cafe extends Bebida {
+    private int intensidade;
+
+    Cafe(String nome, double preco, int intensidade) {
+        super(nome, preco);
+        this.intensidade = intensidade;
+    }
+}
+
+class Cha extends Bebida {
+    private int minutos;
+
+    Cha(String nome, double preco, int minutos) {
+        super(nome, preco);
+        this.minutos = minutos;
+    }
+
+    @Override
+    String noCardapio() {
+        return super.noCardapio() + " (infusão de " + minutos + " min)";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        List<Bebida> cardapio = List.of(
+            new Cafe("Espresso", 6, 5),
+            new Cha("Chá de hibisco", 7, 4),
+            new Bebida("Água", 3)
+        );
+        for (Bebida bebida : cardapio) {
+            System.out.println(bebida.noCardapio());
+        }
+    }
+}
+```
+
+- `class Cafe extends Bebida`: o `Cafe` **herda** de `Bebida`.
+- `super(nome, preco)` precisa ser a **primeira linha** do construtor da filha.
+- `protected`: como o `private`, mas as classes filhas também enxergam.
+- `@Override`: avisa que o método **substitui** o da mãe. Se você errar o nome, o compilador reclama.
+
+</Aba>
+</Abas>
+
+```saida
+Espresso ... R$ 6.00
+Chá de hibisco ... R$ 7.00 (infusão de 4 min)
+Água ... R$ 3.00
+```
+
+(Em Java, dependendo do idioma do computador, o valor pode sair com vírgula: `6,00`.)
+
+## O que acabou de acontecer
+
+<Passos itens={[
+  { icone: "🧁", titulo: "Bebida", texto: "nome, preço, no_cardapio()" },
+  { icone: "☕", titulo: "Cafe herda", texto: "+ intensidade" },
+  { icone: "🍵", titulo: "Cha herda", texto: "+ minutos e o próprio no_cardapio()" },
+]} />
+
+1. O `Cafe` **não escreveu** `no_cardapio`, mas tem: herdou da mãe.
+2. O `Cha` **sobrescreveu** (*override*) o `no_cardapio` para acrescentar o tempo de infusão.
+3. E dentro dele, `super().no_cardapio()` reaproveita o texto da mãe em vez de reescrever. Se o formato do preço mudar na `Bebida`, o chá acompanha.
+4. A lista guarda **bebidas**, e o `for` chama `no_cardapio()` sem saber se é café, chá ou água. Cada objeto responde do seu jeito. (Isso tem nome: **polimorfismo**, o assunto da próxima aula.)
+
+## Vocabulário
+
+| Termo | Significa |
+| --- | --- |
+| Classe mãe, superclasse, classe base | `Bebida` |
+| Classe filha, subclasse, classe derivada | `Cafe`, `Cha` |
+| Herdar / estender | a filha recebe atributos e métodos da mãe |
+| Sobrescrever (override) | a filha substitui um método da mãe pelo dela |
+| `super` | "a minha mãe": chama o construtor ou um método da classe mãe |
+
+## O teste do "é um"
+
+Antes de usar herança, faça a frase: **"Um X é um Y?"**
+
+- Um café **é uma** bebida? ✅ Herança faz sentido.
+- Um gerente **é um** funcionário? ✅
+- Um carro **é um** motor? ❌ Um carro **tem um** motor. Isso não é herança, é **composição** (aula 6).
+- Uma pilha **é uma** lista? 🤔 Parece, mas se a pilha herdar da lista, ganha métodos que ela não deveria ter (como inserir no meio). Melhor **ter** uma lista por dentro.
+
+<Nota tipo="cuidado" titulo="O pinguim que não voa">
+
+O exemplo clássico: `Ave` tem o método `voar()`. `Pinguim` é uma ave, então herda... e agora o pinguim "voa". Herança diz que **toda** filha faz **tudo** que a mãe faz. Se uma filha precisa "desligar" algo da mãe, a hierarquia está errada. Nesse caso, `voar` não deveria estar em `Ave`.
+
+</Nota>
+
+## Quando a herança complica
+
+Herança é poderosa, mas cria uma ligação forte: mudou a mãe, todas as filhas são afetadas. Por isso:
+
+- Prefira hierarquias **rasas** (mãe e filhas, no máximo netas).
+- Use herança quando o "é um" é verdadeiro **e** as filhas realmente compartilham comportamento.
+- Na dúvida entre "é um" e "tem um", fique com **"tem um"** (composição). Muitas equipes seguem a regra "prefira composição a herança".
+
+<Nota tipo="curiosidade" titulo="Herdar de duas mães?">
+
+Python deixa uma classe herdar de várias ao mesmo tempo (`class Mocha(Cafe, Chocolate)`). Java **não** deixa herdar de duas classes, para evitar confusão quando as duas mães têm o mesmo método, mas oferece as **interfaces**, que você vê na próxima aula.
+
+</Nota>
+
+## Todo objeto já tem uma mãe
+
+Mesmo sem escrever `extends`, toda classe Java herda de `Object`, e toda classe Python herda de `object`. É de lá que vêm o `toString()` e o `__str__` que você sobrescreveu na aula 2. Sobrescrever é exatamente isso: trocar o comportamento herdado pelo seu.
+
+<Explique pergunta="Por que 'Carro extends Motor' é uma má ideia, mesmo que o carro precise do motor?">
+
+Porque herança significa 'é um', e um carro não é um motor: ele tem um motor. Se o carro herdasse de Motor, ganharia todos os métodos do motor como se fossem dele (como 'trocar óleo do motor' ser 'trocar óleo do carro'), e qualquer mudança no Motor bagunçaria o Carro. O certo é o carro ter um atributo do tipo Motor (composição).
+
+</Explique>
+
+## Erros comuns
+
+- **Esquecer o `super().__init__`** (Python): os atributos da mãe nunca são criados, e aparece `AttributeError: 'Cafe' object has no attribute 'nome'`.
+- **`super(...)` fora da primeira linha** (Java): erro de compilação.
+- **Errar o nome do método ao sobrescrever** (`no_cardapo`): você cria um método novo e o da mãe continua sendo chamado. Em Java, o `@Override` pega esse erro.
+- **Herdar só para reaproveitar código**, sem o "é um" ser verdadeiro.
+
+<Tarefa titulo="A guilda do jogo">
+
+Crie uma classe `Personagem` com `nome`, `vida` (começa em 100) e o método `atacar()`, que devolve o dano: **10**.
+
+Crie duas filhas:
+
+- `Guerreiro`: tem `forca`; o ataque causa `10 + forca`.
+- `Mago`: tem `mana` (começa em 30). O ataque causa **25** e gasta 10 de mana. Sem mana suficiente, ele ataca como um personagem comum (10).
+
+Monte uma lista com um guerreiro de força 8, um mago e um personagem comum, e mostre quanto cada um causa em dois ataques seguidos.
+
+<Dica>
+
+No `Mago`, sobrescreva `atacar()`: se a mana for 10 ou mais, gaste 10 e devolva 25; senão, devolva `super().atacar()` (Python) ou `super.atacar()` (Java), reaproveitando o ataque da mãe.
+
+</Dica>
+
+<Resposta>
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Personagem:
+    def __init__(self, nome):
+        self.nome = nome
+        self.vida = 100
+
+    def atacar(self):
+        return 10
+
+
+class Guerreiro(Personagem):
+    def __init__(self, nome, forca):
+        super().__init__(nome)
+        self.forca = forca
+
+    def atacar(self):
+        return 10 + self.forca
+
+
+class Mago(Personagem):
+    def __init__(self, nome):
+        super().__init__(nome)
+        self.mana = 30
+
+    def atacar(self):
+        if self.mana >= 10:
+            self.mana -= 10
+            return 25
+        return super().atacar()
+
+
+guilda = [Guerreiro("Bruna", 8), Mago("Caio"), Personagem("Novato")]
+for rodada in range(1, 3):
+    for p in guilda:
+        print(f"Rodada {rodada}: {p.nome} causa {p.atacar()}")
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.List;
+
+class Personagem {
+    protected String nome;
+    protected int vida = 100;
+
+    Personagem(String nome) {
+        this.nome = nome;
+    }
+
+    int atacar() {
+        return 10;
+    }
+}
+
+class Guerreiro extends Personagem {
+    private int forca;
+
+    Guerreiro(String nome, int forca) {
+        super(nome);
+        this.forca = forca;
+    }
+
+    @Override
+    int atacar() {
+        return 10 + forca;
+    }
+}
+
+class Mago extends Personagem {
+    private int mana = 30;
+
+    Mago(String nome) {
+        super(nome);
+    }
+
+    @Override
+    int atacar() {
+        if (mana >= 10) {
+            mana -= 10;
+            return 25;
+        }
+        return super.atacar();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        List<Personagem> guilda = List.of(new Guerreiro("Bruna", 8), new Mago("Caio"), new Personagem("Novato"));
+        for (int rodada = 1; rodada <= 2; rodada++) {
+            for (Personagem p : guilda) {
+                System.out.println("Rodada " + rodada + ": " + p.nome + " causa " + p.atacar());
+            }
+        }
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Rodada 1: Bruna causa 18
+Rodada 1: Caio causa 25
+Rodada 1: Novato causa 10
+Rodada 2: Bruna causa 18
+Rodada 2: Caio causa 25
+Rodada 2: Novato causa 10
+```
+
+Com 30 de mana, o mago aguenta 3 ataques fortes. Experimente 4 rodadas e veja o que acontece na quarta!
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual destas é uma boa relação de herança?"
+  opcoes={["Pizza extends Forno", "Gerente extends Funcionario", "Celular extends Bateria"]}
+  correta={1}
+  explicacao="Um gerente É UM funcionário. Pizza e forno, celular e bateria são relações de 'tem um' (ou nem isso)."
+/>
+
+<Quiz
+  pergunta="Para que serve o super().__init__(nome, preco) dentro do construtor de Cafe?"
+  opcoes={["Criar um segundo objeto Bebida", "Deixar a classe mãe preparar os atributos dela (nome e preço)", "Apagar os atributos da mãe"]}
+  correta={1}
+  explicacao="O super chama o construtor da mãe, que cuida do que é comum. A filha só acrescenta o que é dela."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é herança?", verso: "A classe filha recebe atributos e métodos da mãe e acrescenta (ou troca) o que é dela." },
+  { frente: "Qual o teste antes de usar herança?", verso: "A frase 'X é um Y?' precisa ser verdadeira. Se for 'tem um', é composição." },
+  { frente: "O que é sobrescrever (override)?", verso: "A filha substitui um método herdado pela sua própria versão." },
+  { frente: "O que faz o super?", verso: "Chama o construtor ou um método da classe mãe." },
+  { frente: "protected (Java)", verso: "Como private, mas as classes filhas também enxergam." },
+  { frente: "Java deixa herdar de duas classes?", verso: "Não (Python deixa). Java oferece interfaces para isso." },
+]} />
+
+## Resumindo
+
+- Herança evita repetir o que é comum: a filha `extends`/`(Mãe)` e acrescenta o que é dela.
+- `super` chama a mãe; sobrescrever troca um comportamento herdado.
+- Só herde quando **"é um"** for verdade. "Tem um" é composição.
+- Hierarquias rasas; na dúvida, prefira composição.

@@ -1,0 +1,261 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre git commit e git push?", r: "commit guarda no histórico local; push envia os commits para o GitHub." },
+  { p: "O push foi recusado com 'rejected (fetch first)'. O que fazer?", r: "git pull, resolver conflitos se houver, e então git push. Nunca --force." },
+  { p: "Quando usar git clone em vez de git init?", r: "Quando o projeto já existe no GitHub: o clone baixa tudo e já configura o origin." },
+]} />
+
+Você já sabe guardar versões, criar branches e mandar para o GitHub. Falta a parte que transforma tudo isso em **trabalho de equipe**: o **Pull Request**. É assim que praticamente todas as empresas e projetos open source do mundo recebem código novo.
+
+<Chute pergunta="Num projeto grande, qualquer pessoa pode mandar código direto para a main?">
+
+Não. A `main` costuma ser **protegida**: ninguém faz push direto nela. Toda mudança chega por um Pull Request, que outra pessoa revisa antes de aprovar. É a mesma ideia de um chef que prova o prato antes de ele sair para o salão.
+
+</Chute>
+
+## O que é um Pull Request
+
+Um **Pull Request** (PR) é um pedido: *"fiz estas mudanças nesta branch, por favor, revise e junte na main"*. No GitHub, o PR é uma página onde aparece:
+
+- O **título e a descrição** do que você fez e por quê.
+- Os **commits** e o **diff** de cada arquivo (as linhas verdes e vermelhas que você já conhece).
+- Os **comentários** de quem revisou, linha por linha.
+- Os **checks automáticos**: testes e validações que rodam sozinhos.
+- O botão de **Merge**, que só aparece liberado quando está tudo certo.
+
+<Nota tipo="analogia" titulo="Pensa assim: o prato que passa pelo chef">
+
+O cozinheiro (você) prepara o prato na sua estação (a branch). Antes de ir para o salão (a main), ele vai para o **passe**, onde o chef (quem revisa) prova, comenta "falta sal", o cozinheiro ajusta, e só então o prato é liberado. O PR é o passe da cozinha.
+
+</Nota>
+
+## Dois jeitos de contribuir
+
+| Situação | Como funciona |
+| --- | --- |
+| Você **faz parte** do repositório (é da equipe) | Cria uma **branch** no próprio repositório, faz push dela e abre o PR |
+| Você **não tem permissão** no repositório (open source, comunidade) | Faz um **fork**: uma cópia do repositório na sua conta. Trabalha no fork e abre o PR para o original |
+
+O **fork** é como pegar emprestado o caderno de receitas de outro restaurante, fazer uma cópia sua, testar a sua ideia nela e depois mandar uma sugestão para o restaurante original.
+
+## O fluxo completo, com branch
+
+<Passos itens={[
+  { icone: "⬇️", titulo: "pull", texto: "main atualizada" },
+  { icone: "🌱", titulo: "switch -c", texto: "branch da tarefa" },
+  { icone: "📒", titulo: "commits", texto: "o trabalho" },
+  { icone: "⬆️", titulo: "push", texto: "a branch vai para o GitHub" },
+  { icone: "📨", titulo: "PR", texto: "pedido de revisão" },
+  { icone: "✅", titulo: "merge", texto: "entra na main" },
+]} />
+
+```terminal
+git switch main
+git pull
+git switch -c feat/bebidas-geladas
+# ... trabalha e faz commits ...
+git push -u origin feat/bebidas-geladas
+```
+
+Depois do push, o GitHub mostra um aviso amarelo: **"feat/bebidas-geladas had recent pushes — Compare & pull request"**. Clique, e você vai para a tela de criar o PR.
+
+## Escrevendo um bom PR
+
+Quem revisa não estava na sua cabeça quando você programou. Ajude:
+
+```texto
+Título: Adiciona seção de bebidas geladas ao cardápio
+
+## O que muda
+- Nova seção "Geladas" com chá gelado, suco e café gelado
+- Preços seguindo a tabela que o dono passou
+
+## Por quê
+Os clientes pediram opções para o verão (issue #12).
+
+## Como testar
+Abra o cardapio.txt e confira a seção nova no fim do arquivo.
+```
+
+<Nota tipo="dica" titulo="Ligando o PR a uma issue">
+
+**Issues** são a lista de tarefas e bugs do repositório. Se o seu PR resolve a issue 12, escreva `Closes #12` na descrição. Quando o PR for aprovado, a issue fecha sozinha.
+
+</Nota>
+
+## A revisão de código (code review)
+
+Quem revisa pode:
+
+- **Comment**: deixar comentários e perguntas.
+- **Approve**: aprovar.
+- **Request changes**: pedir ajustes antes de aprovar.
+
+Recebeu um pedido de ajuste? **Não abra outro PR.** Faça os ajustes na **mesma branch**, commit e push. O PR se atualiza sozinho:
+
+```terminal
+# ainda na branch feat/bebidas-geladas
+git commit -am "Corrige preço do café gelado, como sugerido na revisão"
+git push
+```
+
+<Nota tipo="analogia">
+
+Revisão não é bronca. É o chef provando o prato para ele sair melhor. Os melhores devs do mundo têm o código revisado todos os dias, e aprendem muito com isso.
+
+</Nota>
+
+### Como revisar o PR de alguém
+
+Revisar também é uma habilidade (e você aprende muito lendo código dos outros):
+
+- Leia a descrição antes do código: o que a pessoa queria fazer?
+- Na aba **Files changed**, comente na linha exata, clicando no **+** ao lado dela.
+- Seja **gentil e específico**: "Que tal usar uma lista aqui? Fica mais fácil adicionar itens" é muito melhor que "isso tá errado".
+- Elogie o que ficou bom. De verdade.
+
+## Os checks automáticos
+
+Muitos repositórios rodam testes sozinhos a cada PR (o **GitHub Actions**). Na Unidunedev, por exemplo, um robô confere se o JSON do seu card está válido. Se aparecer um **❌**, clique em **Details** para ler o erro, corrija na mesma branch e faça push: os checks rodam de novo.
+
+## Mantendo o seu fork em dia
+
+Enquanto você trabalha no fork, o repositório original continua recebendo PRs de outras pessoas. Para trazer essas novidades:
+
+<Abas>
+<Aba rotulo="Pelo site">
+
+Na página do **seu fork**, clique em **Sync fork → Update branch**. Depois, no terminal:
+
+```terminal
+git switch main
+git pull
+```
+
+</Aba>
+<Aba rotulo="Pelo terminal">
+
+Cadastre o original como um segundo remoto, chamado `upstream` (só uma vez):
+
+```terminal
+git remote add upstream https://github.com/unidunedev/onboarding.git
+```
+
+E sempre que quiser atualizar:
+
+```terminal
+git switch main
+git pull upstream main
+git push
+```
+
+</Aba>
+</Abas>
+
+<Nota tipo="cuidado" titulo="Comece cada tarefa de uma main atualizada">
+
+Se você criar a branch a partir de uma `main` velha, o PR vai nascer com conflitos. Atualize a `main` (Sync fork ou `pull upstream`) **antes** de `git switch -c`.
+
+</Nota>
+
+## Depois do merge
+
+PR aprovado e juntado na main? Arrume a casa:
+
+```terminal
+git switch main
+git pull
+git branch -d feat/bebidas-geladas
+```
+
+O GitHub também oferece um botão **Delete branch** na página do PR, para apagar a branch remota.
+
+## Na prática: o Desafio 1 da Unidunedev
+
+O primeiro desafio da comunidade é exatamente o que você acabou de aprender:
+
+1. **Fork** do repositório `unidunedev/onboarding`.
+2. **Branch** para o seu card.
+3. **Commit** do arquivo `membros/seu-username.json`.
+4. **Push** e **Pull Request** para o repositório original.
+5. O **check** confere o JSON, alguém **revisa** e faz o **merge**.
+6. O seu card aparece no mural. 🎉
+
+<Explique pergunta="Por que as equipes usam Pull Requests em vez de cada pessoa mandar o código direto para a main?">
+
+Porque o PR cria um momento de conferência antes de a mudança chegar no produto: outra pessoa lê o código, os testes automáticos rodam, dá para discutir e pedir ajustes. Isso pega erros cedo, espalha conhecimento pela equipe e mantém a main sempre funcionando.
+
+</Explique>
+
+## Erros comuns
+
+- **Abrir um PR novo a cada ajuste**: faça commit e push na mesma branch, o PR se atualiza.
+- **Trabalhar direto na main do fork**: crie uma branch por tarefa, assim dá para ter vários PRs ao mesmo tempo.
+- **PR gigante**: 30 arquivos e 5 assuntos diferentes ninguém consegue revisar. PRs pequenos são aprovados mais rápido.
+- **Fork desatualizado**: Sync fork antes de começar.
+- **Descrição vazia**: quem revisa precisa saber o que e por quê.
+
+<Tarefa titulo="Seu primeiro PR (de verdade)">
+
+1. No seu `minha-cafeteria`, crie uma **issue** no GitHub: "Adicionar seção de salgados".
+2. Atualize a `main` e crie a branch `feat/salgados`.
+3. Adicione a seção, faça commit e push da branch.
+4. Abra o PR com título, descrição e `Closes #1`.
+5. Revise o seu próprio PR na aba **Files changed** e deixe um comentário numa linha.
+6. Faça o merge e apague a branch. Confira que a issue fechou sozinha.
+7. **Bônus**: faça o Desafio 1 da Unidunedev e entre para o mural!
+
+<Dica>
+
+O número da issue aparece no título dela (#1, #2...). Escreva `Closes #1` em qualquer lugar da descrição do PR.
+
+</Dica>
+
+<Resposta>
+
+```terminal
+git switch main
+git pull
+git switch -c feat/salgados
+# adicione a seção de salgados no cardapio.txt
+git commit -am "Adiciona seção de salgados"
+git push -u origin feat/salgados
+# no GitHub: Compare & pull request, descrição com "Closes #1", Create pull request
+# depois do merge pelo site:
+git switch main
+git pull
+git branch -d feat/salgados
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Quem revisou o seu PR pediu um ajuste. O que você faz?"
+  opcoes={["Fecha o PR e abre outro", "Faz o ajuste na mesma branch, commit e push", "Faz o ajuste direto na main"]}
+  correta={1}
+  explicacao="O PR acompanha a branch. Novos commits nela aparecem no mesmo PR automaticamente."
+/>
+
+<Quiz
+  pergunta="Você quer contribuir com um projeto open source onde não tem permissão de escrita. Qual o primeiro passo?"
+  opcoes={["git push direto no repositório", "Fazer um fork", "Pedir a senha do dono"]}
+  correta={1}
+  explicacao="O fork cria uma cópia na sua conta, onde você pode trabalhar e de onde abre o PR para o original."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é um Pull Request?", verso: "Um pedido para revisar e juntar as mudanças de uma branch na main." },
+  { frente: "Fork × branch", verso: "Branch: você tem permissão no repositório. Fork: cópia na sua conta quando não tem." },
+  { frente: "Como atualizar um fork?", verso: "Sync fork no site (e git pull), ou git pull upstream main." },
+  { frente: "O que escrever no PR para fechar a issue 12?", verso: "Closes #12" },
+  { frente: "Três qualidades de uma boa revisão de código", verso: "Ler a descrição primeiro, comentar na linha exata, ser gentil e específico (e elogiar o que está bom)." },
+]} />
+
+## Resumindo
+
+- **PR** é o pedido de revisão: branch → push → PR → revisão → checks → merge.
+- Sem permissão no repositório? **Fork** e PR para o original.
+- Ajustes vão na **mesma branch**. PRs pequenos, com descrição clara.
+- Mantenha o fork e a main atualizados **antes** de começar cada tarefa.
+- Agora você tem tudo para o Desafio 1 da Unidunedev. A mesa está posta. 🍽️

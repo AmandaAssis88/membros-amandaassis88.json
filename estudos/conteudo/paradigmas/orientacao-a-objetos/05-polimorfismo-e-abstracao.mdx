@@ -1,0 +1,426 @@
+<Aquecimento perguntas={[
+  { p: "Qual frase precisa ser verdadeira para usar herança?", r: "'X é um Y?' Um café é uma bebida: sim. Um carro é um motor: não (tem um)." },
+  { p: "O que é sobrescrever (override) um método?", r: "A classe filha substitui um método herdado pela sua própria versão." },
+  { p: "No for que mostrava o cardápio, como cada bebida sabia imprimir do seu jeito?", r: "Cada objeto usou a sua versão de no_cardapio(): a herdada ou a sobrescrita. Isso é polimorfismo." },
+]} />
+
+Hora de pagar a conta! A cafeteria aceita **Pix**, **cartão** e **dinheiro**. Cada um funciona de um jeito: o cartão cobra uma taxa, o dinheiro pode precisar de troco, o Pix gera um código. Mas para quem está no caixa, a ação é uma só: **"pague este valor"**.
+
+<Chute pergunta="Polimorfismo vem do grego: poli (muitos) + morfo (formas). Muitas formas de quê?">
+
+De responder ao **mesmo pedido**. Você chama o mesmo método (pagar, desenhar, tocar) em objetos diferentes, e cada um responde do seu jeito. Quem chama nem precisa saber qual é qual.
+
+</Chute>
+
+## O problema: o if que nunca para de crescer
+
+Sem polimorfismo, o caixa fica assim:
+
+```python-exemplo
+def cobrar(total, forma):
+    if forma == "pix":
+        print("Gerando QR Code do Pix...")
+        return total
+    elif forma == "cartao":
+        print("Passando o cartão...")
+        return total * 1.03
+    elif forma == "dinheiro":
+        print("Contando as notas...")
+        return total
+    else:
+        print("Forma de pagamento desconhecida")
+```
+
+Agora o dono quer aceitar **vale-refeição**. E depois **criptomoeda**. A cada forma nova, você abre essa função e acrescenta mais um `elif`. E essa mesma lista de `if`s aparece no recibo, no relatório, no cancelamento... Esquecer um lugar é questão de tempo.
+
+<Nota tipo="analogia" titulo="Pensa assim: a maquininha">
+
+Quando você pede "quero pagar", o atendente não precisa saber como cada banco funciona por dentro. Ele vira a maquininha e diz "aproxime ou insira". Cartão de qualquer bandeira, celular, relógio: **cada um resolve o pagamento do seu jeito**, e o atendente só faz o mesmo pedido de sempre.
+
+</Nota>
+
+## Polimorfismo: o mesmo pedido, respostas diferentes
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Pix:
+    def nome(self):
+        return "Pix"
+
+    def cobrar(self, total):
+        return total
+
+
+class Cartao:
+    def __init__(self, taxa):
+        self.taxa = taxa
+
+    def nome(self):
+        return "Cartão"
+
+    def cobrar(self, total):
+        return total * (1 + self.taxa)
+
+
+class Dinheiro:
+    def __init__(self, entregue):
+        self.entregue = entregue
+
+    def nome(self):
+        return "Dinheiro"
+
+    def cobrar(self, total):
+        print(f"  Troco: R$ {self.entregue - total:.2f}")
+        return total
+
+
+def fechar_conta(total, forma):
+    valor = forma.cobrar(total)
+    print(f"{forma.nome()}: R$ {valor:.2f}")
+
+
+for forma in [Pix(), Cartao(0.03), Dinheiro(50)]:
+    fechar_conta(32.0, forma)
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+interface FormaDePagamento {
+    String nome();
+    double cobrar(double total);
+}
+
+class Pix implements FormaDePagamento {
+    public String nome() { return "Pix"; }
+    public double cobrar(double total) { return total; }
+}
+
+class Cartao implements FormaDePagamento {
+    private final double taxa;
+    Cartao(double taxa) { this.taxa = taxa; }
+    public String nome() { return "Cartão"; }
+    public double cobrar(double total) { return total * (1 + taxa); }
+}
+
+class Dinheiro implements FormaDePagamento {
+    private final double entregue;
+    Dinheiro(double entregue) { this.entregue = entregue; }
+    public String nome() { return "Dinheiro"; }
+    public double cobrar(double total) {
+        System.out.printf("  Troco: R$ %.2f%n", entregue - total);
+        return total;
+    }
+}
+
+public class Main {
+    static void fecharConta(double total, FormaDePagamento forma) {
+        double valor = forma.cobrar(total);
+        System.out.printf("%s: R$ %.2f%n", forma.nome(), valor);
+    }
+
+    public static void main(String[] args) {
+        FormaDePagamento[] formas = { new Pix(), new Cartao(0.03), new Dinheiro(50) };
+        for (FormaDePagamento forma : formas) {
+            fecharConta(32.0, forma);
+        }
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Pix: R$ 32.00
+Cartão: R$ 32.96
+  Troco: R$ 18.00
+Dinheiro: R$ 32.00
+```
+
+Olhe a função `fechar_conta`/`fecharConta`: **nenhum `if`**. Ela só faz o pedido (`cobrar`), e cada objeto responde do seu jeito. Para aceitar vale-refeição, você cria uma classe nova com `nome` e `cobrar`, e **não mexe em mais nada**.
+
+<Nota tipo="curiosidade" titulo="Aberto para extensão, fechado para modificação">
+
+Esse é um dos princípios mais famosos de design de software (o "O" do SOLID): um código bom é **aberto** para receber coisas novas e **fechado** para modificações. Você estende o sistema criando classes novas, em vez de editar o que já funciona e arriscar quebrar.
+
+</Nota>
+
+## Abstração: mostrar só o que importa
+
+Repare no que o caixa **precisa saber** sobre uma forma de pagamento: só o `nome` e o `cobrar`. Como o Pix gera o QR Code, como o cartão fala com o banco, nada disso importa para quem usa. **Abstração** é isso: definir **o que** um objeto faz, escondendo o **como**.
+
+<Nota tipo="analogia">
+
+Você dirige qualquer carro sabendo só volante, pedais e câmbio. A injeção eletrônica, o motor e os sensores estão escondidos. O "painel" do carro é a abstração; o motor é a implementação.
+
+</Nota>
+
+### Interfaces (Java): o contrato
+
+No Java acima, a `interface FormaDePagamento` é um **contrato**: "toda forma de pagamento precisa ter `nome()` e `cobrar()`". Uma classe que `implements` a interface **é obrigada** a cumprir o contrato, ou o código não compila.
+
+- Uma classe pode `implements` **várias** interfaces (diferente do `extends`, que é uma só).
+- A variável pode ter o tipo da interface: `FormaDePagamento forma = new Pix();`. Quem usa `forma` só enxerga o que o contrato promete.
+
+### Classes abstratas: a receita incompleta
+
+Às vezes as formas de pagamento compartilham código **e** têm uma parte que cada uma precisa definir. Para isso existe a **classe abstrata**: uma classe mãe que **não pode ser instanciada** e tem métodos **sem corpo**, que as filhas são obrigadas a escrever.
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+from abc import ABC, abstractmethod
+
+
+class Pagamento(ABC):
+    def processar(self, total):
+        valor = self.cobrar(total)
+        print(f"[{self.nome()}] R$ {valor:.2f} aprovado")
+        return valor
+
+    @abstractmethod
+    def nome(self):
+        ...
+
+    @abstractmethod
+    def cobrar(self, total):
+        ...
+
+
+class ValeRefeicao(Pagamento):
+    def nome(self):
+        return "Vale-refeição"
+
+    def cobrar(self, total):
+        return total
+
+
+ValeRefeicao().processar(25.0)
+```
+
+- `ABC` (*Abstract Base Class*) e `@abstractmethod` vêm do módulo `abc`.
+- Tentar `Pagamento()` dá erro: não dá para criar um pagamento "genérico".
+- Uma filha que esquecer de escrever `cobrar` também não consegue ser criada.
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+abstract class Pagamento {
+    double processar(double total) {
+        double valor = cobrar(total);
+        System.out.printf("[%s] R$ %.2f aprovado%n", nome(), valor);
+        return valor;
+    }
+
+    abstract String nome();
+    abstract double cobrar(double total);
+}
+
+class ValeRefeicao extends Pagamento {
+    String nome() { return "Vale-refeição"; }
+    double cobrar(double total) { return total; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new ValeRefeicao().processar(25.0);
+        // new Pagamento();  // não compila: Pagamento é abstrata
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+[Vale-refeição] R$ 25.00 aprovado
+```
+
+O `processar` mora na mãe e é igual para todos (mostra o recibo). O `cobrar` e o `nome` ficam com cada filha. A mãe escreveu a **receita com um espaço em branco**, e cada filha preenche o espaço.
+
+| | Interface | Classe abstrata |
+| --- | --- | --- |
+| Para que serve | Um contrato: "sabe fazer isto" | Uma base comum incompleta |
+| Tem código pronto? | Em geral não | Sim, pode ter métodos completos |
+| Quantas uma classe pode usar (Java)? | Várias (`implements A, B`) | Uma (`extends`) |
+| Exemplo | `FormaDePagamento`, `Comparable` | `Pagamento` com `processar` pronto |
+
+## Python e o "jeito pato"
+
+Você reparou que o primeiro exemplo em Python **funcionou sem interface nenhuma**? Python não confere tipos antes de rodar: se o objeto tem um método `cobrar`, ele serve. Isso se chama **duck typing**:
+
+> "Se anda como pato e grasna como pato, então é um pato."
+
+O `ABC` é opcional em Python, mas ajuda a documentar o contrato e a pegar erros cedo, quando alguém esquece um método.
+
+<Explique pergunta="Como o polimorfismo ajuda quando a cafeteria quiser aceitar uma forma de pagamento nova?">
+
+Como o caixa só faz o mesmo pedido (cobrar) para qualquer forma de pagamento, aceitar uma forma nova é criar uma classe nova que cumpre o contrato (nome e cobrar). Não é preciso mexer na função que fecha a conta nem procurar ifs espalhados pelo código, então o risco de quebrar o que já funciona é bem menor.
+
+</Explique>
+
+## Erros comuns
+
+- **Voltar ao `if tipo == ...`**: se você está testando o tipo do objeto para decidir o que fazer, provavelmente aquele comportamento deveria ser um método dele.
+- **Esquecer de implementar um método da interface** (Java): erro de compilação dizendo que a classe "is not abstract and does not override abstract method".
+- **Tentar criar um objeto de classe abstrata**: `Pagamento()` dá `TypeError` em Python e não compila em Java.
+- **Criar interface para tudo**: se só existe um jeito de fazer a coisa, uma classe simples basta.
+
+<Tarefa titulo="Avisos da cafeteria">
+
+Quando um pedido fica pronto, a cafeteria avisa o cliente. Crie:
+
+- Um contrato `Notificador` com o método `enviar(mensagem)`. Em Python, use `ABC`; em Java, uma `interface`.
+- Três implementações: `Email` (mostra `[e-mail para ana@x.com] ...`), `Sms` (mostra `[SMS para 11 99999-0000] ...`, cortando a mensagem em 30 caracteres) e `Painel` (mostra `[PAINEL] ...` em letras maiúsculas).
+- Uma função `avisar_todos(notificadores, mensagem)` que envia para todos **sem nenhum if**.
+
+<Dica>
+
+Cada classe guarda o próprio destino (e-mail ou telefone) no construtor. Para cortar em Python: `mensagem[:30]`; em Java: `mensagem.substring(0, Math.min(30, mensagem.length()))`. Maiúsculas: `.upper()` / `.toUpperCase()`.
+
+</Dica>
+
+<Resposta>
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+from abc import ABC, abstractmethod
+
+
+class Notificador(ABC):
+    @abstractmethod
+    def enviar(self, mensagem):
+        ...
+
+
+class Email(Notificador):
+    def __init__(self, endereco):
+        self.endereco = endereco
+
+    def enviar(self, mensagem):
+        print(f"[e-mail para {self.endereco}] {mensagem}")
+
+
+class Sms(Notificador):
+    def __init__(self, telefone):
+        self.telefone = telefone
+
+    def enviar(self, mensagem):
+        print(f"[SMS para {self.telefone}] {mensagem[:30]}")
+
+
+class Painel(Notificador):
+    def enviar(self, mensagem):
+        print(f"[PAINEL] {mensagem.upper()}")
+
+
+def avisar_todos(notificadores, mensagem):
+    for n in notificadores:
+        n.enviar(mensagem)
+
+
+avisar_todos(
+    [Email("ana@x.com"), Sms("11 99999-0000"), Painel()],
+    "Pedido 42 pronto: cappuccino e pão de queijo",
+)
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.List;
+
+interface Notificador {
+    void enviar(String mensagem);
+}
+
+class Email implements Notificador {
+    private final String endereco;
+    Email(String endereco) { this.endereco = endereco; }
+    public void enviar(String mensagem) {
+        System.out.println("[e-mail para " + endereco + "] " + mensagem);
+    }
+}
+
+class Sms implements Notificador {
+    private final String telefone;
+    Sms(String telefone) { this.telefone = telefone; }
+    public void enviar(String mensagem) {
+        String curta = mensagem.substring(0, Math.min(30, mensagem.length()));
+        System.out.println("[SMS para " + telefone + "] " + curta);
+    }
+}
+
+class Painel implements Notificador {
+    public void enviar(String mensagem) {
+        System.out.println("[PAINEL] " + mensagem.toUpperCase());
+    }
+}
+
+public class Main {
+    static void avisarTodos(List<Notificador> notificadores, String mensagem) {
+        for (Notificador n : notificadores) {
+            n.enviar(mensagem);
+        }
+    }
+
+    public static void main(String[] args) {
+        avisarTodos(
+            List.of(new Email("ana@x.com"), new Sms("11 99999-0000"), new Painel()),
+            "Pedido 42 pronto: cappuccino e pão de queijo"
+        );
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+[e-mail para ana@x.com] Pedido 42 pronto: cappuccino e pão de queijo
+[SMS para 11 99999-0000] Pedido 42 pronto: cappuccino e
+[PAINEL] PEDIDO 42 PRONTO: CAPPUCCINO E PÃO DE QUEIJO
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que é polimorfismo?"
+  opcoes={["Uma classe ter muitos atributos", "Objetos diferentes responderem ao mesmo método, cada um do seu jeito", "Copiar uma classe várias vezes"]}
+  correta={1}
+  explicacao="Muitas formas de responder ao mesmo pedido: pix.cobrar(), cartao.cobrar() e dinheiro.cobrar() fazem coisas diferentes."
+/>
+
+<Quiz
+  pergunta="Qual a diferença principal entre interface e classe abstrata em Java?"
+  opcoes={["Nenhuma", "Interface é um contrato (uma classe pode implementar várias); classe abstrata é uma base com código comum (só uma por classe)", "Classe abstrata não pode ter métodos"]}
+  correta={1}
+  explicacao="A interface diz o que a classe sabe fazer. A classe abstrata dá uma base parcialmente pronta para as filhas completarem."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é polimorfismo?", verso: "O mesmo pedido (método) para objetos diferentes, e cada um responde do seu jeito." },
+  { frente: "O que é abstração?", verso: "Mostrar o que um objeto faz e esconder como ele faz (o painel do carro, não o motor)." },
+  { frente: "O que é uma interface (Java)?", verso: "Um contrato com os métodos que a classe é obrigada a ter. Uma classe pode implementar várias." },
+  { frente: "O que é uma classe abstrata?", verso: "Uma classe mãe incompleta, que não pode ser instanciada e obriga as filhas a escrever os métodos abstratos." },
+  { frente: "O que é duck typing?", verso: "Em Python, se o objeto tem o método que você chama, ele serve: não precisa declarar o tipo." },
+  { frente: "Sinal de que falta polimorfismo", verso: "Um if tipo == ... espalhado pelo código decidindo o comportamento." },
+]} />
+
+## Resumindo
+
+- **Polimorfismo**: o mesmo pedido, respostas diferentes. Troca `if`s por objetos.
+- **Abstração**: mostrar o **o quê**, esconder o **como**.
+- Java: `interface` (contrato) e `abstract class` (base incompleta). Python: `ABC` e `@abstractmethod`, ou só duck typing.
+- Coisa nova no sistema = classe nova, sem mexer no que já funciona.

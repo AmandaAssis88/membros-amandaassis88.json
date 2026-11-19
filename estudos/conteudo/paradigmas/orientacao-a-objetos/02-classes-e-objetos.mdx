@@ -1,0 +1,464 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre classe e objeto?", r: "Classe é o molde (a forma de bolo). Objeto é o que você cria com ele (o bolo). Um objeto também é chamado de instância." },
+  { p: "No objeto cafe, preco é atributo ou método? E vender?", r: "preco é atributo (um dado). vender é método (uma ação)." },
+  { p: "Cite um objeto que você já usava antes desta trilha.", r: "Strings e listas: nome.upper() em Python, nome.toUpperCase() em Java, lista.append(...)." },
+]} />
+
+Na aula passada você viu a ideia. Agora vamos montar uma classe peça por peça, entendendo cada palavra. O exemplo: um **personagem de jogo**.
+
+## O que um personagem tem e faz?
+
+Antes de escrever código, pense como um designer de jogos:
+
+| Tem (atributos) | Faz (métodos) |
+| --- | --- |
+| nome | atacar outro personagem |
+| vida | receber dano |
+| força | curar |
+| | dizer se está vivo |
+
+Esse exercício, de separar o que a coisa **tem** do que ela **faz**, é metade do trabalho em POO.
+
+## A classe, linha por linha
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Personagem:
+    def __init__(self, nome, forca):
+        self.nome = nome
+        self.forca = forca
+        self.vida = 100
+
+    def esta_vivo(self):
+        return self.vida > 0
+
+    def receber_dano(self, dano):
+        self.vida -= dano
+        if self.vida < 0:
+            self.vida = 0
+        print(f"{self.nome} levou {dano} de dano. Vida: {self.vida}")
+
+    def atacar(self, alvo):
+        print(f"{self.nome} ataca {alvo.nome}!")
+        alvo.receber_dano(self.forca)
+
+
+heroi = Personagem("Lia", 30)
+monstro = Personagem("Slime", 10)
+
+heroi.atacar(monstro)
+heroi.atacar(monstro)
+monstro.atacar(heroi)
+print("O slime está vivo?", monstro.esta_vivo())
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+class Personagem {
+    String nome;
+    int forca;
+    int vida;
+
+    Personagem(String nome, int forca) {
+        this.nome = nome;
+        this.forca = forca;
+        this.vida = 100;
+    }
+
+    boolean estaVivo() {
+        return vida > 0;
+    }
+
+    void receberDano(int dano) {
+        vida -= dano;
+        if (vida < 0) {
+            vida = 0;
+        }
+        System.out.println(nome + " levou " + dano + " de dano. Vida: " + vida);
+    }
+
+    void atacar(Personagem alvo) {
+        System.out.println(nome + " ataca " + alvo.nome + "!");
+        alvo.receberDano(forca);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Personagem heroi = new Personagem("Lia", 30);
+        Personagem monstro = new Personagem("Slime", 10);
+
+        heroi.atacar(monstro);
+        heroi.atacar(monstro);
+        monstro.atacar(heroi);
+        System.out.println("O slime está vivo? " + monstro.estaVivo());
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Lia ataca Slime!
+Slime levou 30 de dano. Vida: 70
+Lia ataca Slime!
+Slime levou 30 de dano. Vida: 40
+Slime ataca Lia!
+Lia levou 10 de dano. Vida: 90
+O slime está vivo? True
+```
+
+(Em Java a última linha mostra `true`, com letra minúscula.)
+
+Agora, peça por peça.
+
+### 1. `class Personagem`
+
+Declara a classe. Por convenção, nome de classe começa com **letra maiúscula** e usa o estilo `PascalCase`: `Personagem`, `ContaBancaria`, `ItemDoPedido`.
+
+### 2. O construtor
+
+O **construtor** é o método especial que roda **no momento em que o objeto nasce**. É ali que você dá os valores iniciais.
+
+| | Python | Java |
+| --- | --- | --- |
+| Nome do construtor | `__init__` | o mesmo nome da classe |
+| Como criar um objeto | `Personagem("Lia", 30)` | `new Personagem("Lia", 30)` |
+
+Repare que a vida não vem de fora: todo personagem nasce com `100`. O construtor pode receber alguns valores e definir outros por conta própria.
+
+### 3. `self` e `this`: "eu mesmo"
+
+Essa é a parte que mais confunde, então vamos com calma.
+
+Quando você escreve `heroi.receber_dano(10)`, o método precisa saber **de qual personagem** tirar a vida: do herói ou do monstro? A classe é uma só, mas os objetos são vários. O `self` (Python) e o `this` (Java) são o jeito de o método dizer **"eu, o objeto que recebeu a chamada"**.
+
+<Nota tipo="analogia" titulo="Pensa assim: o crachá">
+
+Numa cozinha com vários cozinheiros, a instrução "lave **as suas** mãos" é uma só, mas cada cozinheiro lava as próprias. O `self` é o "seu/sua" da instrução: dentro do método, `self.vida` quer dizer "a **minha** vida", seja eu o herói ou o monstro.
+
+</Nota>
+
+<Memoria
+  celulas={[
+    { nome: "heroi", tipo: "Personagem", valor: "Lia · vida 90", endereco: "obj 1" },
+    { nome: "monstro", tipo: "Personagem", valor: "Slime · vida 40", endereco: "obj 2", destaque: true },
+  ]}
+  legenda="Dois objetos, cada um com a própria vida. Em monstro.receber_dano(30), o self é o obj 2."
+/>
+
+As diferenças entre as linguagens:
+
+- Em **Python**, o `self` aparece **escrito** como primeiro parâmetro de todo método, e você é obrigado a usar `self.vida` para falar do atributo.
+- Em **Java**, o `this` existe mas fica **escondido**. Você só precisa escrevê-lo quando há ambiguidade, como no construtor, onde o parâmetro `nome` e o atributo `nome` têm o mesmo nome: `this.nome = nome` quer dizer "o **meu** nome recebe o nome que chegou".
+
+### 4. Métodos
+
+Métodos são funções que moram dentro da classe e têm acesso ao `self`/`this`.
+
+- `esta_vivo()` **devolve** um valor (`return`), sem mudar nada.
+- `receber_dano()` **muda** o estado do objeto (a vida).
+- `atacar()` recebe **outro objeto** como parâmetro e conversa com ele: `alvo.receber_dano(...)`. Objetos chamando métodos uns dos outros é o coração da POO.
+
+## Cada objeto é independente
+
+```python-exemplo
+a = Personagem("Ana", 20)
+b = Personagem("Bia", 20)
+a.receber_dano(50)
+print(a.vida, b.vida)
+```
+
+```saida
+Ana levou 50 de dano. Vida: 50
+50 100
+```
+
+A Ana perdeu vida, a Bia não. Mesma classe, mesmos valores iniciais, **objetos separados**.
+
+<Nota tipo="cuidado" titulo="Variável não é o objeto">
+
+```python-exemplo
+c = a
+c.receber_dano(10)
+print(a.vida)
+```
+
+Isso mostra `40`! A linha `c = a` **não** copia o personagem: ela cria outro nome que aponta para **o mesmo objeto**. É como dar um apelido para alguém: o apelido e o nome são a mesma pessoa. Em Java acontece o mesmo com `Personagem c = a;`.
+
+</Nota>
+
+## Mostrando o objeto do jeito certo
+
+Se você der `print(heroi)` em Python, sai algo como `<__main__.Personagem object at 0x7f...>`. Em Java, sai `Personagem@1b6d3586`. Para ensinar o objeto a se apresentar:
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Personagem:
+    def __init__(self, nome, forca):
+        self.nome = nome
+        self.forca = forca
+        self.vida = 100
+
+    def __str__(self):
+        return f"{self.nome} (vida {self.vida}, força {self.forca})"
+
+
+print(Personagem("Lia", 30))
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+class Personagem {
+    String nome;
+    int forca;
+    int vida = 100;
+
+    Personagem(String nome, int forca) {
+        this.nome = nome;
+        this.forca = forca;
+    }
+
+    @Override
+    public String toString() {
+        return nome + " (vida " + vida + ", força " + forca + ")";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(new Personagem("Lia", 30));
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Lia (vida 100, força 30)
+```
+
+## Atributos da classe: o que todos compartilham
+
+Às vezes uma informação é **da classe inteira**, não de cada objeto. Por exemplo, contar quantos personagens já foram criados:
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Personagem:
+    total = 0
+
+    def __init__(self, nome):
+        self.nome = nome
+        Personagem.total += 1
+
+
+Personagem("Lia")
+Personagem("Slime")
+print("Personagens criados:", Personagem.total)
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+class Personagem {
+    static int total = 0;
+    String nome;
+
+    Personagem(String nome) {
+        this.nome = nome;
+        total++;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new Personagem("Lia");
+        new Personagem("Slime");
+        System.out.println("Personagens criados: " + Personagem.total);
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Personagens criados: 2
+```
+
+Em Java, a palavra é `static`: o atributo pertence à classe. É por isso que o `main` também é `static`: ele roda sem precisar de nenhum objeto criado.
+
+<Explique pergunta="Para que serve o self (ou this)? Explique como se fosse para alguém que acabou de ver a primeira classe.">
+
+A classe é escrita uma vez só, mas dela saem vários objetos. Quando um método roda, ele precisa saber de qual objeto está falando. O self (ou this) é esse "eu mesmo": dentro do método, self.vida é a vida do objeto que recebeu a chamada. Se foi heroi.receber_dano(), é a vida do herói; se foi monstro.receber_dano(), a do monstro.
+
+</Explique>
+
+## Erros comuns
+
+- **Python: esquecer o `self` no parâmetro** (`def esta_vivo():`): dá erro `takes 0 positional arguments but 1 was given`.
+- **Python: esquecer o `self.` no atributo** (`vida -= dano`): você cria uma variável local em vez de mexer no atributo.
+- **Java: esquecer o `new`**: `Personagem p = Personagem("Lia", 30);` não compila.
+- **Java: `this` faltando no construtor**: `nome = nome;` atribui o parâmetro a ele mesmo, e o atributo fica `null`.
+- **Chamar o método sem parênteses**: `heroi.esta_vivo` (sem `()`) não executa nada.
+
+<Tarefa titulo="A classe Aluno">
+
+Crie uma classe `Aluno` com:
+
+- Atributos: `nome` e uma lista de `notas` (que começa vazia).
+- Método `adicionar_nota(nota)` (`adicionarNota` em Java), que só aceita notas de 0 a 10.
+- Método `media()`, que devolve a média (ou 0 se não houver notas).
+- Método `situacao()`, que devolve "Aprovado" se a média for 7 ou mais, senão "Reprovado".
+
+Teste com duas alunas e mostre a situação de cada uma.
+
+<Dica>
+
+A lista começa vazia **no construtor**: `self.notas = []` em Python, `notas = new ArrayList<>()` em Java. No `adicionar_nota`, use um `if` para ignorar notas fora de 0 a 10. A média é `sum(self.notas) / len(self.notas)`.
+
+</Dica>
+
+<Resposta>
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Aluno:
+    def __init__(self, nome):
+        self.nome = nome
+        self.notas = []
+
+    def adicionar_nota(self, nota):
+        if 0 <= nota <= 10:
+            self.notas.append(nota)
+        else:
+            print("Nota inválida:", nota)
+
+    def media(self):
+        if not self.notas:
+            return 0
+        return sum(self.notas) / len(self.notas)
+
+    def situacao(self):
+        return "Aprovado" if self.media() >= 7 else "Reprovado"
+
+
+ana = Aluno("Ana")
+ana.adicionar_nota(8)
+ana.adicionar_nota(9)
+bia = Aluno("Bia")
+bia.adicionar_nota(5)
+bia.adicionar_nota(11)
+print(ana.nome, ana.media(), ana.situacao())
+print(bia.nome, bia.media(), bia.situacao())
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.ArrayList;
+
+class Aluno {
+    String nome;
+    ArrayList<Double> notas = new ArrayList<>();
+
+    Aluno(String nome) {
+        this.nome = nome;
+    }
+
+    void adicionarNota(double nota) {
+        if (nota >= 0 && nota <= 10) {
+            notas.add(nota);
+        } else {
+            System.out.println("Nota inválida: " + nota);
+        }
+    }
+
+    double media() {
+        if (notas.isEmpty()) return 0;
+        double soma = 0;
+        for (double n : notas) soma += n;
+        return soma / notas.size();
+    }
+
+    String situacao() {
+        return media() >= 7 ? "Aprovado" : "Reprovado";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Aluno ana = new Aluno("Ana");
+        ana.adicionarNota(8);
+        ana.adicionarNota(9);
+        Aluno bia = new Aluno("Bia");
+        bia.adicionarNota(5);
+        bia.adicionarNota(11);
+        System.out.println(ana.nome + " " + ana.media() + " " + ana.situacao());
+        System.out.println(bia.nome + " " + bia.media() + " " + bia.situacao());
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Nota inválida: 11
+Ana 8.5 Aprovado
+Bia 5.0 Reprovado
+```
+
+(Em Java, a nota inválida aparece como `11.0`, porque ela é um `double`.)
+
+Repare que `situacao()` chama `media()` do próprio objeto: métodos podem usar outros métodos.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Quando o construtor roda?"
+  opcoes={["Toda vez que um método é chamado", "Quando o objeto é criado", "Só quando o programa termina"]}
+  correta={1}
+  explicacao="O construtor (__init__ em Python, o método com o nome da classe em Java) roda uma vez, no nascimento de cada objeto."
+/>
+
+<Quiz
+  pergunta="Depois de c = a (sendo a um Personagem), você faz c.receber_dano(10). O que acontece com a.vida?"
+  opcoes={["Não muda: c é uma cópia", "Diminui 10: a e c são o mesmo objeto", "Dá erro"]}
+  correta={1}
+  explicacao="A atribuição não copia o objeto, só cria outro nome para ele. a e c apontam para o mesmo personagem."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é o construtor?", verso: "O método que roda quando o objeto nasce, para dar os valores iniciais. __init__ em Python; mesmo nome da classe em Java." },
+  { frente: "O que é self (Python) / this (Java)?", verso: "O próprio objeto que recebeu a chamada do método: 'eu mesmo'." },
+  { frente: "Por que this.nome = nome no construtor Java?", verso: "Para diferenciar o atributo (this.nome) do parâmetro (nome), que têm o mesmo nome." },
+  { frente: "Para que servem __str__ e toString?", verso: "Ensinam o objeto a virar um texto legível quando é impresso." },
+  { frente: "Atributo de classe (static) × atributo do objeto", verso: "O de classe é compartilhado por todos (ex.: total criado). O do objeto é de cada um (ex.: vida)." },
+]} />
+
+## Resumindo
+
+- Classe: nome em `PascalCase`, atributos e métodos.
+- O **construtor** prepara o objeto quando ele nasce.
+- `self`/`this` é o "eu mesmo" do método: é assim que cada objeto mexe nos próprios dados.
+- Cada objeto é independente, mas `c = a` não copia: só cria outro nome para o mesmo objeto.
+- `__str__`/`toString` deixam o objeto se apresentar; `static` é o que pertence à classe.

@@ -22,6 +22,7 @@ import {
   type Trilha,
 } from "../catalogo";
 import { alternarConcluida, idDaAula, useConcluidas } from "../progresso";
+import { agendarRevisao, tirarDaAgenda } from "../revisoes";
 import { Migalhas } from "./trilha";
 
 // Um componente "lazy" por aula, criado uma vez só (o React exige que seja estável).
@@ -127,7 +128,12 @@ export function PaginaAula({ trilha, slug }: { trilha: Trilha | undefined; slug:
           <button
             type="button"
             className={`botao ${feita ? "botao-feito" : "botao-trilha"}`}
-            onClick={() => alternarConcluida(id)}
+            onClick={() => {
+              // Concluir agenda as revisões (1, 3, 7 e 14 dias); desmarcar tira da agenda.
+              if (feita) tirarDaAgenda(id);
+              else agendarRevisao(id);
+              alternarConcluida(id);
+            }}
             aria-pressed={feita}
           >
             <Check size={16} /> {feita ? "Aula concluída" : "Marcar como concluída"}
@@ -148,7 +154,18 @@ export function PaginaAula({ trilha, slug }: { trilha: Trilha | undefined; slug:
             </div>
           )}
 
-          {ultima && trilha.grupo !== "profissoes" && (
+          {ultima && trilha.pratica && (
+            <div className="aula-praticar">
+              <p className="kicker">🎯 FIM DA TRILHA</p>
+              <h2>{trilha.pratica.titulo}</h2>
+              <p>{trilha.pratica.texto}</p>
+              <a className="botao botao-trilha" href={trilha.pratica.url}>
+                {trilha.pratica.rotulo} <ArrowRight size={16} />
+              </a>
+            </div>
+          )}
+
+          {ultima && trilha.grupo !== "profissoes" && !trilha.pratica && (
             <div className="aula-praticar">
               <p className="kicker">🎯 FIM DA TRILHA</p>
               <h2>Agora é com você!</h2>

@@ -1,0 +1,422 @@
+<Aquecimento perguntas={[
+  { p: "O que o construtor faz e quando ele roda?", r: "Prepara o objeto com os valores iniciais. Roda uma vez, quando o objeto é criado." },
+  { p: "Para que serve o self (Python) ou o this (Java)?", r: "É o próprio objeto que recebeu a chamada: dentro do método, self.vida é a vida DESTE objeto." },
+  { p: "Depois de c = a, mexer em c muda a? Por quê?", r: "Muda. A atribuição não copia o objeto: a e c são dois nomes para o mesmo objeto." },
+]} />
+
+Você já sabe criar objetos. Agora vem a pergunta que separa um código frágil de um código confiável: **quem pode mexer nos dados de um objeto?**
+
+<Chute pergunta="Se a vida de um personagem é um número, o que impede alguém de escrever heroi.vida = -500 no meio do programa?">
+
+Até agora, nada! Qualquer linha do programa pode colocar qualquer valor em qualquer atributo, até um valor que não faz sentido. O encapsulamento é justamente a técnica para proteger os dados, obrigando todo mundo a passar pelos métodos, que conferem as regras.
+
+</Chute>
+
+## O problema: a gaveta do caixa aberta
+
+Uma conta digital, do jeito que aprendemos:
+
+```python
+class Conta:
+    def __init__(self, titular):
+        self.titular = titular
+        self.saldo = 0.0
+
+    def depositar(self, valor):
+        if valor <= 0:
+            print("Depósito inválido")
+            return
+        self.saldo += valor
+
+
+conta = Conta("Lia")
+conta.depositar(100)
+conta.saldo = 1000000
+conta.saldo = -50
+print(conta.saldo)
+```
+
+O método `depositar` confere se o valor é positivo. Lindo. Só que não adianta nada, porque qualquer um pode pular o método e escrever direto no `saldo`. Dinheiro do nada, saldo negativo sem cheque especial...
+
+<Nota tipo="analogia" titulo="Pensa assim: o caixa do restaurante">
+
+Num restaurante, a gaveta de dinheiro do caixa não fica aberta para qualquer garçom enfiar a mão. Se você quer pagar, passa **pelo caixa**: ele confere o valor, dá o troco e registra. A gaveta é **privada**; o caixa é a **interface pública**. Encapsular é isso: esconder a gaveta e deixar só o caixa à mostra.
+
+</Nota>
+
+## Encapsulamento: esconder o dado, mostrar a ação
+
+A regra é simples:
+
+1. Os **atributos** importantes ficam **privados**: só a própria classe mexe neles.
+2. O mundo de fora usa **métodos públicos**, que **conferem as regras** antes de mudar qualquer coisa.
+
+Uma regra que precisa ser verdadeira **sempre** (como "o saldo nunca fica negativo") se chama **invariante**. O encapsulamento é o que garante as invariantes.
+
+<Abas>
+<Aba rotulo="Java">
+
+```java
+class Conta {
+    private final String titular;
+    private double saldo;
+
+    Conta(String titular) {
+        this.titular = titular;
+        this.saldo = 0;
+    }
+
+    public void depositar(double valor) {
+        if (valor <= 0) {
+            System.out.println("Depósito inválido");
+            return;
+        }
+        saldo += valor;
+    }
+
+    public boolean sacar(double valor) {
+        if (valor <= 0 || valor > saldo) {
+            System.out.println("Saque negado");
+            return false;
+        }
+        saldo -= valor;
+        return true;
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public String getTitular() {
+        return titular;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Conta conta = new Conta("Lia");
+        conta.depositar(100);
+        conta.sacar(30);
+        conta.sacar(500);
+        System.out.println(conta.getTitular() + " tem R$ " + conta.getSaldo());
+        // conta.saldo = 1000000;  // não compila: saldo é private
+    }
+}
+```
+
+- `private`: só o código **dentro** da classe `Conta` enxerga o atributo. Tentar `conta.saldo` lá no `main` é **erro de compilação**.
+- `public`: qualquer um pode chamar.
+- `final`: o titular é definido no construtor e **nunca mais muda**.
+- `getSaldo()` é um **getter**: deixa ler o valor sem deixar alterar.
+
+</Aba>
+<Aba rotulo="Python">
+
+```python
+class Conta:
+    def __init__(self, titular):
+        self._titular = titular
+        self._saldo = 0.0
+
+    def depositar(self, valor):
+        if valor <= 0:
+            print("Depósito inválido")
+            return
+        self._saldo += valor
+
+    def sacar(self, valor):
+        if valor <= 0 or valor > self._saldo:
+            print("Saque negado")
+            return False
+        self._saldo -= valor
+        return True
+
+    @property
+    def saldo(self):
+        return self._saldo
+
+    @property
+    def titular(self):
+        return self._titular
+
+
+conta = Conta("Lia")
+conta.depositar(100)
+conta.sacar(30)
+conta.sacar(500)
+print(conta.titular, "tem R$", conta.saldo)
+```
+
+- O **`_` no começo** (`_saldo`) é uma convenção que todo programador Python respeita: "isto é interno, não mexa de fora".
+- `@property` transforma um método num atributo **só de leitura**: você escreve `conta.saldo` (sem parênteses), mas não consegue fazer `conta.saldo = 1000000`. Tentar dá `AttributeError`.
+
+</Aba>
+</Abas>
+
+```saida
+Saque negado
+Lia tem R$ 70.0
+```
+
+<Nota tipo="curiosidade" titulo="Python não tem private de verdade?">
+
+Não do jeito do Java. Python confia nos programadores: o `_` é um combinado, não uma tranca. Existe também o `__saldo` (dois sublinhados), que embaralha o nome por dentro e dificulta o acesso de fora, mas o mais comum no dia a dia é o `_` com `@property`. A frase famosa da comunidade Python é: "somos todos adultos aqui".
+
+</Nota>
+
+## Getters e setters: nem tudo precisa de um
+
+Em Java, você vai ver muitas classes com um `get` e um `set` para cada atributo:
+
+```java-exemplo
+public void setSaldo(double saldo) {
+    this.saldo = saldo;
+}
+```
+
+Repare: um `setSaldo` assim **destrói** o encapsulamento. Ele é a gaveta aberta com outro nome! Pergunte sempre: **qual ação do mundo real** muda esse dado? Para o saldo, são `depositar` e `sacar`, com regras. Não existe "setar saldo" num banco de verdade.
+
+<Nota tipo="dica" titulo="Peça, não pergunte">
+
+Uma regra de ouro: em vez de **pegar** o dado do objeto, decidir lá fora e **devolver** o valor, **peça** para o objeto fazer a ação.
+
+- Ruim: `if (conta.getSaldo() >= 50) conta.setSaldo(conta.getSaldo() - 50);`
+- Bom: `conta.sacar(50);`
+
+A regra fica num lugar só (dentro da classe), e ninguém consegue esquecer de conferir.
+
+</Nota>
+
+Setters fazem sentido quando o dado **pode** mudar livremente, mas com validação:
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Perfil:
+    def __init__(self, apelido):
+        self.apelido = apelido
+
+    @property
+    def apelido(self):
+        return self._apelido
+
+    @apelido.setter
+    def apelido(self, novo):
+        novo = novo.strip()
+        if not 3 <= len(novo) <= 20:
+            raise ValueError("O apelido precisa ter de 3 a 20 letras")
+        self._apelido = novo
+
+
+p = Perfil("  lia_dev ")
+print(p.apelido)
+p.apelido = "lia"
+print(p.apelido)
+```
+
+O `@apelido.setter` roda toda vez que alguém faz `p.apelido = ...`, inclusive no construtor. A validação nunca é pulada.
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+class Perfil {
+    private String apelido;
+
+    Perfil(String apelido) {
+        setApelido(apelido);
+    }
+
+    public String getApelido() {
+        return apelido;
+    }
+
+    public void setApelido(String novo) {
+        novo = novo.trim();
+        if (novo.length() < 3 || novo.length() > 20) {
+            throw new IllegalArgumentException("O apelido precisa ter de 3 a 20 letras");
+        }
+        this.apelido = novo;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Perfil p = new Perfil("  lia_dev ");
+        System.out.println(p.getApelido());
+        p.setApelido("lia");
+        System.out.println(p.getApelido());
+    }
+}
+```
+
+O construtor chama o próprio `setApelido`, para a validação valer desde o nascimento.
+
+</Aba>
+</Abas>
+
+```saida
+lia_dev
+lia
+```
+
+<Nota tipo="dica" titulo="raise e throw">
+
+`raise` (Python) e `throw` (Java) **lançam um erro** e interrompem o que estava acontecendo. É o jeito de o objeto dizer "não aceito isso" em vez de ficar num estado inválido. Você vai ver exceções com calma mais para frente; por enquanto, entenda como um "pare tudo, isso está errado".
+
+</Nota>
+
+## Por que isso importa num projeto de verdade
+
+- **Menos bugs**: a regra está num lugar só. Ninguém esquece de validar.
+- **Mudar por dentro sem quebrar por fora**: amanhã o saldo pode ser guardado em centavos (`int`) em vez de reais (`double`). Quem usa `depositar`, `sacar` e `saldo` nem percebe.
+- **Ler o código fica fácil**: os métodos públicos são o "cardápio" do que dá para fazer com o objeto.
+
+<Explique pergunta="Uma colega diz: 'encapsular é só colocar private e criar get e set para tudo'. Você concorda? Por quê?">
+
+Não totalmente. Encapsular é proteger as regras do objeto: esconder os dados e oferecer ações que conferem essas regras. Um set que aceita qualquer valor, sem validação, deixa a gaveta aberta de novo. O certo é perguntar qual ação real muda o dado (depositar, sacar) e criar só os métodos que fazem sentido, com validação.
+
+</Explique>
+
+## Erros comuns
+
+- Criar `set` para tudo, sem validação: o encapsulamento vira enfeite.
+- Em Python, acessar `obj._algo` de fora "só desta vez": vira hábito, e a regra se perde.
+- Em Java, esquecer o `private` e deixar o atributo com o acesso padrão (sem palavra nenhuma): outras classes do mesmo pacote conseguem mexer.
+- Validar no construtor de um jeito e no setter de outro: chame o setter no construtor e a regra fica num lugar só.
+
+<Tarefa titulo="A bateria do celular">
+
+Crie uma classe `Celular` em que:
+
+- A bateria começa em 100 e **nunca** fica abaixo de 0 nem acima de 100.
+- `usar(minutos)` gasta 1% a cada 5 minutos (arredonde para baixo).
+- `carregar(porcentagem)` aumenta a bateria, sem passar de 100.
+- Dá para **ler** a bateria de fora, mas não para alterar direto.
+- `esta_desligado()` (`estaDesligado()` em Java) devolve se a bateria chegou a 0.
+
+<Dica>
+
+Guarde a bateria num atributo privado (`_bateria` / `private int bateria`). Para gastar: `gasto = minutos // 5` (Python) ou `minutos / 5` com `int` (Java). Use `max(0, ...)` e `min(100, ...)` para manter os limites. Exponha a leitura com `@property` ou `getBateria()`.
+
+</Dica>
+
+<Resposta>
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Celular:
+    def __init__(self):
+        self._bateria = 100
+
+    @property
+    def bateria(self):
+        return self._bateria
+
+    def usar(self, minutos):
+        gasto = minutos // 5
+        self._bateria = max(0, self._bateria - gasto)
+
+    def carregar(self, porcentagem):
+        if porcentagem <= 0:
+            return
+        self._bateria = min(100, self._bateria + porcentagem)
+
+    def esta_desligado(self):
+        return self._bateria == 0
+
+
+cel = Celular()
+cel.usar(120)
+print(cel.bateria)
+cel.usar(1000)
+print(cel.bateria, cel.esta_desligado())
+cel.carregar(150)
+print(cel.bateria)
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+class Celular {
+    private int bateria = 100;
+
+    public int getBateria() {
+        return bateria;
+    }
+
+    public void usar(int minutos) {
+        int gasto = minutos / 5;
+        bateria = Math.max(0, bateria - gasto);
+    }
+
+    public void carregar(int porcentagem) {
+        if (porcentagem <= 0) return;
+        bateria = Math.min(100, bateria + porcentagem);
+    }
+
+    public boolean estaDesligado() {
+        return bateria == 0;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Celular cel = new Celular();
+        cel.usar(120);
+        System.out.println(cel.getBateria());
+        cel.usar(1000);
+        System.out.println(cel.getBateria() + " " + cel.estaDesligado());
+        cel.carregar(150);
+        System.out.println(cel.getBateria());
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+76
+0 True
+100
+```
+
+(Em Java aparece `0 true`.)
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual destes métodos QUEBRA o encapsulamento de uma conta bancária?"
+  opcoes={["sacar(valor) que confere o saldo", "setSaldo(valor) que aceita qualquer número", "getSaldo() que só devolve o valor"]}
+  correta={1}
+  explicacao="Um setter sem regra deixa qualquer um colocar qualquer saldo, como se a gaveta do caixa estivesse aberta."
+/>
+
+<Quiz
+  pergunta="Em Python, o que significa um atributo que começa com _ (como _saldo)?"
+  opcoes={["Que ele é constante", "Um combinado: é interno, não mexa de fora", "Que ele é um método"]}
+  correta={1}
+  explicacao="Python não tranca o atributo, mas o _ avisa que ele é interno. Para leitura pública, use @property."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é encapsulamento?", verso: "Esconder os dados do objeto e expor só ações (métodos) que conferem as regras." },
+  { frente: "O que é uma invariante?", verso: "Uma regra que precisa ser sempre verdadeira, como 'o saldo nunca é negativo'." },
+  { frente: "private × public (Java)", verso: "private: só a própria classe enxerga. public: qualquer um pode usar." },
+  { frente: "Como fazer um atributo só de leitura em Python?", verso: "Guardar em _atributo e expor com @property, sem setter." },
+  { frente: "Peça, não pergunte: o que significa?", verso: "Em vez de pegar o dado e decidir lá fora, peça ao objeto para fazer a ação: conta.sacar(50)." },
+]} />
+
+## Resumindo
+
+- Encapsular é **esconder a gaveta e mostrar o caixa**: dados privados, ações públicas com regras.
+- Java usa `private`/`public`/`final`; Python usa `_` e `@property`.
+- Getter e setter não são obrigatórios: crie as ações que existem de verdade e valide sempre.
+- Peça para o objeto fazer, em vez de mexer nos dados dele por fora.

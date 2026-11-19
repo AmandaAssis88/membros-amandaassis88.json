@@ -1,0 +1,254 @@
+<Aquecimento perguntas={[
+  { p: "Qual comando cria uma branch e já entra nela?", r: "git switch -c nome-da-branch" },
+  { p: "Para juntar a branch sobremesas na main, onde você precisa estar?", r: "Na main (a que recebe): git switch main e depois git merge sobremesas." },
+  { p: "O Git colocou <<<<<<<, ======= e >>>>>>> no seu arquivo. O que aconteceu e o que você faz?", r: "Um conflito. Você escolhe o texto final, apaga as marcações, salva, dá git add e git commit." },
+]} />
+
+Até aqui, todo o histórico estava **só no seu computador**. Se o notebook quebrar, foi-se a cafeteria inteira. E ninguém mais consegue trabalhar com você. Nesta aula o seu código vai para a nuvem.
+
+<Chute pergunta="Quando você envia o projeto para o GitHub, o que vai: só os arquivos ou o histórico também?">
+
+O histórico inteiro! Todos os commits, com autores, datas e mensagens. É por isso que o GitHub consegue mostrar quem mudou cada linha, e é por isso também que uma senha commitada continua lá mesmo depois de apagada.
+
+</Chute>
+
+## Local e remoto
+
+- **Repositório local**: o que está no seu computador (a pasta com `.git`).
+- **Repositório remoto**: uma cópia do mesmo repositório num servidor, como o GitHub.
+
+<Nota tipo="analogia" titulo="Pensa assim: a filial e a central">
+
+Sua cozinha (o local) trabalha o dia todo e anota tudo no próprio caderno. No fim do dia, manda as páginas novas para a **central** (o remoto), e de manhã busca o que as outras cozinhas mandaram. Dá para trabalhar offline, mas a central é onde todo mundo se encontra.
+
+</Nota>
+
+<Passos itens={[
+  { icone: "💻", titulo: "Local", texto: "você faz commits" },
+  { icone: "⬆️", titulo: "git push", texto: "envia para o GitHub" },
+  { icone: "☁️", titulo: "GitHub", texto: "a central da equipe" },
+  { icone: "⬇️", titulo: "git pull", texto: "traz o que os outros fizeram" },
+]} />
+
+## Criando a sua conta
+
+1. Acesse [github.com](https://github.com) e crie uma conta.
+2. Escolha o **username com carinho**: ele vira o endereço do seu portfólio (`github.com/seu-username`). Prefira algo profissional e fácil de lembrar.
+3. Em **Settings → Emails**, marque a opção **"Keep my email addresses private"**. O GitHub te dá um e-mail que termina em `@users.noreply.github.com`. Se quiser, use esse e-mail no `git config user.email` para não expor o seu.
+4. Ative a **autenticação em dois fatores** (2FA) em **Settings → Password and authentication**. O GitHub exige isso para quem contribui, e protege a sua conta.
+
+## Criando o repositório no GitHub
+
+1. Clique no **+** no canto superior direito → **New repository**.
+2. Nome: `minha-cafeteria`.
+3. Escolha **Public** (aparece no seu portfólio) ou **Private** (só você vê).
+4. Como você **já tem** um projeto local, **não marque** "Add a README". Deixe o repositório vazio.
+5. Clique em **Create repository**.
+
+O GitHub mostra uma página com instruções. A parte que interessa é a de "push an existing repository".
+
+## Ligando o local ao remoto
+
+```terminal
+git remote add origin https://github.com/seu-username/minha-cafeteria.git
+git remote -v
+```
+
+```saida
+origin  https://github.com/seu-username/minha-cafeteria.git (fetch)
+origin  https://github.com/seu-username/minha-cafeteria.git (push)
+```
+
+- `remote add` cadastra um endereço remoto.
+- `origin` é o **apelido** desse endereço. É só um nome, mas é o padrão que todo mundo usa.
+
+## Primeiro envio: git push
+
+```terminal
+git push -u origin main
+```
+
+- `origin main`: envia a branch `main` para o remoto `origin`.
+- `-u` (de *upstream*): faz o Git lembrar dessa ligação. Dos próximos envios em diante, basta `git push`.
+
+### Se pedir login
+
+O GitHub **não aceita a sua senha** no terminal. Você tem três caminhos:
+
+<Abas>
+<Aba rotulo="Windows">
+
+O Git para Windows já vem com o **Git Credential Manager**. No primeiro `push`, abre uma janela do navegador pedindo para você entrar no GitHub e autorizar. Faça isso uma vez e pronto: ele lembra.
+
+</Aba>
+<Aba rotulo="Mac e Linux">
+
+O jeito mais fácil é instalar o **GitHub CLI** (`gh`) e rodar:
+
+```terminal
+gh auth login
+```
+
+Escolha **GitHub.com → HTTPS → Login with a web browser** e siga as instruções. Depois disso, o `git push` funciona sem pedir nada.
+
+</Aba>
+<Aba rotulo="Token">
+
+Em **Settings → Developer settings → Personal access tokens**, gere um token com permissão de repositório. Quando o terminal pedir a senha, cole o **token** (não a sua senha). Guarde-o como guardaria uma senha.
+
+</Aba>
+</Abas>
+
+Depois do push, recarregue a página do repositório no GitHub: seus arquivos e o histórico de commits estão lá. Clique em **commits** para ver cada um.
+
+<Nota tipo="curiosidade" titulo="E o SSH?">
+
+Muita gente usa chaves SSH em vez de HTTPS: você gera um par de chaves no computador e cadastra a pública no GitHub. É ótimo, mas o HTTPS com o Credential Manager ou o `gh` é mais simples para começar. A documentação do GitHub tem o passo a passo do SSH quando você quiser.
+
+</Nota>
+
+## O dia a dia: commit local, push para a nuvem
+
+```terminal
+# trabalhou, testou...
+git add .
+git commit -m "Adiciona seção de bebidas geladas"
+git push
+```
+
+Commit e push são coisas diferentes: o **commit** guarda no seu histórico local; o **push** envia para o GitHub. Dá para fazer vários commits e um push só no fim.
+
+## Trazendo o que mudou: git pull
+
+Você editou o `README.md` direto pelo site do GitHub (dá para editar arquivos lá, no ícone de lápis). Agora o remoto tem um commit que o seu computador não tem. Para trazer:
+
+```terminal
+git pull
+```
+
+```saida
+Updating 9d1e0a7..c3f1a20
+Fast-forward
+ README.md | 2 +-
+```
+
+<Nota tipo="dica" titulo="Hábito de ouro">
+
+**Comece o dia com git pull.** Antes de mexer em qualquer coisa, traga o que os outros fizeram. Isso evita muitos conflitos.
+
+</Nota>
+
+<Nota tipo="cuidado" titulo="'rejected' no push">
+
+Se aparecer `! [rejected] main -> main (fetch first)`, o remoto tem commits que você não tem. O GitHub recusa para você não apagar o trabalho de ninguém. Rode `git pull`, resolva conflitos se houver, e então `git push`. **Nunca** use `git push --force` para "resolver" isso.
+
+</Nota>
+
+## Baixando um projeto que já existe: git clone
+
+Para trabalhar num projeto que já está no GitHub (de um colega, da faculdade, open source):
+
+```terminal
+git clone https://github.com/unidunedev/onboarding.git
+cd onboarding
+```
+
+O `clone` baixa **tudo**: arquivos, histórico completo e branches, e já deixa o `origin` configurado. Não precisa de `git init` nem de `remote add`.
+
+| Situação | Comando |
+| --- | --- |
+| O projeto começou no seu computador | `git remote add origin ...` + `git push -u origin main` |
+| O projeto já existe no GitHub | `git clone ...` |
+| Enviar seus commits | `git push` |
+| Trazer commits dos outros | `git pull` |
+
+## O README: a vitrine do projeto
+
+O `README.md` é a primeira coisa que aparece na página do repositório. Um bom README responde:
+
+- **O que é** o projeto (uma ou duas frases).
+- **Como rodar** (os comandos).
+- **O que você aprendeu** ou as tecnologias usadas.
+- Um print, se tiver tela.
+
+Ele é escrito em **Markdown**: `#` para títulos, `-` para listas, `**negrito**` e blocos de código com três crases.
+
+<Nota tipo="dica" titulo="O seu perfil também tem README">
+
+Crie um repositório com **exatamente o seu username** como nome (ex.: `github.com/clehdev/clehdev`). O README dele aparece no topo do seu perfil. É o seu cartão de visitas para recrutadores.
+
+</Nota>
+
+<Explique pergunta="Explique a diferença entre git commit e git push para alguém que acabou de começar.">
+
+O commit guarda uma versão do projeto no histórico do seu computador, mesmo sem internet. O push pega os commits que só você tem e envia para o GitHub, onde ficam seguros e visíveis para a equipe. Dá para fazer vários commits e enviar todos num push só.
+
+</Explique>
+
+## Erros comuns
+
+- **`remote origin already exists`**: você já cadastrou o origin. Confira com `git remote -v`.
+- **`src refspec main does not match any`**: você ainda não fez nenhum commit, ou a sua branch se chama `master`. Faça um commit, ou use `git push -u origin master`.
+- **`Authentication failed`**: você digitou a senha da conta. Use o Credential Manager, o `gh auth login` ou um token.
+- **`Permission denied` ou `403` no Windows, mesmo fazendo login**: o Windows pode ter guardado uma credencial antiga (de outra conta ou de um token vencido). Abra o **Gerenciador de Credenciais** do Windows (procure no menu Iniciar), vá em **Credenciais do Windows**, remova as entradas que mencionam `git` ou `github.com` e rode o `git push` de novo: ele vai pedir o login do zero.
+- **`rejected (fetch first)`**: faltou um `git pull` antes do push.
+
+<Tarefa titulo="A cafeteria na nuvem">
+
+1. Crie o repositório `minha-cafeteria` no GitHub (vazio, sem README).
+2. Ligue o seu repositório local com `git remote add origin ...` e faça o `git push -u origin main`.
+3. No site do GitHub, edite o `README.md` (ícone de lápis) e faça o commit por lá.
+4. No terminal, rode `git pull` e confira que a mudança chegou.
+5. Faça mais um commit local e envie com `git push`.
+
+<Dica>
+
+No passo 3, depois de editar pelo site, clique em **Commit changes**. No passo 4, confira o `git log --oneline`: o commit feito no site aparece no topo.
+
+</Dica>
+
+<Resposta>
+
+```terminal
+git remote add origin https://github.com/seu-username/minha-cafeteria.git
+git push -u origin main
+# edite o README pelo site e faça o commit lá
+git pull
+git log --oneline
+# mude algo no cardápio
+git commit -am "Adiciona chá gelado"
+git push
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Você fez 3 commits hoje mas não rodou git push. Onde esses commits estão?"
+  opcoes={["No GitHub", "Só no seu computador", "Perdidos"]}
+  correta={1}
+  explicacao="Commits ficam no repositório local até o push enviar para o remoto."
+/>
+
+<Quiz
+  pergunta="O push foi recusado com 'rejected (fetch first)'. Qual o próximo passo seguro?"
+  opcoes={["git push --force", "Apagar o repositório e criar outro", "git pull, resolver se houver conflito, e então git push"]}
+  correta={2}
+  explicacao="O remoto tem commits que você não tem. Traga-os primeiro com pull; o --force apagaria o trabalho dos outros."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é o origin?", verso: "O apelido padrão do repositório remoto (o endereço no GitHub)." },
+  { frente: "commit × push", verso: "commit guarda no histórico local; push envia os commits para o GitHub." },
+  { frente: "Quando usar git clone?", verso: "Quando o projeto já existe no GitHub e você quer baixá-lo com todo o histórico." },
+  { frente: "O GitHub aceita a senha da conta no terminal?", verso: "Não. Use o Git Credential Manager, o gh auth login ou um token." },
+  { frente: "Qual o hábito de ouro antes de começar a trabalhar?", verso: "git pull, para trazer o que os outros fizeram." },
+]} />
+
+## Resumindo
+
+- **Local** é o seu computador; **remoto** é a cópia no GitHub, apelidada de `origin`.
+- Projeto novo: `remote add` + `push -u`. Projeto existente: `clone`.
+- `push` envia, `pull` traz. Comece o dia com `pull`, nunca use `--force` para fugir de um `rejected`.
+- O README é a vitrine do projeto (e do seu perfil).
