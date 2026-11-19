@@ -1,0 +1,412 @@
+<Aquecimento perguntas={[
+  { p: "O que é polimorfismo?", r: "O mesmo pedido (método) para objetos diferentes, e cada um responde do seu jeito." },
+  { p: "Qual a diferença entre interface e classe abstrata?", r: "Interface é um contrato (o que a classe sabe fazer). Classe abstrata é uma base incompleta, com código comum, que as filhas completam." },
+  { p: "Um carro 'é um' motor ou 'tem um' motor? E o que isso muda?", r: "Tem um motor. Por isso não é herança: é composição, o assunto desta aula." },
+]} />
+
+Você já tem todas as peças: classes, encapsulamento, herança e polimorfismo. Agora vem a habilidade que mais pesa no trabalho de verdade: **montar um sistema** com objetos que se encaixam. O nosso: os **pedidos da cafeteria**.
+
+<Chute pergunta="Para guardar os itens de um pedido, o Pedido deveria herdar de Lista?">
+
+Não. Um pedido **não é** uma lista: ele **tem** uma lista de itens (e também tem um número, um status, uma forma de pagamento...). Se herdasse de lista, ganharia métodos que não fazem sentido, como "ordenar" ou "inverter" o pedido. O certo é o pedido **ter** a lista guardada dentro dele: isso é composição.
+
+</Chute>
+
+## Composição: objetos feitos de objetos
+
+**Composição** é quando um objeto **tem** outros objetos como atributos e **delega** trabalho para eles.
+
+<Nota tipo="analogia" titulo="Pensa assim: a bandeja do pedido">
+
+Um pedido é uma bandeja. Na bandeja **tem** um cappuccino, dois pães de queijo e um bolo. A bandeja não "é" um cappuccino. Para saber o total, a bandeja pergunta o preço de cada coisa que está nela e soma. Cada peça cuida de si, e a bandeja organiza o conjunto.
+
+</Nota>
+
+| | Herança | Composição |
+| --- | --- | --- |
+| Frase | "é um" | "tem um" |
+| Exemplo | Cafe é uma Bebida | Pedido tem itens |
+| Ligação | Forte: mudou a mãe, mudou a filha | Fraca: troca uma peça sem mexer no resto |
+| Flexibilidade | Definida quando você escreve a classe | Dá para trocar a peça enquanto o programa roda |
+
+## Do texto para as classes
+
+O dono da cafeteria explicou o que quer:
+
+> "O **cardápio** tem **produtos**, cada um com nome e preço. O cliente faz um **pedido** com vários **itens**: cada item é um produto e uma quantidade. O pedido mostra o **total** e pode receber um **cupom** de desconto em porcentagem. Depois, o pedido é **pago** com Pix ou cartão."
+
+Um truque antigo e muito útil: **os substantivos viram classes ou atributos, os verbos viram métodos**.
+
+<Passos itens={[
+  { icone: "📋", titulo: "Substantivos", texto: "cardápio, produto, pedido, item, cupom" },
+  { icone: "🔎", titulo: "Quem é coisa importante?", texto: "vira classe" },
+  { icone: "🏷️", titulo: "Quem é detalhe?", texto: "vira atributo (nome, preço)" },
+  { icone: "🏃", titulo: "Verbos", texto: "viram métodos: adicionar, calcular total, pagar" },
+]} />
+
+O desenho (cada caixa é uma classe, e a seta "tem" é composição):
+
+```texto
+Cardapio ──tem vários──▶ Produto (nome, preco)
+                            ▲
+Pedido ──tem vários──▶ ItemDoPedido (produto, quantidade)
+   │
+   └──tem um──▶ FormaDePagamento (Pix, Cartao)
+```
+
+## Uma responsabilidade por classe
+
+Antes do código, a regra que guia tudo: **cada classe cuida de uma coisa só**.
+
+- `Produto` sabe o próprio nome e preço.
+- `ItemDoPedido` sabe calcular o **próprio** subtotal (preço × quantidade).
+- `Pedido` sabe **juntar** os itens, somar e aplicar o cupom.
+- `Cardapio` sabe **encontrar** produtos.
+
+Se uma classe começa a fazer de tudo (calcular, imprimir, salvar no banco, mandar e-mail), ela vira um "objeto Deus" e fica impossível de mudar. Divida.
+
+## O sistema, completo
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Produto:
+    def __init__(self, nome, preco):
+        self.nome = nome
+        self.preco = preco
+
+
+class ItemDoPedido:
+    def __init__(self, produto, quantidade):
+        if quantidade <= 0:
+            raise ValueError("A quantidade precisa ser positiva")
+        self.produto = produto
+        self.quantidade = quantidade
+
+    def subtotal(self):
+        return self.produto.preco * self.quantidade
+
+
+class Cardapio:
+    def __init__(self):
+        self._produtos = {}
+
+    def adicionar(self, produto):
+        self._produtos[produto.nome.lower()] = produto
+
+    def buscar(self, nome):
+        produto = self._produtos.get(nome.lower())
+        if produto is None:
+            raise KeyError(f"{nome} não está no cardápio")
+        return produto
+
+
+class Pedido:
+    def __init__(self, numero):
+        self.numero = numero
+        self._itens = []
+        self._desconto = 0
+
+    def adicionar(self, produto, quantidade=1):
+        self._itens.append(ItemDoPedido(produto, quantidade))
+
+    def aplicar_cupom(self, porcentagem):
+        if not 0 < porcentagem <= 50:
+            raise ValueError("Cupom inválido")
+        self._desconto = porcentagem
+
+    def total(self):
+        soma = sum(item.subtotal() for item in self._itens)
+        return soma * (1 - self._desconto / 100)
+
+    def recibo(self):
+        linhas = [f"Pedido #{self.numero}"]
+        for item in self._itens:
+            linhas.append(f"  {item.quantidade}x {item.produto.nome}: R$ {item.subtotal():.2f}")
+        if self._desconto:
+            linhas.append(f"  Cupom: -{self._desconto}%")
+        linhas.append(f"  Total: R$ {self.total():.2f}")
+        return "\n".join(linhas)
+
+
+cardapio = Cardapio()
+cardapio.adicionar(Produto("Cappuccino", 9.0))
+cardapio.adicionar(Produto("Pão de queijo", 6.0))
+cardapio.adicionar(Produto("Bolo de cenoura", 8.0))
+
+pedido = Pedido(42)
+pedido.adicionar(cardapio.buscar("cappuccino"))
+pedido.adicionar(cardapio.buscar("Pão de queijo"), 2)
+pedido.aplicar_cupom(10)
+print(pedido.recibo())
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+class Produto {
+    private final String nome;
+    private final double preco;
+
+    Produto(String nome, double preco) {
+        this.nome = nome;
+        this.preco = preco;
+    }
+
+    String getNome() { return nome; }
+    double getPreco() { return preco; }
+}
+
+class ItemDoPedido {
+    private final Produto produto;
+    private final int quantidade;
+
+    ItemDoPedido(Produto produto, int quantidade) {
+        if (quantidade <= 0) throw new IllegalArgumentException("A quantidade precisa ser positiva");
+        this.produto = produto;
+        this.quantidade = quantidade;
+    }
+
+    double subtotal() { return produto.getPreco() * quantidade; }
+    Produto getProduto() { return produto; }
+    int getQuantidade() { return quantidade; }
+}
+
+class Cardapio {
+    private final Map<String, Produto> produtos = new HashMap<>();
+
+    void adicionar(Produto produto) {
+        produtos.put(produto.getNome().toLowerCase(), produto);
+    }
+
+    Produto buscar(String nome) {
+        Produto produto = produtos.get(nome.toLowerCase());
+        if (produto == null) throw new IllegalArgumentException(nome + " não está no cardápio");
+        return produto;
+    }
+}
+
+class Pedido {
+    private final int numero;
+    private final List<ItemDoPedido> itens = new ArrayList<>();
+    private int desconto = 0;
+
+    Pedido(int numero) { this.numero = numero; }
+
+    void adicionar(Produto produto, int quantidade) {
+        itens.add(new ItemDoPedido(produto, quantidade));
+    }
+
+    void adicionar(Produto produto) { adicionar(produto, 1); }
+
+    void aplicarCupom(int porcentagem) {
+        if (porcentagem <= 0 || porcentagem > 50) throw new IllegalArgumentException("Cupom inválido");
+        desconto = porcentagem;
+    }
+
+    double total() {
+        double soma = 0;
+        for (ItemDoPedido item : itens) soma += item.subtotal();
+        return soma * (1 - desconto / 100.0);
+    }
+
+    String recibo() {
+        StringBuilder sb = new StringBuilder("Pedido #" + numero + "\n");
+        for (ItemDoPedido item : itens) {
+            sb.append(String.format("  %dx %s: R$ %.2f%n",
+                item.getQuantidade(), item.getProduto().getNome(), item.subtotal()));
+        }
+        if (desconto > 0) sb.append("  Cupom: -" + desconto + "%\n");
+        sb.append(String.format("  Total: R$ %.2f", total()));
+        return sb.toString();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Cardapio cardapio = new Cardapio();
+        cardapio.adicionar(new Produto("Cappuccino", 9.0));
+        cardapio.adicionar(new Produto("Pão de queijo", 6.0));
+        cardapio.adicionar(new Produto("Bolo de cenoura", 8.0));
+
+        Pedido pedido = new Pedido(42);
+        pedido.adicionar(cardapio.buscar("cappuccino"));
+        pedido.adicionar(cardapio.buscar("Pão de queijo"), 2);
+        pedido.aplicarCupom(10);
+        System.out.println(pedido.recibo());
+    }
+}
+```
+
+Repare nos dois métodos `adicionar` com parâmetros diferentes: isso se chama **sobrecarga** (*overload*). Java escolhe qual usar pela quantidade de argumentos. Em Python, o mesmo efeito vem do valor padrão `quantidade=1`.
+
+</Aba>
+</Abas>
+
+```saida
+Pedido #42
+  1x Cappuccino: R$ 9.00
+  2x Pão de queijo: R$ 12.00
+  Cupom: -10%
+  Total: R$ 18.90
+```
+
+## Lendo o sistema como uma conversa
+
+Siga o `pedido.total()`:
+
+1. O **pedido** não sabe o preço de nada. Ele pede para **cada item**: "qual o seu subtotal?"
+2. Cada **item** pede para o seu **produto**: "qual o seu preço?" e multiplica pela quantidade.
+3. O **pedido** soma tudo e aplica o próprio desconto.
+
+Ninguém faz o trabalho do outro. Se amanhã o produto tiver preço promocional no fim de semana, você muda **só** a classe `Produto`, e o pedido, o recibo e o total continuam funcionando.
+
+<Nota tipo="dica" titulo="Composição + polimorfismo = peças trocáveis">
+
+Lembra das formas de pagamento da aula anterior? Com composição, o pedido pode **ter** uma forma de pagamento, e trocar entre Pix e cartão sem mudar uma linha do `Pedido`:
+
+```python-exemplo
+pedido.pagar(Cartao(0.03))
+pedido.pagar(Pix())
+```
+
+Esse é o jeito mais comum de os sistemas de verdade serem montados: muitos objetos pequenos, cada um com uma responsabilidade, ligados por "tem um" e conversando por contratos.
+
+</Nota>
+
+## Como modelar um sistema novo (o roteiro)
+
+<Passos itens={[
+  { icone: "📝", titulo: "Escreva o problema", texto: "em português, como o cliente falaria" },
+  { icone: "🔤", titulo: "Substantivos e verbos", texto: "candidatos a classes e métodos" },
+  { icone: "✏️", titulo: "Desenhe as caixas", texto: "quem tem quem, quem é quem" },
+  { icone: "🔒", titulo: "Regras", texto: "o que nunca pode acontecer? (invariantes)" },
+  { icone: "🧪", titulo: "Comece pequeno", texto: "uma classe por vez, testando" },
+]} />
+
+<Explique pergunta="Por que o Pedido pergunta o subtotal para cada ItemDoPedido, em vez de ele mesmo fazer preço × quantidade?">
+
+Porque cada classe cuida da sua responsabilidade. O item é quem sabe o próprio produto e a própria quantidade, então ele é quem calcula o subtotal. Se a regra mudar (um desconto por quantidade, por exemplo), a mudança fica só no item, e o Pedido continua igual. Isso deixa o sistema mais fácil de mudar e de testar.
+
+</Explique>
+
+## Erros comuns
+
+- **Herdar quando é "tem um"**: `Pedido(list)` ou `Pedido extends ArrayList`.
+- **Objeto Deus**: uma classe `Sistema` com 40 métodos que faz tudo.
+- **Expor a lista interna**: devolver `self._itens` direto deixa qualquer um adicionar itens sem passar pelas regras. Ofereça métodos (`adicionar`, `remover`).
+- **Modelar demais**: criar 15 classes para um programa de 30 linhas. Comece simples e divida quando doer.
+
+<Tarefa titulo="Projeto final: o caixa completo">
+
+Evolua o sistema de pedidos:
+
+1. Adicione ao `Pedido` um **status** que começa em `"aberto"`.
+2. Crie o método `remover(nome_do_produto)`, que só funciona com o pedido aberto.
+3. Crie o método `pagar(forma)`, que recebe uma forma de pagamento da aula 5 (`Pix`, `Cartao`), cobra o `total()`, mostra o valor e muda o status para `"pago"`.
+4. Depois de pago, `adicionar`, `remover` e `aplicar_cupom` devem recusar a operação.
+5. Teste: monte o pedido, pague com cartão (taxa de 3%) e tente adicionar mais um item depois.
+
+<Dica>
+
+Crie um método interno `_garantir_aberto()` (ou `private void garantirAberto()` em Java) que lança um erro se o status não for `"aberto"`, e chame ele no começo de `adicionar`, `remover`, `aplicar_cupom` e `pagar`. Uma regra, um lugar só.
+
+</Dica>
+
+<Resposta>
+
+Só a parte nova do `Pedido` em Python (o resto continua igual, junto com as classes `Pix` e `Cartao` da aula 5):
+
+```python-exemplo
+class Pedido:
+    def __init__(self, numero):
+        self.numero = numero
+        self._itens = []
+        self._desconto = 0
+        self.status = "aberto"
+
+    def _garantir_aberto(self):
+        if self.status != "aberto":
+            raise RuntimeError(f"O pedido #{self.numero} já está {self.status}")
+
+    def adicionar(self, produto, quantidade=1):
+        self._garantir_aberto()
+        self._itens.append(ItemDoPedido(produto, quantidade))
+
+    def remover(self, nome):
+        self._garantir_aberto()
+        self._itens = [i for i in self._itens if i.produto.nome.lower() != nome.lower()]
+
+    def aplicar_cupom(self, porcentagem):
+        self._garantir_aberto()
+        if not 0 < porcentagem <= 50:
+            raise ValueError("Cupom inválido")
+        self._desconto = porcentagem
+
+    def pagar(self, forma):
+        self._garantir_aberto()
+        valor = forma.cobrar(self.total())
+        print(f"Pedido #{self.numero} pago com {forma.nome()}: R$ {valor:.2f}")
+        self.status = "pago"
+
+    # total() e recibo() continuam iguais
+```
+
+```python-exemplo
+pedido = Pedido(43)
+pedido.adicionar(cardapio.buscar("Bolo de cenoura"), 2)
+pedido.pagar(Cartao(0.03))
+try:
+    pedido.adicionar(cardapio.buscar("Cappuccino"))
+except RuntimeError as erro:
+    print("Recusado:", erro)
+```
+
+```saida
+Pedido #43 pago com Cartão: R$ 16.48
+Recusado: O pedido #43 já está pago
+```
+
+O `try/except` (`try/catch` em Java) captura o erro para o programa continuar e mostrar a mensagem.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual relação é composição?"
+  opcoes={["Cappuccino é uma Bebida", "Pedido tem vários ItemDoPedido", "Gerente é um Funcionario"]}
+  correta={1}
+  explicacao="Composição é 'tem um': o pedido é feito de itens. As outras são 'é um' (herança)."
+/>
+
+<Quiz
+  pergunta="Na hora de transformar o texto do cliente em classes, os substantivos e os verbos costumam virar o quê?"
+  opcoes={["Substantivos viram métodos, verbos viram classes", "Substantivos viram classes ou atributos, verbos viram métodos", "Os dois viram variáveis globais"]}
+  correta={1}
+  explicacao="Coisas (pedido, produto) viram classes ou atributos; ações (adicionar, pagar) viram métodos."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é composição?", verso: "Um objeto TEM outros objetos como atributos e delega trabalho para eles." },
+  { frente: "Herança × composição: qual preferir na dúvida?", verso: "Composição: a ligação é mais fraca e as peças são trocáveis." },
+  { frente: "O que é um 'objeto Deus'?", verso: "Uma classe que faz de tudo. Sinal de que precisa ser dividida em responsabilidades." },
+  { frente: "Truque para achar as classes num texto", verso: "Substantivos viram classes ou atributos; verbos viram métodos." },
+  { frente: "Por que não devolver a lista interna (self._itens)?", verso: "Quem recebe poderia mexer nela sem passar pelas regras. Ofereça métodos." },
+  { frente: "O que é sobrecarga (overload) em Java?", verso: "Métodos com o mesmo nome e parâmetros diferentes; o Java escolhe pelo que você passa." },
+]} />
+
+## Resumindo
+
+- **Composição** é "tem um": objetos feitos de objetos, cada um com uma responsabilidade.
+- Modele a partir do texto: substantivos → classes/atributos; verbos → métodos.
+- Objetos conversam: o pedido pergunta ao item, que pergunta ao produto.
+- Composição + polimorfismo = peças trocáveis. Na dúvida entre herança e composição, prefira composição.
+- Você terminou a trilha! Agora é hora de modelar algo seu: a missão do castelo, na comunidade, foi feita para isso. 🧊

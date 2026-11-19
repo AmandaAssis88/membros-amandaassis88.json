@@ -10,6 +10,8 @@ export type TrilhaId =
   | "c"
   | "python"
   | "java"
+  | "poo"
+  | "git"
   | "produto"
   | "front-end"
   | "back-end"
@@ -33,7 +35,7 @@ export type Trilha = {
   nome: string;
   /** Pasta no repositório estudos (e em estudos/conteudo/) */
   pasta: string;
-  grupo: "fundamentos" | "disciplinas" | "linguagens" | "profissoes";
+  grupo: "fundamentos" | "disciplinas" | "linguagens" | "paradigmas" | "ferramentas" | "profissoes";
   /** O item do cardápio: bebida (linguagens e bases) ou sobremesa/pão (profissões) */
   bebida: string;
   emoji: string;
@@ -50,6 +52,8 @@ export type Trilha = {
   cursos?: { titulo: string; url: string; texto: string }[];
   /** Links para se aprofundar, mostrados no fim da última aula */
   documentacao?: { titulo: string; url: string; texto: string }[];
+  /** Onde praticar no fim da trilha (no lugar dos desafios do repositório estudos) */
+  pratica?: { titulo: string; texto: string; url: string; rotulo: string };
   /** Linguagem usada no botão "Testar" dos códigos */
   linguagem?: "c" | "python" | "java";
   aulas: Aula[];
@@ -82,6 +86,18 @@ export const GRUPOS: { id: Trilha["grupo"]; pasta: string; titulo: string; texto
     pasta: "linguagens/",
     titulo: "Linguagens",
     texto: "Mão no código, uma linguagem por vez.",
+  },
+  {
+    id: "paradigmas",
+    pasta: "paradigmas/",
+    titulo: "Paradigmas",
+    texto: "Os adoçantes: um jeito de organizar o código que vai em qualquer linguagem.",
+  },
+  {
+    id: "ferramentas",
+    pasta: "ferramentas/",
+    titulo: "Ferramentas",
+    texto: "O prato e os talheres: sem eles, nenhuma receita chega à mesa.",
   },
   {
     id: "profissoes",
@@ -471,6 +487,172 @@ export const TRILHAS: Trilha[] = [
         titulo: "Herança e coleções",
         resumo: "extends, @Override e ArrayList.",
         minutos: 15,
+      },
+    ],
+  },
+  {
+    id: "poo",
+    nome: "Orientação a Objetos",
+    pasta: "paradigmas/orientacao-a-objetos",
+    grupo: "paradigmas",
+    bebida: "Cubos de açúcar",
+    emoji: "🧊",
+    frase: "Vai em qualquer bebida. Organiza o programa em peças que conversam.",
+    pratica: {
+      titulo: "Hora de modelar",
+      texto:
+        "Use o que aprendeu nas missões da comunidade: a do castelo pede classes, estado e comportamento de verdade.",
+      url: `${ONBOARDING_URL}/missoes`,
+      rotulo: "Ver as missões",
+    },
+    documentacao: [
+      {
+        titulo: "Python: Classes (tutorial oficial)",
+        url: "https://docs.python.org/pt-br/3/tutorial/classes.html",
+        texto: "O capítulo de classes do tutorial oficial do Python, em português.",
+      },
+      {
+        titulo: "Dev.java: Classes e objetos",
+        url: "https://dev.java/learn/classes-objects/",
+        texto: "O guia oficial do Java sobre classes, objetos, herança e interfaces.",
+      },
+    ],
+    sobre:
+      "Orientação a objetos é um jeito de organizar programas: em vez de variáveis soltas e funções espalhadas, você junta dados e comportamento em objetos que representam coisas do mundo, como um pedido, uma conta ou um personagem. É o paradigma de Java, aparece muito em Python, Kotlin, C#, Dart e Swift, e é o que você vai encontrar na maioria das empresas.",
+    aprender: [
+      "Por que organizar o código em objetos (e quando não precisa)",
+      "Classes, objetos, atributos, métodos e construtores",
+      "Encapsulamento, herança e polimorfismo sem decoreba",
+      "Composição e como modelar um sistema de verdade",
+    ],
+    aulas: [
+      {
+        slug: "por-que-objetos",
+        arquivo: "01-por-que-objetos",
+        titulo: "Por que orientar a objetos?",
+        resumo: "Do código espalhado à forma de bolo: o problema que a POO resolve.",
+        minutos: 20,
+      },
+      {
+        slug: "classes-e-objetos",
+        arquivo: "02-classes-e-objetos",
+        titulo: "Classes e objetos, de verdade",
+        resumo: "Atributos, métodos, construtor, self e this, passo a passo.",
+        minutos: 25,
+      },
+      {
+        slug: "encapsulamento",
+        arquivo: "03-encapsulamento",
+        titulo: "Encapsulamento",
+        resumo: "Proteger o que importa: o saldo não muda sozinho.",
+        minutos: 22,
+      },
+      {
+        slug: "heranca",
+        arquivo: "04-heranca",
+        titulo: "Herança",
+        resumo: "É um: reaproveitar sem copiar e colar (e quando não usar).",
+        minutos: 22,
+      },
+      {
+        slug: "polimorfismo-e-abstracao",
+        arquivo: "05-polimorfismo-e-abstracao",
+        titulo: "Polimorfismo e abstração",
+        resumo: "O mesmo pedido, respostas diferentes: Pix, cartão e dinheiro.",
+        minutos: 25,
+      },
+      {
+        slug: "composicao-e-modelagem",
+        arquivo: "06-composicao-e-modelagem",
+        titulo: "Composição e modelagem",
+        resumo: "Tem um: montando o sistema de pedidos da cafeteria.",
+        minutos: 30,
+      },
+    ],
+  },
+  {
+    id: "git",
+    nome: "Git e GitHub",
+    pasta: "ferramentas/git-e-github",
+    grupo: "ferramentas",
+    bebida: "Prato e talheres",
+    emoji: "🍽️",
+    frase: "Antes de servir qualquer receita, a mesa precisa estar posta.",
+    pratica: {
+      titulo: "Seu primeiro PR de verdade",
+      texto:
+        "O Desafio 1 da comunidade é exatamente isso: fork, branch, commit e Pull Request para entrar no mural.",
+      url: `${ONBOARDING_URL}/desafio-pr`,
+      rotulo: "Fazer o Desafio do PR",
+    },
+    documentacao: [
+      {
+        titulo: "Pro Git (livro oficial, em português)",
+        url: "https://git-scm.com/book/pt-br/v2",
+        texto: "O livro completo e gratuito do Git, do básico ao avançado.",
+      },
+      {
+        titulo: "GitHub Docs: Introdução",
+        url: "https://docs.github.com/pt/get-started",
+        texto: "A documentação oficial do GitHub, com guias de repositório, PR e colaboração.",
+      },
+      {
+        titulo: "Learn Git Branching",
+        url: "https://learngitbranching.js.org/?locale=pt_BR",
+        texto: "Um joguinho visual para treinar branches, merge e rebase.",
+      },
+    ],
+    sobre:
+      "Git guarda a história do seu código: cada versão, quem mudou o quê e por quê. GitHub é onde esse histórico mora na nuvem e onde as equipes trabalham juntas com Pull Requests. Toda vaga de tecnologia espera que você saiba o básico, e toda profissão do cardápio usa os dois todos os dias.",
+    aprender: [
+      "Por que controle de versão existe e a diferença entre Git e GitHub",
+      "Commit, as três áreas do Git e mensagens que fazem sentido",
+      "Voltar no tempo sem medo: log, diff, restore e revert",
+      "Branches, merge e conflitos",
+      "Push, pull, clone, fork e Pull Request em equipe",
+    ],
+    aulas: [
+      {
+        slug: "por-que-git",
+        arquivo: "01-por-que-git",
+        titulo: "Por que o Git existe?",
+        resumo: "Do trabalho_final_v3_AGORA_VAI ao histórico organizado.",
+        minutos: 18,
+      },
+      {
+        slug: "primeiro-commit",
+        arquivo: "02-primeiro-commit",
+        titulo: "Seu primeiro repositório e commit",
+        resumo: "init, status, add e commit: bancada, bandeja e livro de receitas.",
+        minutos: 25,
+      },
+      {
+        slug: "voltando-no-tempo",
+        arquivo: "03-voltando-no-tempo",
+        titulo: "Voltando no tempo sem medo",
+        resumo: "log, diff, restore, revert e o .gitignore.",
+        minutos: 22,
+      },
+      {
+        slug: "branches-e-merge",
+        arquivo: "04-branches-e-merge",
+        titulo: "Branches, merge e conflitos",
+        resumo: "Testar uma receita nova sem estragar o prato principal.",
+        minutos: 28,
+      },
+      {
+        slug: "github-e-remoto",
+        arquivo: "05-github-e-remoto",
+        titulo: "GitHub: seu código na nuvem",
+        resumo: "remote, push, pull e clone, com conta e autenticação.",
+        minutos: 25,
+      },
+      {
+        slug: "pull-request-em-equipe",
+        arquivo: "06-pull-request-em-equipe",
+        titulo: "Pull Request e trabalho em equipe",
+        resumo: "fork, PR, revisão de código e manter tudo em dia.",
+        minutos: 28,
       },
     ],
   },

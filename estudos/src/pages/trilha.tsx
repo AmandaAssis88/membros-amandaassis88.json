@@ -174,6 +174,16 @@ export function PaginaTrilha({ trilha }: { trilha: Trilha | undefined }) {
                 Ver o chat por dentro <ArrowRight size={16} />
               </Link>
             </div>
+          ) : trilha.pratica ? (
+            <div className="lado-cartao">
+              <h2>
+                <Target size={18} /> {trilha.pratica.titulo}
+              </h2>
+              <p>{trilha.pratica.texto}</p>
+              <a className="botao botao-contorno" href={trilha.pratica.url}>
+                {trilha.pratica.rotulo} <ArrowRight size={16} />
+              </a>
+            </div>
           ) : (
             <div className="lado-cartao">
               <h2>

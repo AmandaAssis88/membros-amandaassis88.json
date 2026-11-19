@@ -1,0 +1,295 @@
+<Chute pergunta="Orientação a objetos é uma linguagem de programação?">
+
+Não. É um **paradigma**: um jeito de pensar e organizar o código. Java, Python, Kotlin, C#, Dart e Swift deixam você programar orientado a objetos, cada uma com a sua sintaxe. Por isso esta trilha fica junto dos "adoçantes" do cardápio: vai em qualquer bebida.
+
+</Chute>
+
+<Nota tipo="dica" titulo="Antes de começar">
+
+Esta trilha usa **Python** e **Java** lado a lado (troque nas abas). Você precisa saber o básico de uma delas: variáveis, `if`, laços, listas e funções. Se ainda não viu, passe antes pela trilha da linguagem.
+
+</Nota>
+
+## O problema: a cafeteria cresceu
+
+Lembra do sistema da cafeteria? Começou simples: um café, um preço.
+
+```python
+nome = "Café coado"
+preco = 5.0
+print(nome, preco)
+```
+
+Aí entraram mais bebidas. E cada bebida tem nome, preço, tamanho e estoque:
+
+```python-exemplo
+nome1 = "Café coado"
+preco1 = 5.0
+estoque1 = 30
+
+nome2 = "Cappuccino"
+preco2 = 9.0
+estoque2 = 12
+
+nome3 = "Chá gelado"
+preco3 = 7.0
+estoque3 = 0
+```
+
+Com 3 bebidas, já dá para sentir o cheiro de problema. Com 50, é impossível. E pior: a função que vende uma bebida precisa receber tudo separado e torcer para ninguém misturar o `preco2` com o `estoque3`:
+
+```python-exemplo
+def vender(nome, preco, estoque, quantidade):
+    if quantidade > estoque:
+        print("Sem estoque de", nome)
+        return estoque
+    print("Vendeu", quantidade, nome, "por R$", preco * quantidade)
+    return estoque - quantidade
+```
+
+<Nota tipo="analogia" titulo="Pensa assim: a cozinha sem fichas">
+
+Imagine uma cozinha onde cada informação de cada prato está anotada num papelzinho solto, espalhado pela bancada: o preço do bolo num canto, a receita do bolo em outro, quanto sobrou de bolo em outro. Funciona até a primeira correria. Agora imagine que cada prato tem a **sua ficha**, com tudo dele junto: nome, preço, quantidade e até as instruções de como servir. Isso é orientação a objetos.
+
+</Nota>
+
+## A ideia central: juntar dados e comportamento
+
+Na programação que você viu até agora (chamada de **procedural** ou **estruturada**), dados e funções vivem separados. Na **orientação a objetos** (POO), você junta numa coisa só:
+
+- **Os dados** de uma coisa (o nome, o preço e o estoque da bebida). Eles se chamam **atributos**.
+- **O que essa coisa sabe fazer** (vender, repor estoque, mostrar no cardápio). Isso se chama **métodos**.
+
+Essa "coisa" é um **objeto**. Veja o mesmo problema organizado em objetos:
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+class Bebida:
+    def __init__(self, nome, preco, estoque):
+        self.nome = nome
+        self.preco = preco
+        self.estoque = estoque
+
+    def vender(self, quantidade):
+        if quantidade > self.estoque:
+            print("Sem estoque de", self.nome)
+            return
+        self.estoque -= quantidade
+        print("Vendeu", quantidade, self.nome, "por R$", self.preco * quantidade)
+
+
+cafe = Bebida("Café coado", 5.0, 30)
+cappuccino = Bebida("Cappuccino", 9.0, 12)
+
+cafe.vender(2)
+cappuccino.vender(20)
+print("Ainda tem", cafe.estoque, "cafés")
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+class Bebida {
+    String nome;
+    double preco;
+    int estoque;
+
+    Bebida(String nome, double preco, int estoque) {
+        this.nome = nome;
+        this.preco = preco;
+        this.estoque = estoque;
+    }
+
+    void vender(int quantidade) {
+        if (quantidade > estoque) {
+            System.out.println("Sem estoque de " + nome);
+            return;
+        }
+        estoque -= quantidade;
+        System.out.println("Vendeu " + quantidade + " " + nome + " por R$ " + preco * quantidade);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Bebida cafe = new Bebida("Café coado", 5.0, 30);
+        Bebida cappuccino = new Bebida("Cappuccino", 9.0, 12);
+
+        cafe.vender(2);
+        cappuccino.vender(20);
+        System.out.println("Ainda tem " + cafe.estoque + " cafés");
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Vendeu 2 Café coado por R$ 10.0
+Sem estoque de Cappuccino
+Ainda tem 28 cafés
+```
+
+Não se preocupe ainda com cada palavra (`class`, `self`, `this`, `new`): a próxima aula destrincha tudo. Repare só no **jeito de pensar**: `cafe.vender(2)` se lê como uma frase. "Café, venda 2." Cada bebida cuida do próprio estoque, e não tem como confundir o estoque de uma com o de outra.
+
+## Classe e objeto: a forma e o bolo
+
+Essas duas palavras vão aparecer o tempo todo, então vale fixar agora.
+
+<Nota tipo="analogia" titulo="A forma de bolo">
+
+A **classe** é a **forma de bolo**: ela define o formato, mas você não come a forma. Os **objetos** são os **bolos** feitos com ela. Com uma forma só, você faz quantos bolos quiser, e cada bolo é independente: um pode ser de cenoura, outro de chocolate, um pode ter sido comido pela metade.
+
+</Nota>
+
+| | Classe | Objeto |
+| --- | --- | --- |
+| O que é | O molde, a descrição | Uma coisa concreta feita a partir do molde |
+| Quantas existem | Uma | Quantas você criar |
+| Exemplo | `Bebida` | `cafe`, `cappuccino` |
+| Na vida real | A ficha "Aluno" da secretaria | Você, com o seu nome e a sua matrícula |
+
+Um objeto também é chamado de **instância** da classe. "O `cafe` é uma instância de `Bebida`" quer dizer o mesmo que "o `cafe` é um objeto do tipo `Bebida`".
+
+## Os quatro pilares (um gostinho)
+
+A POO costuma ser explicada com quatro ideias. Você vai ver uma por aula, mas olhe o mapa:
+
+<Passos itens={[
+  { icone: "🔒", titulo: "Encapsulamento", texto: "proteger os dados de mudanças erradas" },
+  { icone: "🧬", titulo: "Herança", texto: "reaproveitar o que é comum" },
+  { icone: "🎭", titulo: "Polimorfismo", texto: "o mesmo pedido, respostas diferentes" },
+  { icone: "🧩", titulo: "Abstração", texto: "mostrar só o que importa" },
+]} />
+
+## Objetos que você já usou sem saber
+
+Em Python e Java, você já usa objetos há tempos:
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+nome = "unidunedev"
+print(nome.upper())
+
+cardapio = ["café", "chá"]
+cardapio.append("suco")
+print(cardapio)
+```
+
+`nome` é um objeto da classe `str`, e `upper()` é um método dele. `cardapio` é um objeto da classe `list`, e `append()` é um método. Em Python, **tudo** é objeto.
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.ArrayList;
+
+public class Main {
+    public static void main(String[] args) {
+        String nome = "unidunedev";
+        System.out.println(nome.toUpperCase());
+
+        ArrayList<String> cardapio = new ArrayList<>();
+        cardapio.add("café");
+        cardapio.add("chá");
+        System.out.println(cardapio);
+    }
+}
+```
+
+`String` e `ArrayList` são classes. `toUpperCase()` e `add()` são métodos. O `new` cria um objeto novo a partir da classe.
+
+</Aba>
+</Abas>
+
+## E os outros paradigmas?
+
+POO não é o único jeito de programar, e não é sempre o melhor:
+
+- **Procedural** (o que você fez em C e nos primeiros programas): passo a passo, com funções. Ótimo para programas pequenos e scripts.
+- **Orientado a objetos**: organiza sistemas grandes em peças que conversam. É o que mais aparece nas empresas (Java, Kotlin, C#, Swift, Dart).
+- **Funcional**: trata o programa como uma combinação de funções que não mudam nada fora delas. Aparece muito em JavaScript, em dados e em linguagens como Elixir e Haskell. Vale estudar mais para frente.
+
+<Nota tipo="curiosidade" titulo="Dá para misturar">
+
+As linguagens modernas misturam paradigmas. Em Python você escreve um script procedural, cria classes quando o sistema cresce e usa funções como `map` e `filter` do estilo funcional, tudo no mesmo arquivo. Saber POO não te prende a ela: te dá mais uma ferramenta.
+
+</Nota>
+
+## Quando NÃO precisa de classe
+
+Um programa que lê dois números e mostra a soma não precisa de classe nenhuma. Criar classes para tudo deixa o código mais longo sem ganhar nada. Use objetos quando:
+
+- Você tem **várias coisas do mesmo tipo** (várias bebidas, vários alunos, vários pedidos).
+- Os dados de uma coisa **sempre andam juntos** (nome, preço e estoque).
+- Existem **regras** que precisam ser respeitadas sempre (o estoque nunca pode ficar negativo).
+
+<Explique pergunta="Se um colega perguntar 'qual a diferença entre classe e objeto?', como você explicaria com um exemplo que não seja de comida?">
+
+Uma possibilidade: a classe é a planta de uma casa, e os objetos são as casas construídas com essa planta. Todas têm a mesma estrutura (quartos, cozinha), mas cada uma tem o seu endereço, a sua cor e os seus moradores. Outra: a classe é o formulário de cadastro de aluno, e cada aluno cadastrado é um objeto, com o seu nome e a sua matrícula.
+
+</Explique>
+
+<Tarefa titulo="Pense em objetos">
+
+Sem programar ainda: pegue um aplicativo que você usa todo dia (Spotify, iFood, Instagram, um jogo). Escreva:
+
+1. **Três classes** que provavelmente existem nele.
+2. Para cada classe, **três atributos** e **dois métodos**.
+
+<Dica>
+
+Pense nos "substantivos" do app (música, pedido, perfil, personagem) para achar as classes. Os atributos são as características deles, e os métodos são as ações (os verbos).
+
+</Dica>
+
+<Resposta>
+
+Um exemplo com o Spotify:
+
+| Classe | Atributos | Métodos |
+| --- | --- | --- |
+| `Musica` | titulo, artista, duracao | tocar(), curtir() |
+| `Playlist` | nome, dono, musicas | adicionar(musica), embaralhar() |
+| `Usuario` | nome, plano, seguidores | seguir(usuario), criarPlaylist(nome) |
+
+Não existe resposta única: o importante é separar o que a coisa **é/tem** (atributos) do que ela **faz** (métodos).
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Em cafe = Bebida('Café coado', 5.0, 30), o que é Bebida e o que é cafe?"
+  opcoes={["Bebida é o objeto, cafe é a classe", "Bebida é a classe, cafe é um objeto (instância)", "Os dois são métodos"]}
+  correta={1}
+  explicacao="A classe é o molde (Bebida). Cada objeto criado com ela (cafe) é uma instância."
+/>
+
+<Quiz
+  pergunta="No objeto cafe, o que são preco e vender?"
+  opcoes={["Os dois são atributos", "preco é atributo, vender é método", "preco é método, vender é atributo"]}
+  correta={1}
+  explicacao="Atributos são os dados (o que a coisa tem). Métodos são as ações (o que a coisa faz)."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é um paradigma de programação?", verso: "Um jeito de pensar e organizar o código. POO é um deles, não uma linguagem." },
+  { frente: "Classe × objeto", verso: "Classe é o molde (a forma de bolo). Objeto é a coisa feita com o molde (o bolo)." },
+  { frente: "Atributo × método", verso: "Atributo é um dado do objeto (preço). Método é uma ação dele (vender)." },
+  { frente: "Quais são os quatro pilares da POO?", verso: "Encapsulamento, herança, polimorfismo e abstração." },
+  { frente: "Quando vale a pena usar classes?", verso: "Quando há várias coisas do mesmo tipo, dados que andam juntos e regras que precisam ser respeitadas." },
+]} />
+
+## Resumindo
+
+- POO é um **paradigma**: organiza o programa em **objetos** que juntam **atributos** (dados) e **métodos** (ações).
+- **Classe** é o molde; **objeto** (instância) é o que você cria com ele.
+- Você já usa objetos: strings e listas são objetos.
+- Existem outros paradigmas (procedural, funcional), e as linguagens modernas misturam todos.

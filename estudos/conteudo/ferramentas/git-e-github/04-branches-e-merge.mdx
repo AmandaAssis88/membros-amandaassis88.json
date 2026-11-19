@@ -1,0 +1,277 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre git restore e git revert?", r: "restore descarta mudanças que ainda não viraram commit. revert desfaz um commit que já existe, criando um commit novo." },
+  { p: "No git diff, o que significam as linhas com - e com +?", r: "- é o que saiu, + é o que entrou." },
+  { p: "Cite duas coisas que devem ir no .gitignore.", r: "Por exemplo: .env (senhas), node_modules/, dist/, __pycache__/, .DS_Store." },
+]} />
+
+Até agora o histórico foi uma linha reta: um commit depois do outro. Só que, no mundo real, você quer **testar ideias sem estragar o que já funciona**. Para isso existem as **branches**.
+
+## O problema
+
+A cafeteria está funcionando. O dono pede: "quero testar um cardápio de inverno, com chocolate quente e sopa". Se você mexer direto no cardápio principal e a ideia não agradar, vai ter que desfazer tudo. E se, no meio do teste, aparecer um erro urgente no preço do café?
+
+<Nota tipo="analogia" titulo="Pensa assim: a panela de teste">
+
+Na cozinha, ninguém testa uma receita nova direto no prato que vai para o cliente. O chef pega **outra panela**, faz o teste ali, prova, ajusta. Se ficar bom, junta ao cardápio. Se não, joga fora, e o prato principal nunca correu risco. Uma **branch** é essa panela de teste.
+
+</Nota>
+
+## O que é uma branch
+
+Uma branch (ramo, em inglês) é uma **linha paralela** do histórico. A `main` é a linha principal, a que "vai para o cliente". Você cria uma branch, faz commits nela, e a `main` continua intacta.
+
+```texto
+main:            A ── B ── C
+                            \
+cardapio-inverno:            D ── E
+```
+
+Os commits `D` e `E` existem só na branch `cardapio-inverno`. A `main` continua parada no `C`.
+
+## Criando e trocando de branch
+
+```terminal
+git switch -c cardapio-inverno
+```
+
+```saida
+Switched to a new branch 'cardapio-inverno'
+```
+
+- `git switch -c nome` **cria** a branch e já **entra** nela.
+- `git switch nome` só entra numa branch que já existe.
+- `git branch` lista as branches. A atual aparece com `*`.
+
+```terminal
+git branch
+```
+
+```saida
+* cardapio-inverno
+  main
+```
+
+Agora faça mudanças e commits normalmente:
+
+```terminal
+# adicione "Chocolate quente - R$ 9" ao cardápio
+git add cardapio.txt
+git commit -m "Adiciona chocolate quente ao cardápio de inverno"
+```
+
+Agora a mágica. Volte para a `main` e abra o `cardapio.txt`:
+
+```terminal
+git switch main
+```
+
+O chocolate quente **sumiu** do arquivo. Ele não foi apagado: só existe na outra branch. Volte com `git switch cardapio-inverno` e ele reaparece. O Git troca os arquivos da pasta conforme a branch em que você está.
+
+<Nota tipo="cuidado" titulo="Antes de trocar de branch, faça commit">
+
+Se você tiver mudanças não commitadas e trocar de branch, o Git pode recusar (para não perder o seu trabalho) ou levar as mudanças junto. O hábito saudável: `git status` limpo antes de `git switch`.
+
+</Nota>
+
+## Juntando: git merge
+
+O cardápio de inverno foi aprovado! Hora de levar para a `main`. A regra: **vá para a branch que vai receber** e chame o merge da outra.
+
+```terminal
+git switch main
+git merge cardapio-inverno
+```
+
+```saida
+Updating 9d1e0a7..4be71c2
+Fast-forward
+ cardapio.txt | 1 +
+ 1 file changed, 1 insertion(+)
+```
+
+**Fast-forward** quer dizer que a `main` não tinha nada novo desde que a branch saiu, então o Git só "avançou o ponteiro" da `main` até o último commit da branch. Simples assim.
+
+Branch usada, pode apagar (os commits continuam na `main`):
+
+```terminal
+git branch -d cardapio-inverno
+```
+
+<Passos itens={[
+  { icone: "🌱", titulo: "git switch -c", texto: "cria a panela de teste" },
+  { icone: "🧪", titulo: "commits", texto: "testa a receita" },
+  { icone: "🔙", titulo: "git switch main", texto: "volta para quem recebe" },
+  { icone: "🔗", titulo: "git merge", texto: "junta ao prato principal" },
+]} />
+
+## Quando as duas linhas andaram
+
+Agora o caso mais comum em equipe: enquanto você trabalhava na branch, **alguém fez commits na main**.
+
+```texto
+main:          A ── B ── C ── F
+                          \
+sobremesas:                D ── E
+```
+
+O merge não dá para ser fast-forward, porque as duas linhas andaram. O Git cria um **commit de merge**, que tem dois "pais" e une as duas histórias:
+
+```texto
+main:          A ── B ── C ── F ── M
+                          \       /
+sobremesas:                D ── E
+```
+
+Na maioria das vezes, o Git junta sozinho, porque as mudanças foram em partes diferentes dos arquivos.
+
+## Conflitos: quando duas pessoas mexem na mesma linha
+
+E se, na `main`, alguém mudou o preço do café para `R$ 6`, e na sua branch você mudou a **mesma linha** para `R$ 5,50`? O Git não tem como adivinhar qual está certo. Isso é um **conflito**.
+
+```terminal
+git merge promocao
+```
+
+```saida
+Auto-merging cardapio.txt
+CONFLICT (content): Merge conflict in cardapio.txt
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+Calma. Nada foi perdido. Abra o arquivo e veja as marcações que o Git colocou:
+
+```texto
+<<<<<<< HEAD
+Café coado - R$ 6
+=======
+Café coado - R$ 5,50
+>>>>>>> promocao
+Pão de queijo - R$ 6
+```
+
+- Entre `<<<<<<< HEAD` e `=======`: a versão da branch onde você está (a `main`).
+- Entre `=======` e `>>>>>>> promocao`: a versão que está chegando.
+
+<Nota tipo="analogia">
+
+São dois cozinheiros que reescreveram a mesma linha da receita. O Git coloca as duas versões lado a lado no papel e pergunta: "qual fica?". Quem decide é uma pessoa, porque só uma pessoa sabe o que faz sentido.
+
+</Nota>
+
+**Resolvendo, passo a passo:**
+
+1. Decida o resultado final. Pode ser uma das versões, as duas ou uma terceira.
+2. **Apague as marcações** (`<<<<<<<`, `=======`, `>>>>>>>`) e deixe só o texto final:
+
+```texto
+Café coado - R$ 5,50
+Pão de queijo - R$ 6
+```
+
+3. Salve, coloque na bandeja e finalize o merge:
+
+```terminal
+git add cardapio.txt
+git commit -m "Junta a promoção do café"
+```
+
+<Nota tipo="dica" titulo="O VS Code ajuda muito">
+
+O VS Code destaca o conflito e mostra botões: **Accept Current Change** (fica a sua), **Accept Incoming Change** (fica a que chegou), **Accept Both Changes** (ficam as duas). Depois é só salvar, dar `add` e `commit`.
+
+</Nota>
+
+<Nota tipo="dica" titulo="Desistir também é uma opção">
+
+Se o conflito ficou confuso e você quer voltar ao estado de antes do merge: `git merge --abort`.
+
+</Nota>
+
+## Boas práticas de branch
+
+- **Uma branch por tarefa**: `feat/cardapio-inverno`, `fix/preco-cafe`, `docs/readme`.
+- **Branches curtas**: quanto mais tempo longe da `main`, maior a chance de conflito.
+- **A main sempre funcionando**: nada de commit quebrado direto na `main`.
+- Antes de começar algo novo, volte para a `main` atualizada e crie a branch a partir dela.
+
+<Explique pergunta="Por que um conflito acontece, e por que o Git não resolve sozinho?">
+
+Conflito acontece quando duas branches mudaram as mesmas linhas de um arquivo de jeitos diferentes. O Git sabe juntar mudanças em lugares diferentes, mas quando é a mesma linha ele não sabe qual versão faz sentido para o projeto. Essa decisão depende de entender o que cada mudança queria, então precisa de uma pessoa.
+
+</Explique>
+
+<Tarefa titulo="Dois cozinheiros, uma receita">
+
+No `minha-cafeteria`, provoque e resolva um conflito de propósito:
+
+1. Na `main`, crie a branch `promocao` com `git switch -c promocao`, mude o preço do primeiro item e faça commit.
+2. Volte para a `main` e mude **o mesmo preço** para outro valor. Faça commit.
+3. Ainda na `main`, rode `git merge promocao`.
+4. Resolva o conflito ficando com o preço da promoção e finalize o merge.
+5. Rode `git log --oneline --graph` e veja o desenho das duas linhas se juntando.
+
+<Dica>
+
+Depois do passo 3, o `git status` mostra o arquivo em "both modified". Abra-o, apague as três marcações, deixe uma linha só, salve, e então `git add` e `git commit`.
+
+</Dica>
+
+<Resposta>
+
+```terminal
+git switch -c promocao
+# muda "Café coado - R$ 5" para "Café coado - R$ 4"
+git commit -am "Coloca o café em promoção"
+git switch main
+# muda a mesma linha para "Café coado - R$ 6"
+git commit -am "Reajusta o preço do café"
+git merge promocao
+# resolve o conflito deixando "Café coado - R$ 4"
+git add cardapio.txt
+git commit -m "Junta a promoção do café"
+git log --oneline --graph
+```
+
+```saida
+*   b7e2c90 (HEAD -> main) Junta a promoção do café
+|\
+| * 51aa0f3 (promocao) Coloca o café em promoção
+* | 8c3d4e1 Reajusta o preço do café
+|/
+* 9d1e0a7 Adiciona README com a descrição da cafeteria
+```
+
+O `-am` no commit é um atalho para "add de todos os arquivos já rastreados + commit".
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Você está na branch sobremesas e quer levar o trabalho dela para a main. O que faz?"
+  opcoes={["git merge main (na sobremesas)", "git switch main e depois git merge sobremesas", "git branch -d main"]}
+  correta={1}
+  explicacao="Vá para a branch que vai RECEBER (main) e faça merge da outra (sobremesas)."
+/>
+
+<Quiz
+  pergunta="O que significa 'Fast-forward' num merge?"
+  opcoes={["Que houve um conflito", "Que a main só avançou até o último commit da branch, sem commit de merge", "Que o merge foi cancelado"]}
+  correta={1}
+  explicacao="A main não tinha nada novo, então o Git só moveu o ponteiro para a frente."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é uma branch?", verso: "Uma linha paralela do histórico: a panela de teste que não mexe no prato principal (main)." },
+  { frente: "Comando para criar uma branch e já entrar nela", verso: "git switch -c nome-da-branch" },
+  { frente: "Para fazer merge, em qual branch você precisa estar?", verso: "Na que vai RECEBER as mudanças (geralmente a main)." },
+  { frente: "O que é um conflito?", verso: "Duas branches mudaram a mesma linha de jeitos diferentes, e uma pessoa precisa decidir o resultado." },
+  { frente: "Como resolver um conflito?", verso: "Escolher o texto final, apagar <<<<<<< ======= >>>>>>>, salvar, git add e git commit." },
+]} />
+
+## Resumindo
+
+- Branch é uma linha paralela: teste à vontade sem arriscar a `main`.
+- `git switch -c` cria, `git switch` troca, `git branch` lista, `git branch -d` apaga.
+- `git merge` junta. Se só a branch andou, é fast-forward; se as duas andaram, nasce um commit de merge.
+- Conflito não é erro: é o Git pedindo para você decidir. Apague as marcações, `add` e `commit`.

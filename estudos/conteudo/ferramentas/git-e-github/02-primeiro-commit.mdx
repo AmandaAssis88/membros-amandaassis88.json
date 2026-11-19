@@ -1,0 +1,281 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre Git e GitHub?", r: "Git é o programa que guarda o histórico no seu computador. GitHub é o site que guarda esse histórico na nuvem e ajuda a colaborar." },
+  { p: "O que um commit registra?", r: "Quem mudou, quando, o que mudou e por quê (a mensagem)." },
+  { p: "Qual comando mostra a versão do Git instalada?", r: "git --version" },
+]} />
+
+Hora de colocar a mão na massa. Nesta aula você vai criar um projeto do zero, fazer seu primeiro commit e entender a ideia mais importante do Git: **as três áreas**.
+
+## Criando um repositório
+
+Um **repositório** (ou "repo") é uma pasta que o Git está vigiando. Vamos criar o projeto do cardápio de uma cafeteria:
+
+```terminal
+mkdir cafeteria
+cd cafeteria
+git init
+```
+
+```saida
+Initialized empty Git repository in /home/voce/cafeteria/.git/
+```
+
+- `mkdir` cria a pasta, `cd` entra nela.
+- `git init` transforma a pasta num repositório. Ele cria uma pasta escondida chamada `.git`, onde mora **todo o histórico**.
+
+<Nota tipo="cuidado" titulo="Nunca apague a pasta .git">
+
+Se apagar a `.git`, o histórico inteiro some e a pasta volta a ser uma pasta comum. Também não rode `git init` dentro de uma pasta que já é um repositório, nem na sua pasta de usuário inteira.
+
+</Nota>
+
+## A pergunta que você vai fazer mil vezes: git status
+
+```terminal
+git status
+```
+
+```saida
+On branch main
+
+No commits yet
+
+nothing to commit (create/copy files and use "git add" to track)
+```
+
+O `git status` é o garçom que você chama para perguntar "como está o meu pedido?". Ele diz em que branch você está, o que mudou e o que está pronto para o commit. **Na dúvida, rode git status.** Sério, profissionais rodam o tempo todo.
+
+Agora crie um arquivo `cardapio.txt` (pelo VS Code ou pelo terminal) com este conteúdo:
+
+```texto
+Café coado - R$ 5
+Pão de queijo - R$ 6
+```
+
+E pergunte de novo:
+
+```terminal
+git status
+```
+
+```saida
+On branch main
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        cardapio.txt
+```
+
+**Untracked** quer dizer "não rastreado": o Git viu o arquivo, mas ainda não está cuidando dele.
+
+## As três áreas do Git
+
+Essa é a parte que, quando você entende, o Git para de ser mágica.
+
+<Nota tipo="analogia" titulo="Pensa assim: a cozinha do restaurante">
+
+1. **Bancada (working directory)**: onde você está cozinhando. Os arquivos que você edita no VS Code. Bagunça permitida.
+2. **Bandeja (staging area)**: onde você coloca os pratos que **vão sair juntos** para o salão. Você escolhe o que entra.
+3. **Livro de pedidos (repositório)**: quando a bandeja sai, o pedido fica registrado para sempre, com data e anotação. Isso é o commit.
+
+</Nota>
+
+<Passos itens={[
+  { icone: "🧑‍🍳", titulo: "Bancada", texto: "você edita os arquivos" },
+  { icone: "🍽️", titulo: "git add", texto: "coloca na bandeja" },
+  { icone: "📒", titulo: "git commit", texto: "registra no livro" },
+]} />
+
+Por que existe a bandeja? Porque nem sempre você quer guardar **tudo** que mudou. Imagine que você corrigiu um bug e, no mesmo tempo, começou a mexer numa tela nova que ainda não funciona. Com a bandeja, você coloca só a correção do bug num commit, e deixa a tela nova para depois.
+
+## Primeiro commit, passo a passo
+
+**1. Colocar na bandeja:**
+
+```terminal
+git add cardapio.txt
+git status
+```
+
+```saida
+On branch main
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+        new file:   cardapio.txt
+```
+
+"Changes to be committed": o arquivo está na bandeja.
+
+**2. Registrar com uma mensagem:**
+
+```terminal
+git commit -m "Cria o cardápio com café e pão de queijo"
+```
+
+```saida
+[main (root-commit) 1c44e8a] Cria o cardápio com café e pão de queijo
+ 1 file changed, 2 insertions(+)
+ create mode 100644 cardapio.txt
+```
+
+Pronto! `1c44e8a` é a identidade desse commit (no seu computador será outra). `2 insertions(+)` quer dizer duas linhas adicionadas.
+
+**3. Conferir o histórico:**
+
+```terminal
+git log --oneline
+```
+
+```saida
+1c44e8a (HEAD -> main) Cria o cardápio com café e pão de queijo
+```
+
+`HEAD` é um marcador que diz "você está aqui". Por enquanto ele aponta para o único commit da `main`.
+
+## O ciclo do dia a dia
+
+Agora adicione uma linha no `cardapio.txt`:
+
+```texto
+Café coado - R$ 5
+Pão de queijo - R$ 6
+Bolo de cenoura - R$ 8
+```
+
+```terminal
+git status
+```
+
+```saida
+Changes not staged for commit:
+        modified:   cardapio.txt
+```
+
+O arquivo já é rastreado, então o Git diz **modified** (modificado), mas ainda fora da bandeja. O ciclo é sempre o mesmo:
+
+```terminal
+git add cardapio.txt
+git commit -m "Adiciona bolo de cenoura ao cardápio"
+```
+
+<Nota tipo="dica" titulo="Atalho: git add .">
+
+`git add .` coloca na bandeja **tudo** o que mudou na pasta atual. É prático, mas olhe o `git status` antes para não mandar junto algo que não queria (como um arquivo de senha ou uma pasta enorme).
+
+</Nota>
+
+## Mensagens de commit que ajudam
+
+Daqui a três meses, você (ou um colega) vai ler o histórico tentando entender o que aconteceu. Compare:
+
+| Ruim | Boa |
+| --- | --- |
+| `mudanças` | `Adiciona bolo de cenoura ao cardápio` |
+| `arrumei` | `Corrige preço do pão de queijo` |
+| `aaaaa` | `Remove item que saiu do cardápio` |
+| `final agora vai` | `Separa bebidas e comidas em seções` |
+
+Uma regra simples: complete a frase **"Este commit vai..."**. "Este commit vai *adicionar bolo de cenoura ao cardápio*". Se a frase faz sentido, a mensagem é boa.
+
+<Nota tipo="curiosidade" titulo="Commits convencionais">
+
+Muitas equipes usam um prefixo para dizer o tipo da mudança: `feat:` (novidade), `fix:` (correção), `docs:` (documentação), `style:` (visual), `refactor:` (reorganização sem mudar o comportamento). Por exemplo: `feat: adiciona bolo de cenoura ao cardápio`. Não é obrigatório, mas você vai ver muito por aí.
+
+</Nota>
+
+## Commits pequenos são melhores
+
+Pense num commit como **uma ideia**. "Adiciona o bolo" é uma ideia. "Adiciona o bolo, muda a cor do site, corrige o login e apaga um arquivo velho" são quatro ideias num commit só. Se uma delas der problema, desfazer vai levar as outras três juntas.
+
+<Explique pergunta="Por que o Git tem a 'bandeja' (staging area) em vez de salvar tudo que mudou direto?">
+
+Porque nem tudo que você mexeu está pronto ou faz parte da mesma ideia. A bandeja deixa você escolher exatamente o que entra em cada commit, então o histórico fica organizado em mudanças pequenas e com sentido, fáceis de entender e de desfazer.
+
+</Explique>
+
+## Erros comuns
+
+- **Rodar `git commit` sem `-m`**: abre um editor no terminal. Se cair no Vim, digite a mensagem, aperte `Esc`, digite `:wq` e `Enter`.
+- **"nothing to commit"**: você esqueceu o `git add`, ou não salvou o arquivo no editor.
+- **"not a git repository"**: você está fora da pasta do projeto. Use `cd` para entrar nela.
+- **"Author identity unknown"**: faltou configurar `user.name` e `user.email` (aula anterior).
+
+<Tarefa titulo="O cardápio da sua cafeteria">
+
+1. Crie um repositório chamado `minha-cafeteria`.
+2. Crie um `cardapio.txt` com 2 itens e faça o primeiro commit.
+3. Adicione mais 2 itens, **um commit para cada item**.
+4. Crie um arquivo `README.md` com uma frase sobre a cafeteria e faça um commit só dele.
+5. Rode `git log --oneline`. Devem aparecer 4 commits.
+
+<Dica>
+
+O ciclo é sempre: edite e salve o arquivo → `git status` → `git add arquivo` → `git commit -m "mensagem"`. Repita para cada item.
+
+</Dica>
+
+<Resposta>
+
+```terminal
+mkdir minha-cafeteria
+cd minha-cafeteria
+git init
+# crie cardapio.txt com 2 itens
+git add cardapio.txt
+git commit -m "Cria o cardápio com café e pão de queijo"
+# adicione o 3º item
+git add cardapio.txt
+git commit -m "Adiciona bolo de cenoura"
+# adicione o 4º item
+git add cardapio.txt
+git commit -m "Adiciona suco de laranja"
+# crie o README.md
+git add README.md
+git commit -m "Adiciona README com a descrição da cafeteria"
+git log --oneline
+```
+
+```saida
+9d1e0a7 (HEAD -> main) Adiciona README com a descrição da cafeteria
+5b8c2f1 Adiciona suco de laranja
+3a7e9c4 Adiciona bolo de cenoura
+1c44e8a Cria o cardápio com café e pão de queijo
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Você editou o arquivo e rodou git commit -m 'teste', mas o Git respondeu 'nothing added to commit'. O que faltou?"
+  opcoes={["git init", "git add", "git push"]}
+  correta={1}
+  explicacao="O commit só leva o que está na bandeja (staging). Sem git add, a mudança fica só na bancada."
+/>
+
+<Quiz
+  pergunta="Qual destas mensagens de commit é a mais útil?"
+  opcoes={["ajustes", "Corrige o preço do café coado", "commit 3"]}
+  correta={1}
+  explicacao="Ela diz exatamente o que o commit faz. Complete: 'Este commit vai corrigir o preço do café coado'."
+/>
+
+<Cartoes itens={[
+  { frente: "Quais são as três áreas do Git?", verso: "Bancada (working directory), bandeja (staging area) e livro de pedidos (repositório)." },
+  { frente: "O que faz git add?", verso: "Coloca as mudanças na bandeja, prontas para o próximo commit." },
+  { frente: "Qual comando responde 'como está o meu projeto?'", verso: "git status" },
+  { frente: "O que significa 'untracked'?", verso: "O Git viu o arquivo, mas ainda não está rastreando: falta o primeiro git add." },
+  { frente: "Como saber se uma mensagem de commit é boa?", verso: "Complete 'Este commit vai...'. Se a frase faz sentido e diz o que mudou, está boa." },
+]} />
+
+## Resumindo
+
+- `git init` cria o repositório (a pasta `.git` guarda tudo).
+- O ciclo: editar → `git add` (bandeja) → `git commit -m` (livro de pedidos).
+- `git status` o tempo todo, `git log --oneline` para ver o histórico.
+- Um commit = uma ideia, com uma mensagem que completa "Este commit vai...".

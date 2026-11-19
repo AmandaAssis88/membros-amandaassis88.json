@@ -1,0 +1,66 @@
+/* Cores e animações das trilhas de Orientação a Objetos (cubos de açúcar) e Git (prato e talheres). */
+
+[data-trilha="poo"] {
+  --t-acento: #d7b8f0;
+  --t-tinta: #7a4a9e;
+  --t-suave: #f2e9f8;
+  --t-hero:
+    radial-gradient(circle at 80% 10%, rgba(215, 184, 240, 0.24), transparent 45%),
+    linear-gradient(160deg, #241c35 0%, #382a48 55%, #4a3328 100%);
+}
+[data-trilha="git"] {
+  --t-acento: #f4a58a;
+  --t-tinta: #b23b1e;
+  --t-suave: #fbe7df;
+  --t-hero:
+    radial-gradient(circle at 80% 10%, rgba(240, 80, 51, 0.2), transparent 45%),
+    linear-gradient(160deg, #1f2420 0%, #2f2c25 55%, #4a3328 100%);
+}
+
+.poo-cubo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: boiar 3.2s ease-in-out infinite;
+}
+.poo-c2 {
+  animation-delay: 0.7s;
+}
+.poo-c3 {
+  animation-delay: 1.4s;
+}
+.git-ultimo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: git-pulso 2.4s ease-in-out infinite;
+}
+@keyframes git-pulso {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+}
+
+/* Grupos seguidos no cardápio (linguagens e, logo abaixo, paradigmas) precisam respirar. */
+.cardapio > .cardapio-grupo + .cardapio-grupo {
+  margin-top: 36px;
+}
+
+/* Home: a mesa posta entre as bebidas e a padaria */
+.mesa {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px clamp(16px, 4vw, 48px) 40px;
+}
+.mesa .secao-topo {
+  margin-bottom: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poo-cubo,
+  .git-ultimo {
+    animation: none;
+  }
+}

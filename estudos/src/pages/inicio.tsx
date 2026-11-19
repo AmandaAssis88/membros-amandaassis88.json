@@ -6,6 +6,7 @@ import { CantinhoEstudos } from "../cantinho/cantinho";
 import { ParticulasDoAmbiente } from "../cantinho/particulas";
 import { CHAVE_TEMA, TEMA_PADRAO, normalizarTema, type TemaId } from "../cantinho/temas";
 import { MiniPlayer } from "../components/mini-player";
+import { HoraDeRevisar } from "../components/hora-de-revisar";
 import { CRIADOR } from "@/config";
 import { GRUPOS, PESOS, TRILHAS, duracao, minutosDaTrilha, type Trilha } from "../catalogo";
 import { idDaAula, useConcluidas } from "../progresso";
@@ -44,6 +45,8 @@ function CartaoTrilha({ trilha, concluidas }: { trilha: Trilha; concluidas: stri
     </Link>
   );
 }
+
+const grupoDe = (id: Trilha["grupo"]) => GRUPOS.find((g) => g.id === id)!;
 
 function GrupoDoCardapio({
   grupo,
@@ -118,6 +121,8 @@ export function Inicio() {
 
       <CantinhoEstudos tema={tema} onTemaChange={escolherTema} />
 
+      <HoraDeRevisar />
+
       <section className="cardapio" id="cardapio">
         <div className="secao-topo">
           <p className="kicker">CARDÁPIO</p>
@@ -129,7 +134,20 @@ export function Inicio() {
             <GrupoDoCardapio key={g.id} grupo={g} concluidas={concluidas} />
           ))}
         </div>
-        <GrupoDoCardapio grupo={GRUPOS[2]!} concluidas={concluidas} />
+        <GrupoDoCardapio grupo={grupoDe("linguagens")} concluidas={concluidas} />
+        <GrupoDoCardapio grupo={grupoDe("paradigmas")} concluidas={concluidas} />
+      </section>
+
+      <section className="cardapio mesa" id="mesa">
+        <div className="secao-topo">
+          <p className="kicker">🍽️ A MESA POSTA</p>
+          <h2>Antes de servir, os talheres</h2>
+          <p>
+            Toda profissão da padaria usa Git e GitHub todos os dias. Dá para aprender a qualquer
+            momento, mas antes de entrar numa equipe, a mesa precisa estar posta.
+          </p>
+        </div>
+        <GrupoDoCardapio grupo={grupoDe("ferramentas")} concluidas={concluidas} />
       </section>
 
       <section className="cardapio padaria" id="profissoes">
@@ -142,7 +160,7 @@ export function Inicio() {
             mapa inteiro.
           </p>
         </div>
-        <GrupoDoCardapio grupo={GRUPOS[3]!} concluidas={concluidas} />
+        <GrupoDoCardapio grupo={grupoDe("profissoes")} concluidas={concluidas} />
       </section>
 
       <section className="como-estudar">

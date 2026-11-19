@@ -1,0 +1,275 @@
+<Aquecimento perguntas={[
+  { p: "Quais são as três áreas do Git e o comando que leva de uma para a outra?", r: "Bancada (você edita) → git add → bandeja (staging) → git commit → repositório (histórico)." },
+  { p: "Você rodou git commit e apareceu 'nothing added to commit'. Por quê?", r: "Faltou o git add: o commit só leva o que está na bandeja." },
+  { p: "Complete: uma boa mensagem de commit responde 'Este commit vai...'", r: "...dizer exatamente o que muda. Ex.: 'Corrige o preço do café coado'." },
+]} />
+
+O maior presente do Git é este: **errar fica barato**. Apagou uma linha importante? Quebrou algo que funcionava? Dá para olhar o passado, comparar e voltar. Nesta aula você aprende a fazer isso **sem medo**.
+
+<Chute pergunta="Se você fizer um commit com um erro, ele some quando você corrigir no commit seguinte?">
+
+Não. O histórico do Git não se apaga sozinho: o commit com erro continua lá, e a correção vira um commit novo em cima dele. É justamente isso que permite voltar e entender o que aconteceu. Daqui a pouco você vai ver o `git revert`, que faz exatamente isso: desfaz criando um commit novo.
+
+</Chute>
+
+## Lendo o histórico
+
+```terminal
+git log --oneline
+```
+
+```saida
+9d1e0a7 (HEAD -> main) Adiciona README com a descrição da cafeteria
+5b8c2f1 Adiciona suco de laranja
+3a7e9c4 Adiciona bolo de cenoura
+1c44e8a Cria o cardápio com café e pão de queijo
+```
+
+Para ver os detalhes completos (autor, data e mensagem), use só `git log`. Para sair da tela do log, aperte `q`.
+
+Algumas variações úteis:
+
+```terminal
+git log --oneline -5          # só os 5 últimos
+git log --oneline cardapio.txt  # só os commits que mexeram nesse arquivo
+git log --oneline --author="Ana"  # só os commits da Ana
+```
+
+## O que mudou? git diff
+
+Edite o `cardapio.txt` e troque o preço do café de `R$ 5` para `R$ 6`. Antes de qualquer `add`, pergunte:
+
+```terminal
+git diff
+```
+
+```saida
+diff --git a/cardapio.txt b/cardapio.txt
+--- a/cardapio.txt
++++ b/cardapio.txt
+@@ -1,3 +1,3 @@
+-Café coado - R$ 5
++Café coado - R$ 6
+ Pão de queijo - R$ 6
+ Bolo de cenoura - R$ 8
+```
+
+Como ler:
+
+- Linha com **`-`** (vermelha): o que **saiu**.
+- Linha com **`+`** (verde): o que **entrou**.
+- Linhas sem sinal: contexto, para você se localizar.
+
+<Nota tipo="analogia">
+
+O `git diff` é como comparar duas fotos do mesmo prato, lado a lado, com um círculo vermelho em cada diferença.
+
+</Nota>
+
+| Comando | Compara |
+| --- | --- |
+| `git diff` | bancada × bandeja (o que você ainda não deu `add`) |
+| `git diff --staged` | bandeja × último commit (o que vai entrar no commit) |
+| `git diff 1c44e8a 9d1e0a7` | dois commits quaisquer |
+| `git show 3a7e9c4` | o que um commit específico mudou |
+
+<Nota tipo="dica" titulo="No VS Code é ainda mais fácil">
+
+Na aba **Source Control** (o ícone de ramificação na lateral), clique num arquivo modificado: o VS Code mostra o antes e o depois lado a lado. É o mesmo `git diff`, com cores.
+
+</Nota>
+
+## Desfazendo: escolha a ferramenta certa
+
+Desfazer no Git depende de **onde** está o erro. Volte para a cozinha: tem diferença entre derrubar o molho na bancada, colocar o prato errado na bandeja e um pedido que já foi registrado no livro.
+
+### 1. Errei na bancada (ainda não dei add)
+
+Mexeu no arquivo, se arrependeu e quer voltar ao que estava no último commit:
+
+```terminal
+git restore cardapio.txt
+```
+
+<Nota tipo="cuidado" titulo="Esse não tem volta">
+
+`git restore` joga fora as mudanças da bancada que **nunca foram commitadas**. O Git não tem como recuperar algo que ele nunca guardou. Antes de rodar, olhe o `git diff` e tenha certeza.
+
+</Nota>
+
+### 2. Coloquei na bandeja sem querer
+
+Deu `git add` num arquivo que não devia ir nesse commit. Tire da bandeja (a mudança continua na bancada, nada se perde):
+
+```terminal
+git restore --staged senhas.txt
+```
+
+### 3. Fiz um commit e a mensagem ficou errada (e ainda não enviei para o GitHub)
+
+```terminal
+git commit --amend -m "Adiciona suco de laranja ao cardápio"
+```
+
+O `--amend` refaz o último commit. Use **só** em commits que ainda não foram enviados para o GitHub, porque ele troca a identidade do commit.
+
+### 4. Um commit antigo introduziu um erro
+
+O jeito seguro, que funciona até em projetos de equipe:
+
+```terminal
+git revert 5b8c2f1
+```
+
+O `revert` **não apaga** o commit `5b8c2f1`. Ele cria um **commit novo** que faz o contrário dele. O histórico fica honesto: "aqui adicionamos o suco, aqui desfizemos".
+
+```saida
+a81f3d2 (HEAD -> main) Revert "Adiciona suco de laranja"
+9d1e0a7 Adiciona README com a descrição da cafeteria
+5b8c2f1 Adiciona suco de laranja
+...
+```
+
+<Nota tipo="curiosidade" titulo="E o git reset?">
+
+Você vai ver muita gente usando `git reset --hard` na internet. Ele "rebobina" o histórico e apaga commits, e também joga fora as mudanças da bancada. É poderoso e perigoso: em projeto de equipe pode bagunçar o trabalho dos outros. Enquanto estiver começando, prefira `restore` e `revert`.
+
+</Nota>
+
+## Só dar uma olhadinha no passado
+
+Quer ver como o projeto estava num commit antigo, sem mudar nada?
+
+```terminal
+git switch --detach 3a7e9c4
+```
+
+Os arquivos da pasta voltam a ser como eram naquele commit. O Git avisa que você está em **"detached HEAD"**: é como visitar uma página antiga do caderno. Olhe à vontade e, para voltar ao presente:
+
+```terminal
+git switch main
+```
+
+## .gitignore: o que nunca deve entrar
+
+Alguns arquivos não devem ir para o histórico:
+
+- Senhas e chaves (`.env`)
+- Pastas geradas automaticamente (`node_modules/`, `build/`, `dist/`, `__pycache__/`)
+- Arquivos do sistema (`.DS_Store` do Mac, `Thumbs.db` do Windows)
+- Programas compilados (`*.exe`, `*.class`, `*.o`)
+
+Crie um arquivo chamado `.gitignore` na raiz do projeto, com um padrão por linha:
+
+```texto
+# Segredos
+.env
+
+# Gerados
+node_modules/
+dist/
+__pycache__/
+*.class
+
+# Sistema
+.DS_Store
+```
+
+Depois disso, o `git status` passa a ignorar esses arquivos. Faça commit do `.gitignore`: ele também faz parte do projeto.
+
+<Nota tipo="cuidado" titulo="Se uma senha já foi para o GitHub">
+
+O `.gitignore` só vale para arquivos que **ainda não** foram commitados. Se uma senha já entrou num commit e foi enviada, apagar o arquivo não basta, porque ela continua no histórico. O certo é **trocar a senha** (gerar uma chave nova) imediatamente.
+
+</Nota>
+
+<Explique pergunta="Qual a diferença entre git restore e git revert? Quando usar cada um?">
+
+O `git restore` mexe na bancada (ou na bandeja): desfaz mudanças que ainda **não viraram commit**. O `git revert` desfaz um **commit que já existe**, criando um commit novo com o contrário dele, sem apagar o histórico. Mudança não commitada: restore. Commit que já existe: revert.
+
+</Explique>
+
+## Erros comuns
+
+- Ficar "preso" no `git log`: aperte `q`.
+- Usar `git restore` achando que dá para recuperar depois: não dá, o que nunca foi commitado não tem cópia.
+- Usar `--amend` num commit que já foi enviado: o GitHub vai recusar o próximo envio, porque o histórico mudou.
+- Criar o `.gitignore` depois de commitar a pasta: o arquivo já está rastreado. Rode `git rm -r --cached pasta/` e faça um commit.
+
+<Tarefa titulo="Máquina do tempo da cafeteria">
+
+No seu repositório `minha-cafeteria`:
+
+1. Mude um preço, veja o `git diff` e **descarte** a mudança com `git restore`.
+2. Crie um arquivo `rascunho.txt`, dê `git add` e tire da bandeja com `git restore --staged`.
+3. Crie um `.gitignore` que ignore `rascunho.txt` e faça commit dele.
+4. Faça um commit adicionando um item ao cardápio e depois desfaça com `git revert`.
+5. Confira no `git log --oneline` que o commit e o revert aparecem.
+
+<Dica>
+
+Para o passo 4, pegue o código do commit no `git log --oneline` e use `git revert codigo`. Se abrir um editor pedindo a mensagem, salve e feche (no Vim: `Esc`, `:wq`, `Enter`).
+
+</Dica>
+
+<Resposta>
+
+```terminal
+# 1
+git diff
+git restore cardapio.txt
+# 2
+git add rascunho.txt
+git restore --staged rascunho.txt
+# 3
+echo "rascunho.txt" > .gitignore
+git add .gitignore
+git commit -m "Ignora o arquivo de rascunho"
+# 4
+git add cardapio.txt
+git commit -m "Adiciona torta de limão"
+git log --oneline   # copie o código do commit da torta
+git revert 7c21a9e
+# 5
+git log --oneline
+```
+
+```saida
+e04b6aa (HEAD -> main) Revert "Adiciona torta de limão"
+7c21a9e Adiciona torta de limão
+2f9d0c3 Ignora o arquivo de rascunho
+...
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Você mexeu num arquivo, NÃO deu add e quer voltar ao que estava no último commit. Qual comando?"
+  opcoes={["git revert", "git restore arquivo", "git commit --amend"]}
+  correta={1}
+  explicacao="restore descarta mudanças da bancada. revert é para commits que já existem; amend refaz o último commit."
+/>
+
+<Quiz
+  pergunta="Um commit da semana passada, que já está no GitHub, quebrou o cálculo do troco. Qual é o jeito seguro de desfazer?"
+  opcoes={["git reset --hard", "Apagar a pasta .git", "git revert com o código do commit"]}
+  correta={2}
+  explicacao="revert cria um commit novo que desfaz o antigo, sem reescrever o histórico que outras pessoas já têm."
+/>
+
+<Cartoes itens={[
+  { frente: "No git diff, o que significam - e +?", verso: "- é o que saiu (vermelho), + é o que entrou (verde)." },
+  { frente: "git restore × git restore --staged", verso: "restore descarta mudanças da bancada. --staged só tira da bandeja, sem perder nada." },
+  { frente: "Por que preferir git revert a git reset em equipe?", verso: "revert desfaz criando um commit novo e não reescreve o histórico que os outros já baixaram." },
+  { frente: "Para que serve o .gitignore?", verso: "Listar o que nunca deve entrar no histórico: senhas, pastas geradas, arquivos do sistema." },
+  { frente: "Uma senha foi para o GitHub. Apagar o arquivo resolve?", verso: "Não. Ela continua no histórico. Troque a senha imediatamente." },
+]} />
+
+## Resumindo
+
+- `git log` e `git diff` mostram o passado e o que mudou.
+- Bancada: `git restore`. Bandeja: `git restore --staged`. Último commit não enviado: `--amend`. Commit que já existe: `git revert`.
+- `git switch --detach` visita o passado; `git switch main` volta.
+- `.gitignore` mantém segredos e lixo fora do histórico.

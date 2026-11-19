@@ -152,6 +152,73 @@ export function Bebida({ trilha, tamanho = 120 }: { trilha: TrilhaId; tamanho?: 
           <Rotulo x={60} y={86} texto="J" cor="#fff4e4" />
         </g>
       )}
+
+      {trilha === "poo" && (
+        <g>
+          <ellipse cx="60" cy="100" rx="44" ry="7" fill="#e9dcef" />
+          <ellipse cx="60" cy="98" rx="36" ry="5" fill="#f7f0fa" />
+          <g className="poo-cubo">
+            <path d="M24 78 l16 -8.0 l16 8.0 l-16 8.0z" fill="#ffffff" />
+            <path d="M24 78 l16 8.0 v16 l-16 -8.0z" fill="#efe4f4" />
+            <path d="M40 86.0 l16 -8.0 v16 l-16 8.0z" fill="#d9c6e6" />
+          </g>
+          <g className="poo-cubo poo-c2">
+            <path d="M60 78 l16 -8.0 l16 8.0 l-16 8.0z" fill="#ffffff" />
+            <path d="M60 78 l16 8.0 v16 l-16 -8.0z" fill="#efe4f4" />
+            <path d="M76 86.0 l16 -8.0 v16 l-16 8.0z" fill="#d9c6e6" />
+          </g>
+          <g className="poo-cubo poo-c3">
+            <path d="M42 52 l16 -8.0 l16 8.0 l-16 8.0z" fill="#ffffff" />
+            <path d="M42 52 l16 8.0 v16 l-16 -8.0z" fill="#efe4f4" />
+            <path d="M58 60.0 l16 -8.0 v16 l-16 8.0z" fill="#d9c6e6" />
+          </g>
+          <text
+            x="60"
+            y="36"
+            textAnchor="middle"
+            fontFamily="JetBrains Mono, monospace"
+            fontWeight="700"
+            fontSize="14"
+            fill="#8a5aa8"
+          >
+            {"{ }"}
+          </text>
+        </g>
+      )}
+
+      {trilha === "git" && (
+        <g>
+          <path
+            d="M14 30v22a5 5 0 0 0 10 0V30M19 30v24M19 54v50"
+            fill="none"
+            stroke="#b9a48c"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <path
+            d="M101 30c-7 6-7 24 0 30v44"
+            fill="none"
+            stroke="#b9a48c"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          <circle cx="60" cy="66" r="33" fill="#fffaf3" stroke="#e3d3bf" strokeWidth="3" />
+          <circle cx="60" cy="66" r="24" fill="none" stroke="#efe3d2" strokeWidth="2" />
+          <g className="git-grafo">
+            <path
+              d="M44 78V54M44 70c0-8 16-6 16-14v-2M60 54c0 8 16 8 16 16v8"
+              fill="none"
+              stroke="#2f7a4f"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
+            <circle cx="44" cy="78" r="5" fill="#2f7a4f" />
+            <circle cx="44" cy="54" r="5" fill="#2f7a4f" />
+            <circle cx="60" cy="54" r="5" fill="#f05033" />
+            <circle className="git-ultimo" cx="76" cy="78" r="5" fill="#f05033" />
+          </g>
+        </g>
+      )}
     </svg>
   );
 }
@@ -162,6 +229,8 @@ const ITENS: Record<TrilhaId, string[]> = {
   c: ["0x7f", "&x", "*p", "{ }", "\\0", "0x1a", "int", "&", "*", ";"],
   python: ["", "", "", "", "", "", "", "", "", ""],
   java: ["", "", "", "", "", "", "", "", "", ""],
+  poo: ["class", "{ }", "self", "this", "new", "▣", "extends", "▣", "obj.", "{ }"],
+  git: ["commit", "●", "main", "merge", "●─●", "push", "PR #1", "●", "branch", "pull"],
   produto: ["GET", "200", "→", "JSON", "←", "/api", "POST", "201", "→", "{ }"],
   qa: ["✓", "✗", "bug", "✓", "assert", "✓", "✗", "test", "✓", "🐞"],
   "ui-ux": ["◯", "△", "▢", "Aa", "◯", "▢", "△", "#ff8fb1", "Aa", "◯"],
