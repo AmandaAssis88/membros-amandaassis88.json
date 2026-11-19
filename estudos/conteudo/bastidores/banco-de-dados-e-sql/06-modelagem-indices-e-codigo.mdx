@@ -1,0 +1,239 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre WHERE e HAVING?", r: "WHERE filtra linhas antes de agrupar; HAVING filtra grupos depois das agregações." },
+  { p: "Por que usar COUNT(DISTINCT p.id) depois de um JOIN com itens?", r: "Porque cada pedido aparece uma vez por item; sem DISTINCT, ele é contado várias vezes." },
+  { p: "O que é uma chave estrangeira?", r: "Uma coluna que guarda o id de outra tabela, ligando as duas." },
+]} />
+
+Você já consulta, altera, junta e resume. Para fechar a trilha, três assuntos que aparecem no primeiro dia de trabalho com banco de dados: **desenhar** as tabelas do jeito certo, deixar as consultas **rápidas** e usar SQL **de dentro do código** com segurança.
+
+<Chute pergunta="Se o cliente pode ter vários telefones, é uma boa ideia criar as colunas telefone1, telefone2 e telefone3?">
+
+Não. E se alguém tiver quatro? E como procurar "quem tem o telefone tal" sem olhar três colunas? Quando uma coisa pode ter **vários** de outra, o certo é uma **tabela separada** (`telefones`, com o `cliente_id`). É a mesma ideia que separou pedidos e itens.
+
+</Chute>
+
+## Modelagem: cada coisa na sua prateleira
+
+Modelar é decidir **quais tabelas** existem e **como se ligam**. Um sinal de modelo ruim é a **repetição**. Veja esta tabela única de pedidos:
+
+| pedido | cliente | cidade_cliente | produto | preco |
+| --- | --- | --- | --- | --- |
+| 1 | Ana | São Paulo | Cappuccino | 9.00 |
+| 1 | Ana | São Paulo | Pão de queijo | 6.00 |
+| 3 | Ana | São Paulo | Cappuccino | 9.00 |
+
+Parece prático, mas:
+
+- **A Ana mudou de cidade?** É preciso alterar todas as linhas dela. Se esquecer uma, o banco passa a dizer duas coisas diferentes.
+- **O cappuccino subiu?** O preço está repetido em cada venda. E os pedidos antigos, deveriam mudar?
+- **Um produto novo**, que ninguém comprou ainda, não tem onde ser cadastrado.
+
+A solução é a que você já usa: **uma tabela por "coisa"**, ligadas por ids. Esse processo de tirar a repetição tem nome: **normalização**.
+
+<Passos itens={[
+  { icone: "🔤", titulo: "Substantivos", texto: "cliente, produto, pedido viram tabelas" },
+  { icone: "🔁", titulo: "Repetiu?", texto: "o dado que se repete vai para a tabela dele" },
+  { icone: "🔗", titulo: "Vários de vários", texto: "um pedido tem vários produtos, e um produto está em vários pedidos: tabela do meio (itens_pedido)" },
+]} />
+
+<Nota tipo="curiosidade" titulo="A tabela do meio">
+
+Um pedido tem **vários** produtos, e um produto aparece em **vários** pedidos. Essa relação "muitos para muitos" sempre vira uma **tabela do meio**, com o id dos dois lados: é a nossa `itens_pedido`. E ela ainda guarda o que pertence à **ligação**: a quantidade. Se quiser preservar o preço da época da venda, ele também mora ali.
+
+</Nota>
+
+## Índices: o sumário do livro
+
+Procurar os pedidos da Ana com `WHERE cliente_id = 1` obriga o banco a olhar **todas** as linhas da tabela de pedidos, uma por uma: a **busca linear** da trilha de Algoritmos. Com 10 milhões de pedidos, fica lento.
+
+Um **índice** é uma estrutura extra, sempre ordenada, que leva direto às linhas certas, como o **índice remissivo** no fim de um livro.
+
+```sql
+CREATE INDEX idx_pedidos_cliente_id ON pedidos (cliente_id);
+```
+
+Dá para pedir ao SQLite que mostre **como** ele vai buscar:
+
+```sql
+EXPLAIN QUERY PLAN SELECT * FROM pedidos WHERE cliente_id = 1;
+```
+
+| Antes do índice | Depois do índice |
+| --- | --- |
+| `SCAN pedidos` (lê a tabela inteira) | `SEARCH pedidos USING INDEX idx_pedidos_cliente_id` |
+
+Por dentro, os índices usam estruturas parecidas com a **busca binária**: O(log n) em vez de O(n).
+
+<Nota tipo="cuidado" titulo="Índice não é de graça">
+
+Cada índice ocupa espaço e precisa ser **atualizado** a cada `INSERT`, `UPDATE` e `DELETE`. Crie índices nas colunas que você **filtra** (`WHERE`), **junta** (`JOIN ... ON`) e **ordena** com frequência, e não em todas. A chave primária já ganha um índice automaticamente.
+
+</Nota>
+
+## SQL de dentro do código
+
+Programas conversam com o banco mandando SQL. Em Python, o SQLite já vem embutido, com o módulo `sqlite3`. Veja um caso real: uma cliente chamada **Joana D'Ávila**.
+
+```python
+import sqlite3
+
+con = sqlite3.connect(":memory:")
+con.execute("CREATE TABLE clientes (id INTEGER PRIMARY KEY, nome TEXT NOT NULL, cidade TEXT)")
+con.executemany(
+    "INSERT INTO clientes (nome, cidade) VALUES (?, ?)",
+    [("Ana", "São Paulo"), ("Bia", "Recife"), ("Joana D'Ávila", "Manaus")],
+)
+con.commit()
+
+nome = "Joana D'Ávila"
+
+try:
+    sql = "SELECT id, cidade FROM clientes WHERE nome = '" + nome + "'"
+    print(con.execute(sql).fetchall())
+except sqlite3.Error as erro:
+    print("Concatenando:", erro)
+
+linha = con.execute("SELECT id, cidade FROM clientes WHERE nome = ?", (nome,)).fetchone()
+print("Com parâmetro:", linha)
+```
+
+```saida
+Concatenando: near "Ávila": syntax error
+Com parâmetro: (3, 'Manaus')
+```
+
+O apóstrofo do nome **fechou o texto** no meio da consulta montada com `+`, e o SQL quebrou. Se um sobrenome comum já quebra a consulta, imagine alguém digitando, de propósito, um texto com comandos SQL dentro. Isso é a **injeção de SQL**, que você vai ver na trilha de **Segurança para devs**.
+
+A versão com `?` manda a consulta e o valor **separados**. O banco trata o valor sempre como **dado**, nunca como parte do comando. Por isso:
+
+<Nota tipo="cuidado" titulo="A regra que não tem exceção">
+
+**Nunca monte SQL juntando texto** com `+`, `f"..."` ou `.format()`. Use sempre **parâmetros**: `?` no SQLite, `%s` no MySQL e no PostgreSQL com Python, `?` com `PreparedStatement` em Java.
+
+</Nota>
+
+<Abas>
+<Aba rotulo="Python">
+
+```python-exemplo
+cursor.execute("SELECT * FROM clientes WHERE nome = ?", (nome,))
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java-exemplo
+PreparedStatement consulta = conexao.prepareStatement(
+    "SELECT * FROM clientes WHERE nome = ?"
+);
+consulta.setString(1, nome);
+ResultSet resultado = consulta.executeQuery();
+```
+
+</Aba>
+</Abas>
+
+<Nota tipo="curiosidade" titulo="ORMs">
+
+Em muitos projetos, você não escreve SQL diretamente: usa um **ORM**, uma biblioteca que transforma objetos em linhas e vice-versa (SQLAlchemy e Django em Python, Hibernate em Java, Prisma em JavaScript). Eles já usam parâmetros por baixo. Mas quando a consulta fica lenta ou o resultado vem errado, quem sabe SQL é quem resolve.
+
+</Nota>
+
+## Revisando o SQL que a IA escreveu
+
+Junte tudo da trilha numa lista:
+
+| Pergunte | Por quê |
+| --- | --- |
+| Uma linha do resultado representa o quê? | Pega JOIN duplicando linhas |
+| E os NULL? | `= NULL`, `<>` e `AVG` ignorando vazios |
+| Tem `UPDATE` ou `DELETE`? Cadê o `WHERE`? | Evita mudar a tabela inteira |
+| É `INNER` ou `LEFT`? Quem pode sumir? | Pega quem some do relatório |
+| Usa parâmetros ou junta texto? | Evita injeção de SQL |
+| Conferi um número que eu sei de cabeça? | O erro que roda sem erro |
+
+<Explique pergunta="Por que usar parâmetros (como o ?) em vez de juntar o texto do usuário na consulta SQL?">
+
+Porque, juntando texto, o que o usuário digita vira parte do comando SQL: um apóstrofo num sobrenome já quebra a consulta, e um texto malicioso pode mudar o que ela faz (injeção de SQL). Com parâmetros, a consulta e os valores vão separados, e o banco trata o valor sempre como dado, nunca como comando.
+
+</Explique>
+
+<Tarefa titulo="Modele a biblioteca de verdade">
+
+Lembra da biblioteca da faculdade da aula 1? Agora escreva o SQL:
+
+1. `CREATE TABLE` para `alunos`, `livros` e `emprestimos`, com chaves primárias, chaves estrangeiras, `NOT NULL` onde fizer sentido e a data de devolução podendo ficar vazia.
+2. Um índice que acelere "quais empréstimos estão com o aluno X".
+3. Uma consulta com os **livros que estão emprestados agora** (sem data de devolução), com o nome do aluno.
+
+<Dica>
+
+`emprestimos` tem `aluno_id REFERENCES alunos(id)` e `livro_id REFERENCES livros(id)`. O índice vai em `emprestimos (aluno_id)`. Na consulta, junte as três tabelas e filtre `WHERE e.data_devolucao IS NULL`.
+
+</Dica>
+
+<Resposta>
+
+```sql
+CREATE TABLE alunos (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  matricula TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE livros (
+  id INTEGER PRIMARY KEY,
+  titulo TEXT NOT NULL,
+  autor TEXT NOT NULL
+);
+
+CREATE TABLE emprestimos (
+  id INTEGER PRIMARY KEY,
+  aluno_id INTEGER NOT NULL REFERENCES alunos(id),
+  livro_id INTEGER NOT NULL REFERENCES livros(id),
+  data_saida TEXT NOT NULL,
+  data_devolucao TEXT
+);
+
+CREATE INDEX idx_emprestimos_aluno_id ON emprestimos (aluno_id);
+
+SELECT l.titulo, a.nome AS aluno, e.data_saida
+FROM emprestimos e
+JOIN livros l ON l.id = e.livro_id
+JOIN alunos a ON a.id = e.aluno_id
+WHERE e.data_devolucao IS NULL
+ORDER BY e.data_saida;
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Um pedido tem vários produtos e um produto aparece em vários pedidos. Como modelar?"
+  opcoes={["Colunas produto1, produto2, produto3 em pedidos", "Uma tabela do meio com pedido_id e produto_id", "Guardar os produtos como texto separado por vírgula"]}
+  correta={1}
+  explicacao="Relação muitos para muitos vira uma tabela do meio, como itens_pedido."
+/>
+
+<Quiz
+  pergunta="Qual o custo de criar um índice?"
+  opcoes={["Nenhum", "Espaço extra e escritas (INSERT, UPDATE, DELETE) um pouco mais lentas", "A tabela deixa de aceitar NULL"]}
+  correta={1}
+  explicacao="O índice acelera as buscas, mas precisa ser mantido a cada mudança. Crie nas colunas que você filtra, junta e ordena."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é normalização?", verso: "Tirar a repetição colocando cada coisa na sua tabela, ligadas por ids." },
+  { frente: "Como modelar 'muitos para muitos'?", verso: "Com uma tabela do meio que guarda o id dos dois lados (ex.: itens_pedido)." },
+  { frente: "Para que serve um índice?", verso: "Achar as linhas sem ler a tabela inteira: O(log n) em vez de O(n)." },
+  { frente: "Onde criar índices?", verso: "Nas colunas usadas com frequência em WHERE, JOIN e ORDER BY." },
+  { frente: "A regra sem exceção do SQL no código", verso: "Nunca juntar texto na consulta: sempre parâmetros (?, %s, PreparedStatement)." },
+]} />
+
+## Resumindo
+
+- **Modelar** é uma tabela por coisa; repetição é sinal de problema; muitos para muitos vira tabela do meio.
+- **Índices** aceleram buscas como um sumário, mas custam espaço e escrita.
+- No código, **sempre parâmetros**, nunca texto juntado.
+- Revise o SQL (seu ou da IA) com a lista: linhas, NULL, WHERE, tipo de JOIN, parâmetros e um número conferido. A despensa está organizada. 🫙

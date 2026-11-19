@@ -1,0 +1,75 @@
+Alguns conceitos aparecem em toda conversa de segurança. A trilha **Segurança para devs**, na cozinha, mostra os ataques mais comuns em detalhe; aqui está o vocabulário da profissão.
+
+## Vulnerabilidade, ameaça e risco
+
+| Termo | Significa | Na cafeteria |
+| --- | --- | --- |
+| **Vulnerabilidade** | Uma fraqueza | A porta dos fundos não tranca |
+| **Ameaça** | Quem ou o que pode explorar a fraqueza | Alguém que quer roubar o caixa |
+| **Risco** | A chance de acontecer × o tamanho do estrago | Alto, se o caixa fica perto da porta |
+
+Segurança é **gerenciar risco**: não dá para eliminar todos, então se corrige primeiro o que é mais provável e mais grave.
+
+## CVE: as falhas têm número
+
+Quando alguém descobre uma falha num software conhecido, ela ganha um código público, o **CVE** (por exemplo, `CVE-2021-44228`, a famosa falha do Log4j). Assim, o mundo inteiro fala da mesma falha, e as ferramentas avisam se o seu projeto usa a versão vulnerável.
+
+<Nota tipo="dica" titulo="Atualizar é segurança">
+A maior parte dos ataques explora falhas **já conhecidas e já corrigidas**, em sistemas que ninguém atualizou. Manter dependências e sistemas atualizados (o famoso *patch*) é uma das defesas mais eficientes que existem.
+</Nota>
+
+## Como um ataque acontece
+
+Os ataques costumam seguir etapas parecidas. Conhecer a sequência ajuda a colocar uma barreira em cada uma:
+
+<Passos itens={[
+  { icone: "🔭", titulo: "Reconhecimento", texto: "descobrir o que existe" },
+  { icone: "🚪", titulo: "Entrada", texto: "phishing, senha vazada, falha conhecida" },
+  { icone: "🕳️", titulo: "Permanência", texto: "esconder-se e ganhar mais acesso" },
+  { icone: "🎯", titulo: "Objetivo", texto: "roubar dados, sequestrar, derrubar" },
+]} />
+
+Quem defende tenta **quebrar a corrente** o mais cedo possível: 2FA barra a entrada, menor privilégio limita o acesso, monitoramento percebe a permanência, backup reduz o estrago.
+
+## Ransomware e backup
+
+O **ransomware** criptografa os arquivos da empresa e cobra resgate para devolver. A melhor defesa contra o pior cenário é o **backup**, seguindo a regra **3-2-1**: 3 cópias, em 2 tipos de mídia diferentes, 1 fora do lugar (e testando se a restauração funciona de verdade).
+
+## Resposta a incidentes
+
+Quando acontece, existe um roteiro:
+
+1. **Preparar**: ter o plano, os contatos e as ferramentas antes.
+2. **Detectar e analisar**: o que está acontecendo?
+3. **Conter**: isolar o que foi afetado.
+4. **Erradicar e recuperar**: limpar e voltar a funcionar.
+5. **Aprender**: o que mudar para não acontecer de novo, sem caça às bruxas.
+
+<Tarefa titulo="Classifique os riscos">
+
+Para cada situação, diga a vulnerabilidade, a ameaça e uma camada de defesa:
+
+1. O servidor da cafeteria roda uma versão de 2019 de um sistema que tem CVEs conhecidos.
+2. O gerente usa a mesma senha no e-mail pessoal e no painel da loja.
+3. O único backup fica num HD ligado no mesmo computador.
+
+<Dica>
+Pense em quem poderia explorar cada fraqueza e em qual hábito ou ferramenta da aula fecha a porta: atualização, 2FA, gerenciador de senhas, backup 3-2-1.
+</Dica>
+
+<Resposta>
+
+1. Vulnerabilidade: software desatualizado com falhas públicas. Ameaça: robôs que varrem a internet atrás dessas versões. Defesa: atualizar e monitorar dependências.
+2. Vulnerabilidade: senha reutilizada. Ameaça: um vazamento do e-mail pessoal libera o painel. Defesa: senha única com gerenciador e 2FA.
+3. Vulnerabilidade: backup no mesmo lugar do original. Ameaça: ransomware criptografa os dois. Defesa: regra 3-2-1, com uma cópia desconectada ou fora do local.
+
+</Resposta>
+
+</Tarefa>
+
+## Resumindo
+
+- **Vulnerabilidade** é a fraqueza, **ameaça** é quem explora, **risco** é chance × estrago.
+- Falhas conhecidas têm **CVE**; atualizar é uma das melhores defesas.
+- Ataques seguem etapas; cada camada de defesa quebra a corrente num ponto.
+- Backup 3-2-1 e um plano de resposta a incidentes salvam a empresa no pior dia.

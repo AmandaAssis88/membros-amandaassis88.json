@@ -1,0 +1,182 @@
+<Chute pergunta="Se uma planilha guarda dados em linhas e colunas, por que os sistemas usam banco de dados em vez de planilha?">
+
+Porque a planilha não aguenta o que um sistema precisa: milhares de pessoas lendo e escrevendo **ao mesmo tempo**, regras que **nunca** podem ser quebradas (um pedido sem cliente, um preço vazio), buscas rápidas em milhões de linhas e a garantia de que nada se perde se a luz cair no meio de uma venda. O banco de dados foi feito para isso.
+
+</Chute>
+
+## A despensa da cozinha
+
+<Nota tipo="analogia" titulo="Pensa assim: a despensa organizada">
+
+Numa cozinha profissional, nada fica jogado. A despensa tem **prateleiras** (uma para grãos, outra para laticínios), cada pote tem **etiqueta** e cada item tem um **lugar certo**. Qualquer cozinheiro acha o que precisa em segundos, e ninguém guarda leite na prateleira de café. O banco de dados é essa despensa: tudo guardado, etiquetado e fácil de achar.
+
+</Nota>
+
+Todo sistema que você usa tem um banco de dados por trás: o app do banco guarda o seu saldo, o Instagram guarda seus posts e seguidores, o iFood guarda restaurantes, cardápios e pedidos. Toda profissão da padaria encosta nele: o back-end escreve, o front-end mostra, o pessoal de dados analisa, o QA confere e o DevOps faz backup.
+
+## Planilha × banco de dados
+
+| | Planilha | Banco de dados |
+| --- | --- | --- |
+| Quantas pessoas ao mesmo tempo | Poucas, e com conflito | Milhares, de forma organizada |
+| Regras | Qualquer célula aceita qualquer coisa | Regras fixas: tipo, obrigatório, único |
+| Tamanho | Fica lenta com dezenas de milhares de linhas | Milhões ou bilhões de linhas |
+| Quem usa | Pessoas, clicando | Programas, por código |
+| Se cair a luz no meio de uma venda | Pode ficar pela metade | Ou salva tudo, ou nada |
+
+## Tabelas, linhas e colunas
+
+Os bancos mais usados são os **relacionais**: eles guardam os dados em **tabelas**, parecidas com planilhas, mas com regras.
+
+A tabela `produtos` da nossa cafeteria:
+
+| id | nome | categoria | preco |
+| --- | --- | --- | --- |
+| 1 | Café coado | bebida | 5.00 |
+| 2 | Cappuccino | bebida | 9.00 |
+| 3 | Chá gelado | bebida | 7.00 |
+| 4 | Pão de queijo | comida | 6.00 |
+| 5 | Bolo de cenoura | comida | 8.00 |
+| 6 | Croissant | comida | 10.00 |
+
+- Cada **coluna** é uma informação, com um **tipo** fixo: texto, número inteiro, número decimal, data.
+- Cada **linha** (ou **registro**) é um item: um produto.
+- A coluna **`id`** é a **chave primária**: um número único que identifica cada linha, como o número da comanda. Dois produtos podem ter o mesmo nome, mas nunca o mesmo id.
+
+<Nota tipo="dica" titulo="Por que não usar o nome como identificador?">
+
+Nomes mudam ("Café coado" vira "Café da casa") e podem se repetir. O id nunca muda e nunca se repete. As outras tabelas vão apontar para o produto pelo id, então ele precisa ser estável.
+
+</Nota>
+
+## Tabelas que conversam
+
+A cafeteria não tem só produtos. Tem clientes, pedidos e os itens de cada pedido. Cada coisa fica na **sua** tabela, e elas se ligam pelos ids:
+
+```texto
+clientes  ◀───  pedidos  ◀───  itens_pedido  ───▶  produtos
+  id             id              pedido_id          id
+  nome           cliente_id      produto_id         nome
+  cidade         data            quantidade         categoria
+                                                     preco
+```
+
+O pedido não copia o nome do cliente: ele guarda o **`cliente_id`**. Se a Ana mudar o nome no cadastro, todos os pedidos dela continuam certos. Essa ligação entre tabelas é o "relacional" do banco relacional, e você vai usá-la de verdade na aula de JOIN.
+
+## SQL: a língua da despensa
+
+Para conversar com um banco relacional, existe uma linguagem própria: o **SQL** (*Structured Query Language*, lê-se "ésse-quê-éle" ou "síquel"). Ele é diferente das linguagens que você viu: em vez de dizer **como** buscar, passo a passo, você diz **o que** quer, e o banco descobre o melhor caminho.
+
+```sql
+SELECT nome, preco
+FROM produtos
+WHERE categoria = 'bebida';
+```
+
+Lê-se quase como português: "selecione o nome e o preço, da tabela produtos, onde a categoria é bebida".
+
+| Comando | Para quê |
+| --- | --- |
+| `SELECT` | Consultar dados |
+| `INSERT` | Inserir linhas |
+| `UPDATE` | Alterar linhas |
+| `DELETE` | Apagar linhas |
+| `CREATE TABLE` | Criar uma tabela |
+
+## Os bancos mais conhecidos
+
+| Banco | Onde aparece |
+| --- | --- |
+| **PostgreSQL** | Muito usado em empresas e startups; é o banco por trás do Supabase |
+| **MySQL** / **MariaDB** | Sites e sistemas web há décadas |
+| **SQLite** | Um banco num arquivo só: está no seu celular, no navegador e em apps |
+| **SQL Server** e **Oracle** | Grandes empresas e bancos |
+
+O SQL básico é praticamente o mesmo em todos. Aprendendo num, você usa em qualquer um.
+
+<Nota tipo="curiosidade" titulo="E os bancos NoSQL?">
+
+Existem também bancos que não usam tabelas, chamados **NoSQL**: o MongoDB guarda documentos parecidos com JSON, o Redis guarda pares chave → valor (como os dicionários da trilha de Algoritmos) na memória, para ser rapidíssimo. Eles têm o seu lugar, mas o banco relacional com SQL continua sendo a base que toda vaga espera.
+
+</Nota>
+
+## Onde praticar
+
+Nesta trilha, os exemplos usam **SQLite**, porque ele roda em qualquer lugar sem instalar nada:
+
+- **No navegador**: abra o [SQLite Online](https://sqliteonline.com/), cole os comandos e clique em **Run**.
+- **No computador**: instale o **DB Browser for SQLite** (gratuito) e crie um banco novo.
+
+Na próxima aula você recebe o script que cria a cafeteria inteira para treinar.
+
+<Nota tipo="ia" titulo="Por que aprender SQL se a IA escreve consultas?">
+
+A IA escreve SQL muito bem, e também escreve consultas que **parecem certas e devolvem o dado errado**: um JOIN que duplica linhas, um filtro que esquece os valores vazios, um `UPDATE` sem `WHERE` que muda a tabela inteira. Nesta trilha você vai aprender a ler e conferir essas consultas, porque um dado errado num relatório ou um `DELETE` apagando tudo custa caro.
+
+</Nota>
+
+<Explique pergunta="Por que a tabela de pedidos guarda o cliente_id em vez do nome do cliente?">
+
+Porque o id é único e não muda. Se o pedido guardasse o nome, dois clientes com o mesmo nome se confundiriam, e se alguém mudasse o nome no cadastro, os pedidos antigos ficariam com o nome velho. Guardando só o id, a informação do cliente fica num lugar só, e todos os pedidos apontam para ela.
+
+</Explique>
+
+<Tarefa titulo="Desenhe a despensa">
+
+Pense num sistema de **biblioteca da faculdade**. Sem escrever SQL ainda, liste:
+
+1. As **tabelas** que ele precisa (pelo menos 3).
+2. As **colunas** de cada uma, com o tipo (texto, inteiro, decimal, data).
+3. Qual coluna é a **chave primária** de cada tabela.
+4. Como as tabelas se **ligam** (qual tabela guarda o id de qual).
+
+<Dica>
+
+Pense nas "coisas" do sistema: quem pega emprestado, o que é emprestado e o empréstimo em si. O empréstimo liga as outras duas, com as datas.
+
+</Dica>
+
+<Resposta>
+
+Um exemplo:
+
+| Tabela | Colunas | Chave primária |
+| --- | --- | --- |
+| `alunos` | id (inteiro), nome (texto), matricula (texto), curso (texto) | id |
+| `livros` | id (inteiro), titulo (texto), autor (texto), ano (inteiro) | id |
+| `emprestimos` | id (inteiro), aluno_id (inteiro), livro_id (inteiro), data_saida (data), data_devolucao (data, pode ficar vazia) | id |
+
+A tabela `emprestimos` liga as outras duas: guarda o `aluno_id` e o `livro_id`. Um aluno pode ter vários empréstimos, e um livro pode ser emprestado várias vezes (em datas diferentes).
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que é uma chave primária?"
+  opcoes={["A primeira coluna de qualquer tabela", "Uma coluna com valor único que identifica cada linha", "A senha do banco de dados"]}
+  correta={1}
+  explicacao="A chave primária (geralmente o id) identifica cada linha sem repetição e não muda."
+/>
+
+<Quiz
+  pergunta="Qual a principal diferença do SQL para Python ou Java?"
+  opcoes={["SQL é mais lento", "No SQL você diz O QUE quer, e o banco decide COMO buscar", "SQL só funciona no Windows"]}
+  correta={1}
+  explicacao="SQL é declarativo: você descreve o resultado, e o banco escolhe o caminho mais eficiente."
+/>
+
+<Cartoes itens={[
+  { frente: "Tabela, linha e coluna", verso: "Tabela guarda um tipo de coisa; cada linha é um item; cada coluna é uma informação com tipo fixo." },
+  { frente: "O que é chave primária?", verso: "A coluna (geralmente id) com valor único que identifica cada linha." },
+  { frente: "Por que guardar cliente_id no pedido, e não o nome?", verso: "O id é único e estável; o dado do cliente fica num lugar só." },
+  { frente: "Os cinco comandos básicos do SQL", verso: "SELECT, INSERT, UPDATE, DELETE e CREATE TABLE." },
+  { frente: "Banco relacional × NoSQL", verso: "Relacional usa tabelas e SQL (PostgreSQL, MySQL, SQLite); NoSQL usa documentos, chave-valor e outros formatos (MongoDB, Redis)." },
+]} />
+
+## Resumindo
+
+- O banco de dados é a despensa: muitos usuários, regras fixas, muitos dados e nada pela metade.
+- Bancos relacionais guardam **tabelas** com **linhas**, **colunas** tipadas e uma **chave primária**.
+- As tabelas se ligam pelos ids.
+- **SQL** diz **o que** você quer; o banco descobre **como**.

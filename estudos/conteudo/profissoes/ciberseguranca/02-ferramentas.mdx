@@ -1,0 +1,56 @@
+Cada área da cibersegurança tem as suas ferramentas, mas algumas aparecem em quase todas. Não precisa saber todas: aprenda a base (terminal e redes) e escolha uma de cada tipo para aprofundar.
+
+## Linguagens
+
+Programar ajuda muito: automatizar tarefas, ler código atrás de falhas e entender como os ataques funcionam.
+
+<Linguagens ids={["python", "bash", "sql", "javascript", "c"]} />
+
+- **Python**: automatizar investigações, escrever scripts e ferramentas.
+- **Bash**: o dia a dia no terminal Linux.
+- **SQL**: consultar registros e entender a injeção de SQL por dentro.
+- **JavaScript**: entender o navegador e o XSS.
+- **C**: entender memória e as falhas de baixo nível (mais para frente).
+
+## A base: sistemas e redes
+
+| Ferramenta | Para quê |
+| --- | --- |
+| **Linux e o terminal** | A maioria dos servidores e das ferramentas de segurança roda nele |
+| **Wireshark** | Ver os pacotes que passam pela rede, um por um |
+| **Nmap** | Descobrir quais computadores e serviços existem numa rede (só nas suas!) |
+| **Máquinas virtuais** (VirtualBox) | Montar um laboratório isolado para treinar sem risco |
+
+## Defesa e monitoramento
+
+| Ferramenta | Para quê |
+| --- | --- |
+| **SIEM** (Wazuh, Splunk, Microsoft Sentinel) | Juntar os registros de todos os sistemas e disparar alertas |
+| **EDR / antivírus corporativo** | Vigiar o que acontece nos computadores da empresa |
+| **Firewall e WAF** | Filtrar o tráfego de rede e as requisições web |
+
+## Segurança de aplicações e testes
+
+| Ferramenta | Para quê |
+| --- | --- |
+| **Burp Suite** e **OWASP ZAP** | Interceptar e analisar as requisições de um site |
+| **Análise de dependências** (Dependabot, npm audit, pip-audit) | Avisar quando uma biblioteca do projeto tem falha conhecida |
+| **Secret scanning** | Achar senhas e chaves commitadas por engano |
+| **Kali Linux** | Distribuição Linux com centenas de ferramentas de teste já instaladas |
+
+<Nota tipo="cuidado" titulo="Ferramenta não é profissão">
+Saber rodar o Nmap ou o Burp não faz ninguém profissional de segurança. O que faz é entender **o que** está acontecendo: redes, sistemas, web e código. As ferramentas mudam; os fundamentos ficam. E todas elas só se usam em sistemas seus ou com autorização.
+</Nota>
+
+<Quiz
+  pergunta="Para que serve um SIEM?"
+  opcoes={["Testar senhas", "Juntar os registros de vários sistemas e disparar alertas", "Criar sites seguros"]}
+  correta={1}
+  explicacao="O SIEM centraliza logs e procura padrões de ataque. É a ferramenta central de um SOC."
+/>
+
+## Resumindo
+
+- Base de tudo: **Linux, terminal e redes**.
+- Defesa: SIEM, EDR, firewall. Aplicações: Burp, ZAP, análise de dependências, secret scanning.
+- Programar (Python e Bash primeiro) faz muita diferença.

@@ -1,0 +1,183 @@
+<Aquecimento perguntas={[
+  { p: "Qual a proteção principal contra injeção de SQL?", r: "Consultas com parâmetros, que mandam o valor separado do comando." },
+  { p: "O que é validar com lista de permitidos?", r: "Aceitar só os valores e formatos esperados, e recusar todo o resto." },
+  { p: "De onde deve vir o preço de um produto num pedido?", r: "Do banco, no servidor. Nunca do valor que o navegador mandou." },
+]} />
+
+A injeção de SQL ataca o **banco**. Agora vamos para o outro lado: o **navegador** de quem usa o site. Aqui, o perigo é um texto digitado por uma pessoa virar **código rodando no navegador de outra**. Isso tem nome: **XSS**.
+
+<Chute pergunta="A cafeteria deixa os clientes comentarem os produtos. Um comentário pode fazer o navegador de quem lê executar um programa?">
+
+Pode, se o site colocar o comentário na página **como HTML**. Se alguém escrever uma tag `<script>` no comentário e o site não tratar, o navegador de todo visitante vai executar esse script, achando que ele faz parte do site. Com isso dá para roubar a sessão, trocar o conteúdo da página ou enganar o usuário.
+
+</Chute>
+
+## XSS: quando o comentário vira código
+
+**XSS** (*Cross-Site Scripting*) acontece quando o site mostra um texto que veio de fora **sem tratar**, e o navegador o interpreta como HTML e JavaScript.
+
+```python
+import html
+
+comentario = '<script>alert("Peguei você!")</script> Adorei o café!'
+
+pagina_insegura = "<p>" + comentario + "</p>"
+pagina_segura = "<p>" + html.escape(comentario) + "</p>"
+
+print(pagina_insegura)
+print(pagina_segura)
+```
+
+```saida
+<p><script>alert("Peguei você!")</script> Adorei o café!</p>
+<p>&lt;script&gt;alert(&quot;Peguei você!&quot;)&lt;/script&gt; Adorei o café!</p>
+```
+
+- Na página insegura, o navegador vê uma tag `<script>` de verdade e **executa**. O `alert` é inofensivo, mas no lugar dele podia estar qualquer código.
+- Na segura, `html.escape` trocou `<` por `&lt;`, `>` por `&gt;` e as aspas por `&quot;`. O navegador **mostra** o texto `<script>...` na tela, como texto, e não executa nada.
+
+<Nota tipo="analogia" titulo="Pensa assim: o quadro de recados do café">
+
+O café tem um quadro onde os clientes deixam recados. Se um recado diz *"Funcionários: entreguem o caixa para quem ler isto"*, ninguém obedece, porque todo mundo sabe que aquilo é **um recado de cliente**, não uma ordem da gerência. Escapar o HTML é colocar o recado no quadro **como recado**, nunca como ordem.
+
+</Nota>
+
+## No front-end: textContent, não innerHTML
+
+No JavaScript do navegador, a diferença está em **como** você coloca o texto na página:
+
+```javascript
+const comentario = pegarComentarioDoServidor();
+
+// ❌ Interpreta como HTML: vira código
+caixa.innerHTML = comentario;
+
+// ✅ Trata como texto: aparece exatamente o que foi digitado
+caixa.textContent = comentario;
+```
+
+<Nota tipo="dica" titulo="React, Vue e Angular já ajudam">
+
+Frameworks modernos **escapam por padrão**: em React, `<p>{comentario}</p>` mostra o texto como texto. O perigo volta quando alguém usa a porta de saída de propósito, como o `dangerouslySetInnerHTML` do React (o nome já avisa: "perigosamente"). Se precisar mostrar HTML vindo de fora, use uma biblioteca de **sanitização** (como a DOMPurify), que tira tudo que é perigoso.
+
+</Nota>
+
+## A sessão: o crachá do usuário
+
+Depois do login, o site guarda um **token de sessão**, normalmente num **cookie**. É o crachá que diz "esta pessoa já entrou". Quem rouba o crachá entra no lugar dela, sem precisar da senha. Por isso o XSS é tão perigoso, e por isso os cookies de sessão têm três proteções:
+
+| Atributo do cookie | O que faz |
+| --- | --- |
+| `HttpOnly` | O JavaScript da página **não consegue ler** o cookie (um script injetado não rouba o crachá) |
+| `Secure` | O cookie só viaja por **HTTPS** |
+| `SameSite` | O cookie não é enviado em requisições vindas de **outros sites** |
+
+<Nota tipo="curiosidade" titulo="E o CSRF?">
+
+O `SameSite` protege de outro ataque, o **CSRF**: um site malicioso faz o seu navegador mandar uma requisição para outro site em que você está logado (por exemplo, "transferir saldo"), aproveitando o seu cookie. Além do `SameSite`, os frameworks usam **tokens anti-CSRF** em formulários. Se você usa um framework, deixe essas proteções ligadas.
+
+</Nota>
+
+## HTTPS: o envelope lacrado
+
+Sem HTTPS, tudo que passa entre o navegador e o servidor (senhas, cookies, dados) viaja como um **cartão-postal**: qualquer um no caminho (o Wi-Fi do café, por exemplo) pode ler. Com HTTPS, viaja num **envelope lacrado**. Hoje é obrigatório em qualquer site, e os serviços de hospedagem já oferecem de graça.
+
+## Camada extra: Content Security Policy
+
+O servidor pode mandar uma regra dizendo ao navegador **de onde** é permitido carregar scripts, a **CSP** (*Content Security Policy*). Se mesmo assim um script injetado aparecer na página, o navegador se recusa a rodá-lo. Mais uma camada do bolo de rolo.
+
+<Passos itens={[
+  { icone: "🔤", titulo: "Escapar a saída", texto: "textContent, templates que escapam" },
+  { icone: "🧼", titulo: "Sanitizar", texto: "quando HTML de fora for inevitável" },
+  { icone: "🍪", titulo: "Cookies protegidos", texto: "HttpOnly, Secure, SameSite" },
+  { icone: "🔒", titulo: "HTTPS", texto: "sempre" },
+  { icone: "🛡️", titulo: "CSP", texto: "o navegador barra scripts estranhos" },
+]} />
+
+<Explique pergunta="Por que escapar o HTML impede o XSS?">
+
+Porque o escape troca os caracteres que o navegador usa para reconhecer código (como < e >) por versões que ele só mostra na tela. Assim, um texto com uma tag script aparece como texto, letra por letra, em vez de ser interpretado e executado. O comentário continua sendo só um comentário.
+
+</Explique>
+
+## Erros comuns
+
+- Usar `innerHTML` com qualquer coisa que veio do usuário ou do servidor.
+- Montar HTML juntando texto no servidor sem escapar (os templates modernos escapam por padrão; não desligue).
+- Guardar o token de sessão no `localStorage`, onde qualquer script da página consegue ler.
+- Desligar proteções do framework porque "estava dando erro".
+- Achar que "só eu uso esse campo": o nome do usuário, a bio, o nome do arquivo enviado, tudo é texto de fora.
+
+<Tarefa titulo="Revise o mural de recados">
+
+O front-end do mural de recados da cafeteria faz isto:
+
+```javascript
+fetch("/api/recados")
+  .then((resposta) => resposta.json())
+  .then((recados) => {
+    for (const recado of recados) {
+      lista.innerHTML += `<li><b>${recado.autor}</b>: ${recado.texto}</li>`;
+    }
+  });
+```
+
+E o servidor guarda o token de sessão num cookie sem nenhum atributo extra. Liste os problemas e as correções.
+
+<Dica>
+
+Repare que dois campos vêm de fora: o autor **e** o texto. Pense em como montar o `<li>` sem `innerHTML`. E lembre dos três atributos do cookie.
+
+</Dica>
+
+<Resposta>
+
+1. **`innerHTML` com `autor` e `texto`**: os dois vêm do usuário, então são XSS. Montar os elementos e usar `textContent`:
+
+```javascript
+for (const recado of recados) {
+  const item = document.createElement("li");
+  const autor = document.createElement("b");
+  autor.textContent = recado.autor;
+  item.append(autor, ": " + recado.texto);
+  lista.append(item);
+}
+```
+
+(O `append` com texto também trata como texto, nunca como HTML.)
+
+2. **Cookie de sessão sem proteção**: marcar como `HttpOnly`, `Secure` e `SameSite=Lax` (ou `Strict`).
+3. **Camadas extras**: limitar o tamanho do recado no servidor e configurar uma CSP.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual destas linhas mostra um comentário do usuário com segurança?"
+  opcoes={["caixa.innerHTML = comentario", "caixa.textContent = comentario", "document.write(comentario)"]}
+  correta={1}
+  explicacao="textContent trata o conteúdo como texto. innerHTML e document.write interpretam como HTML."
+/>
+
+<Quiz
+  pergunta="O que o atributo HttpOnly faz num cookie de sessão?"
+  opcoes={["Faz o cookie viajar só por HTTP", "Impede que o JavaScript da página leia o cookie", "Apaga o cookie ao fechar a aba"]}
+  correta={1}
+  explicacao="Com HttpOnly, mesmo um script injetado por XSS não consegue ler o token de sessão."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é XSS?", verso: "Texto de fora mostrado como HTML, que vira código rodando no navegador de outras pessoas." },
+  { frente: "Como evitar XSS?", verso: "Escapar a saída (textContent, templates que escapam) e sanitizar quando HTML de fora for inevitável." },
+  { frente: "HttpOnly, Secure e SameSite", verso: "JS não lê o cookie; só viaja por HTTPS; não vai em requisições de outros sites." },
+  { frente: "Para que serve o HTTPS?", verso: "Criptografar o caminho entre navegador e servidor: envelope lacrado em vez de cartão-postal." },
+  { frente: "O que é CSP?", verso: "Uma regra do servidor que diz ao navegador de onde é permitido carregar scripts." },
+]} />
+
+## Resumindo
+
+- **XSS**: texto de fora tratado como HTML vira código no navegador de outra pessoa.
+- **Escape a saída**: `textContent`, templates que escapam, sanitização quando inevitável.
+- Proteja a sessão: cookies `HttpOnly`, `Secure` e `SameSite`, e HTTPS sempre.
+- CSP é mais uma camada do bolo de rolo.

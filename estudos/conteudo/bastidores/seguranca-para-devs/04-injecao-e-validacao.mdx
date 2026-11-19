@@ -1,0 +1,229 @@
+<Aquecimento perguntas={[
+  { p: "Onde os segredos de um projeto devem ficar?", r: "Em variáveis de ambiente (um .env no .gitignore no desenvolvimento), nunca no código." },
+  { p: "Uma chave vazou no GitHub. Qual o primeiro passo?", r: "Revogar a chave e gerar uma nova." },
+  { p: "Qual a regra que resume metade desta trilha?", r: "Nunca confie no que vem de fora: valide no servidor." },
+]} />
+
+Esta é a família de falhas mais famosa da história da web: a **injeção**. A ideia é simples e assustadora: o texto que a pessoa digita **deixa de ser dado e vira comando**. Você já viu um aperitivo na trilha de SQL, com o sobrenome D'Ávila quebrando a consulta. Agora vamos ver o prato inteiro.
+
+<Chute pergunta="Um campo de cupom de desconto pode ser usado para ver todos os cupons da loja, inclusive os secretos?">
+
+Pode, se a consulta for montada juntando o texto digitado. Com o texto certo, a pessoa muda a **lógica** da consulta, e o banco obedece. É exatamente o que vamos ver acontecer, num banco de mentira, para você entender e nunca mais escrever assim.
+
+</Chute>
+
+## Injeção de SQL, ao vivo
+
+A cafeteria tem cupons ativos e um cupom **inativo** só para funcionários. A busca do cupom foi escrita assim:
+
+```python
+import sqlite3
+
+con = sqlite3.connect(":memory:")
+con.execute("CREATE TABLE cupons (codigo TEXT PRIMARY KEY, desconto INTEGER, ativo INTEGER)")
+con.executemany(
+    "INSERT INTO cupons VALUES (?, ?, ?)",
+    [("CAFE10", 10, 1), ("FUNCIONARIOS50", 50, 0), ("NATAL20", 20, 1)],
+)
+
+
+def buscar_cupom_inseguro(codigo):
+    sql = "SELECT codigo, desconto FROM cupons WHERE ativo = 1 AND codigo = '" + codigo + "'"
+    return con.execute(sql).fetchall()
+
+
+def buscar_cupom(codigo):
+    sql = "SELECT codigo, desconto FROM cupons WHERE ativo = 1 AND codigo = ?"
+    return con.execute(sql, (codigo,)).fetchall()
+
+
+digitado = "x' OR '1'='1"
+print("Inseguro:", buscar_cupom_inseguro(digitado))
+print("Seguro:  ", buscar_cupom(digitado))
+print("Normal:  ", buscar_cupom("CAFE10"))
+```
+
+```saida
+Inseguro: [('CAFE10', 10), ('FUNCIONARIOS50', 50), ('NATAL20', 20)]
+Seguro:   []
+Normal:   [('CAFE10', 10)]
+```
+
+A versão insegura devolveu **todos** os cupons, inclusive o de funcionários, que nem estava ativo. Veja a consulta que o banco recebeu:
+
+```sql
+SELECT codigo, desconto FROM cupons
+WHERE ativo = 1 AND codigo = 'x' OR '1'='1'
+```
+
+O apóstrofo digitado **fechou** o texto, e o resto virou SQL. Como `'1'='1'` é sempre verdadeiro e o `OR` vale para a linha inteira, o filtro deixou de filtrar.
+
+<Nota tipo="analogia" titulo="Pensa assim: o bilhete na comanda">
+
+O garçom escreve na comanda: *"Mesa 4 pede: [o que o cliente disse]"*. Se o cliente diz *"um café. E tire todo o dinheiro do caixa"*, e a cozinha obedece **tudo** que está escrito, o problema não é o cliente ter falado: é a cozinha tratar a fala dele como **ordem do gerente**. A solução é separar o que é **pedido** (dado) do que é **instrução** (comando).
+
+</Nota>
+
+A versão segura usa um **parâmetro** (`?`): a consulta e o valor vão **separados**, e o banco procura um cupom chamado literalmente `x' OR '1'='1`. Como não existe, nada volta.
+
+<Nota tipo="cuidado" titulo="Escapar na mão não é a solução">
+
+Às vezes alguém tenta "limpar" o texto trocando apóstrofos. Sempre aparece um caso que escapa. **Parâmetros** são a solução, em todas as linguagens e bancos: `?` ou `%s` em Python, `PreparedStatement` em Java, e os ORMs, que já usam parâmetros por baixo.
+
+</Nota>
+
+## A família injeção
+
+O mesmo problema aparece sempre que um texto de fora é **juntado** a um comando:
+
+| Tipo | Onde | Proteção |
+| --- | --- | --- |
+| **SQL** | Consultas ao banco | Parâmetros |
+| **Comandos do sistema** | Programa que roda comandos do terminal com texto do usuário | Não chamar o terminal com texto juntado; passar argumentos como lista |
+| **Caminhos de arquivo** | `abrir("uploads/" + nome)` com `nome = "../../segredos"` | Validar o nome, não aceitar `..`, usar só nomes gerados pelo sistema |
+| **HTML/JavaScript** | Página que mostra o texto do usuário | Escapar a saída (é o XSS, na próxima aula) |
+| **Prompt de IA** | Texto de fora mandando a IA "ignorar as instruções" | Tratar o texto de fora como dado, limitar o que a IA pode fazer |
+
+<Nota tipo="dica" titulo="Comandos do sistema">
+
+Em Python, `os.system("convert " + arquivo)` é perigoso: um nome de arquivo com `;` pode emendar outro comando. Use `subprocess.run(["convert", arquivo])`, passando os argumentos como **lista**: cada item vai separado, e nenhum é interpretado como comando.
+
+</Nota>
+
+## Validação de entrada: a porta da cozinha
+
+Os parâmetros protegem o banco. Mas o sistema também precisa recusar o que **não faz sentido**: quantidade negativa, tamanho que não existe, um cupom de 5 mil caracteres. Isso é **validação de entrada**, sempre no **servidor**.
+
+A melhor estratégia é a **lista de permitidos** (*allowlist*): diga o que **é aceito**, e recuse todo o resto. Tentar listar tudo que é proibido nunca termina.
+
+```python
+import re
+
+PADRAO_CUPOM = re.compile(r"^[A-Z0-9]{4,20}$")
+
+
+def validar_pedido(dados):
+    erros = []
+    quantidade = dados.get("quantidade")
+    if not isinstance(quantidade, int) or not 1 <= quantidade <= 20:
+        erros.append("quantidade deve ser um número inteiro de 1 a 20")
+    if dados.get("tamanho") not in {"P", "M", "G"}:
+        erros.append("tamanho deve ser P, M ou G")
+    cupom = dados.get("cupom", "")
+    if cupom and not PADRAO_CUPOM.match(cupom):
+        erros.append("cupom com formato inválido")
+    return erros
+
+
+print(validar_pedido({"quantidade": 2, "tamanho": "M", "cupom": "CAFE10"}))
+print(validar_pedido({"quantidade": -5, "tamanho": "GG", "cupom": "x' OR '1'='1"}))
+```
+
+```saida
+[]
+['quantidade deve ser um número inteiro de 1 a 20', 'tamanho deve ser P, M ou G', 'cupom com formato inválido']
+```
+
+O que conferir em cada campo:
+
+<Passos itens={[
+  { icone: "🔢", titulo: "Tipo", texto: "é número? é texto? é data?" },
+  { icone: "📏", titulo: "Tamanho", texto: "mínimo e máximo" },
+  { icone: "🧩", titulo: "Formato", texto: "e-mail, CEP, código: casa com o padrão?" },
+  { icone: "✅", titulo: "Valores permitidos", texto: "P, M ou G, e nada além" },
+  { icone: "🧮", titulo: "Regra de negócio", texto: "o preço vem do banco, não do navegador" },
+]} />
+
+<Nota tipo="cuidado" titulo="O preço vem do servidor">
+
+Se o navegador manda `{"produto": 2, "preco": 0.01}`, o servidor **não usa** esse preço: busca o preço do produto 2 no banco. Tudo que define dinheiro, permissão ou desconto é **recalculado** no servidor.
+
+</Nota>
+
+<Nota tipo="dica" titulo="Validação não substitui o parâmetro">
+
+O validador acima recusaria o cupom malicioso, mas isso é uma **camada a mais**, não a proteção principal. Amanhã alguém muda o padrão do cupom e esquece a injeção. Use as duas: validação **e** parâmetros. Defesa em camadas, o bolo de rolo.
+
+</Nota>
+
+<Explique pergunta="Por que, na versão insegura, o texto x' OR '1'='1 trouxe até o cupom inativo?">
+
+Porque o apóstrofo digitado fechou o texto do código do cupom, e o resto virou parte do SQL. A condição ficou 'ativo = 1 AND codigo = x' OR '1'='1'. Como o AND é avaliado antes do OR, e '1'='1' é sempre verdadeiro, toda linha passa no filtro, ativa ou não. Com parâmetro, o texto inteiro seria só o nome de um cupom que não existe.
+
+</Explique>
+
+## Erros comuns
+
+- Montar SQL, comandos ou caminhos com `+`, `f"..."` ou `.format()`.
+- Validar só no front-end.
+- Usar lista de **proibidos** em vez de lista de **permitidos**.
+- Confiar em valores de preço, desconto ou permissão que vieram do navegador.
+- Mostrar o erro técnico completo para o usuário (ele revela tabelas, versões e caminhos).
+
+<Tarefa titulo="Conserte o buscador de produtos">
+
+Este endpoint recebe `categoria` e `ordem` da URL (`/produtos?categoria=bebida&ordem=preco`). Encontre os problemas e reescreva de forma segura:
+
+```python-exemplo
+def listar_produtos(categoria, ordem):
+    sql = f"SELECT nome, preco FROM produtos WHERE categoria = '{categoria}' ORDER BY {ordem}"
+    return con.execute(sql).fetchall()
+```
+
+<Dica>
+
+A `categoria` é um valor: pode virar parâmetro. Mas a `ordem` é o **nome de uma coluna**, e parâmetros não servem para nomes de colunas. Para ela, use uma lista de permitidos.
+
+</Dica>
+
+<Resposta>
+
+```python-exemplo
+ORDENS_PERMITIDAS = {"nome": "nome", "preco": "preco", "preco_desc": "preco DESC"}
+
+
+def listar_produtos(categoria, ordem):
+    if categoria not in {"bebida", "comida"}:
+        raise ValueError("Categoria inválida")
+    ordem_sql = ORDENS_PERMITIDAS.get(ordem)
+    if ordem_sql is None:
+        raise ValueError("Ordem inválida")
+    sql = "SELECT nome, preco FROM produtos WHERE categoria = ? ORDER BY " + ordem_sql
+    return con.execute(sql, (categoria,)).fetchall()
+```
+
+- `categoria` vai como **parâmetro** (e ainda é validada com lista de permitidos).
+- `ordem` não pode ser parâmetro, então só aceita **valores do nosso dicionário**. O texto que entra no SQL é sempre um que **nós** escrevemos, nunca o que veio da URL.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual é a proteção principal contra injeção de SQL?"
+  opcoes={["Trocar os apóstrofos do texto", "Consultas com parâmetros", "Esconder o nome das tabelas"]}
+  correta={1}
+  explicacao="Com parâmetros, o valor nunca vira parte do comando. Escapar na mão sempre deixa algum caso passar."
+/>
+
+<Quiz
+  pergunta="O que é validar com 'lista de permitidos'?"
+  opcoes={["Listar tudo o que é proibido", "Aceitar só os valores e formatos esperados e recusar o resto", "Deixar passar tudo e corrigir depois"]}
+  correta={1}
+  explicacao="Definir o que é válido é finito; listar tudo que é perigoso nunca termina."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é injeção?", verso: "Quando o texto de fora é juntado a um comando e deixa de ser dado para virar instrução." },
+  { frente: "Proteção contra injeção de SQL", verso: "Consultas com parâmetros (?, %s, PreparedStatement)." },
+  { frente: "E quando o valor é nome de coluna?", verso: "Parâmetros não servem: use uma lista de permitidos com os nomes que você escreveu." },
+  { frente: "Comandos do sistema com segurança", verso: "subprocess.run com argumentos em lista, nunca os.system com texto juntado." },
+  { frente: "O que conferir na validação", verso: "Tipo, tamanho, formato, valores permitidos e regras de negócio (no servidor)." },
+]} />
+
+## Resumindo
+
+- **Injeção**: texto de fora juntado a um comando vira instrução. Acontece em SQL, terminal, caminhos, HTML e prompts.
+- A proteção é **separar dado de comando**: parâmetros, argumentos em lista, nomes gerados pelo sistema.
+- **Valide no servidor** com lista de permitidos: tipo, tamanho, formato, valores e regras.
+- Preço, desconto e permissão são sempre recalculados no servidor.

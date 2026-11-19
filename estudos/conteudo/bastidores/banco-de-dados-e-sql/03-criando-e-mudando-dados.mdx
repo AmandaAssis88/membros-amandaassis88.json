@@ -1,0 +1,261 @@
+<Aquecimento perguntas={[
+  { p: "Qual a ordem das partes de um SELECT?", r: "SELECT, FROM, WHERE, ORDER BY, LIMIT." },
+  { p: "Como encontrar linhas com um valor vazio?", r: "Com IS NULL. Comparar com = NULL nunca dá verdadeiro." },
+  { p: "Como trazer os 3 produtos mais caros?", r: "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 3;" },
+]} />
+
+Consultar não muda nada: é olhar a despensa. Agora você vai **mexer** nela: criar prateleiras novas, guardar itens, trocar etiquetas e jogar coisas fora. E vai aprender o cuidado que separa um dev tranquilo de um dev que apagou a tabela inteira numa sexta-feira à tarde.
+
+<Chute pergunta="O que acontece se você rodar DELETE FROM produtos; sem nenhum WHERE?">
+
+Apaga **todos** os produtos. Sem pedir confirmação, sem lixeira. O `WHERE` é o que diz **quais** linhas apagar; sem ele, o banco entende que são todas. É por isso que esta aula tem uma regra de ouro: primeiro o `SELECT` com o mesmo `WHERE`, depois o `DELETE` ou o `UPDATE`.
+
+</Chute>
+
+## CREATE TABLE: a prateleira nova
+
+A cafeteria vai ter cupons de desconto. Precisamos de uma tabela nova:
+
+```sql
+CREATE TABLE cupons (
+  codigo   TEXT    PRIMARY KEY,
+  desconto INTEGER NOT NULL CHECK (desconto BETWEEN 1 AND 50),
+  validade TEXT    NOT NULL,
+  ativo    INTEGER NOT NULL DEFAULT 1
+);
+```
+
+Cada coluna tem um **nome**, um **tipo** e, se precisar, **regras** (as *constraints*):
+
+| Regra | O que garante |
+| --- | --- |
+| `PRIMARY KEY` | Valor único que identifica a linha |
+| `NOT NULL` | A coluna não pode ficar vazia |
+| `UNIQUE` | Não pode repetir (como o e-mail de um cadastro) |
+| `CHECK (...)` | Uma condição que todo valor precisa cumprir |
+| `DEFAULT valor` | O valor usado quando ninguém informa |
+| `REFERENCES tabela(coluna)` | Aponta para uma linha que existe em outra tabela (próxima aula) |
+
+<Nota tipo="analogia" titulo="As regras são o fiscal da despensa">
+
+Lembra das regras de negócio do PRD, na trilha de IA ("o desconto máximo é 50%")? Colocar a regra **no banco** é como ter um fiscal na porta da despensa: não importa se o erro veio do site, do app ou de um script, o banco recusa o que quebra a regra.
+
+</Nota>
+
+Os tipos mais comuns (os nomes mudam um pouco entre os bancos):
+
+| Tipo | Guarda | No PostgreSQL |
+| --- | --- | --- |
+| `INTEGER` | Números inteiros | `integer`, `bigint` |
+| `REAL` | Números decimais | `numeric(10,2)` para dinheiro |
+| `TEXT` | Textos | `text`, `varchar(100)` |
+| Datas | No SQLite, texto no formato `'AAAA-MM-DD'` | `date`, `timestamp` |
+
+<Nota tipo="cuidado" titulo="Dinheiro e números decimais">
+
+Números decimais "comuns" (como o `REAL`) podem ter pequenos erros de arredondamento: `0.1 + 0.2` vira `0.30000000000000004`. Para dinheiro, os sistemas sérios usam um tipo decimal exato (`numeric` no PostgreSQL) ou guardam **centavos em inteiro** (R$ 8,50 vira `850`).
+
+</Nota>
+
+## INSERT: guardando itens
+
+```sql
+INSERT INTO cupons (codigo, desconto, validade)
+VALUES ('CAFE10', 10, '2026-12-31');
+```
+
+A coluna `ativo` não foi informada, então recebe o `DEFAULT 1`. Agora, tente quebrar as regras:
+
+```sql
+INSERT INTO cupons (codigo, desconto, validade)
+VALUES ('METADE', 80, '2026-12-31');
+```
+
+```saida
+CHECK constraint failed: desconto BETWEEN 1 AND 50
+```
+
+```sql
+INSERT INTO cupons (codigo, desconto, validade)
+VALUES ('CAFE10', 5, '2026-12-31');
+```
+
+```saida
+UNIQUE constraint failed: cupons.codigo
+```
+
+O banco recusou os dois. É exatamente isso que você quer.
+
+Para inserir um produto novo sem informar o id, deixe o banco escolher:
+
+```sql
+INSERT INTO produtos (nome, categoria, preco)
+VALUES ('Suco de laranja', 'bebida', 8.50);
+```
+
+Como `id` é `INTEGER PRIMARY KEY`, o SQLite gera o próximo número (aqui, `7`). Outros bancos fazem o mesmo com `SERIAL`, `IDENTITY` ou `AUTO_INCREMENT`.
+
+<Nota tipo="dica" titulo="Sempre liste as colunas no INSERT">
+
+Dá para escrever `INSERT INTO cupons VALUES (...)` sem listar as colunas, mas aí a ordem dos valores precisa bater exatamente com a ordem da tabela. Se alguém acrescentar uma coluna amanhã, o seu código quebra (ou, pior, grava no lugar errado).
+
+</Nota>
+
+## UPDATE: trocando a etiqueta
+
+O café subiu 10% para todas as bebidas:
+
+```sql
+UPDATE produtos
+SET preco = preco * 1.10
+WHERE categoria = 'bebida';
+```
+
+O `SET` diz **o que** muda; o `WHERE` diz **em quais linhas**. Aqui, 4 linhas foram alteradas (as três bebidas originais e o suco novo).
+
+## DELETE: jogando fora
+
+```sql
+DELETE FROM produtos
+WHERE id = 7;
+```
+
+Apaga só o produto de id 7. Prefira filtrar pela **chave primária**: ela garante que você está mirando exatamente uma linha.
+
+## A regra de ouro: SELECT antes de UPDATE e DELETE
+
+<Passos itens={[
+  { icone: "🔍", titulo: "1. SELECT", texto: "com o mesmo WHERE: são essas as linhas?" },
+  { icone: "🔢", titulo: "2. Confira", texto: "a quantidade de linhas faz sentido?" },
+  { icone: "✏️", titulo: "3. UPDATE ou DELETE", texto: "com o mesmo WHERE, sem mudar nada" },
+]} />
+
+```sql
+-- 1. Quem vai ser afetado?
+SELECT * FROM cupons WHERE validade < '2026-11-01';
+
+-- 2. Conferiu? Então, com o mesmo WHERE:
+DELETE FROM cupons WHERE validade < '2026-11-01';
+```
+
+<Nota tipo="cuidado" titulo="UPDATE sem WHERE">
+
+`UPDATE produtos SET preco = 0;` deixa **todos** os produtos de graça. Muita gente experiente já fez isso em produção. Por isso, além da regra de ouro, os bancos de verdade têm **backups**, e muitas equipes só mexem em dados de produção com **revisão de outra pessoa**.
+
+</Nota>
+
+## Transações: tudo ou nada
+
+Uma venda mexe em várias tabelas: cria o pedido, cria os itens, baixa o estoque. Se a luz cair no meio, não pode ficar um pedido sem itens. Para isso existem as **transações**:
+
+```sql
+BEGIN;
+
+INSERT INTO pedidos (id, cliente_id, data) VALUES (5, 4, '2026-11-19');
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade) VALUES (5, 1, 2);
+
+COMMIT;
+```
+
+- `BEGIN` abre a transação.
+- `COMMIT` confirma **tudo de uma vez**.
+- `ROLLBACK`, no lugar do `COMMIT`, desfaz **tudo** o que foi feito desde o `BEGIN`.
+
+<Nota tipo="analogia" titulo="O pedido inteiro ou nada">
+
+É como montar a bandeja do pedido: ou ela sai completa para a mesa (`COMMIT`), ou volta tudo para a cozinha (`ROLLBACK`). Nunca sai meio pedido.
+
+</Nota>
+
+<Nota tipo="ia" titulo="Revise com atenção redobrada">
+
+Quando a IA sugerir um `UPDATE`, `DELETE`, `DROP TABLE` ou qualquer mudança de estrutura, leia o `WHERE` palavra por palavra e rode o `SELECT` antes. Uma consulta errada mostra um dado errado; um `DELETE` errado apaga o dado.
+
+</Nota>
+
+<Explique pergunta="Por que rodar um SELECT com o mesmo WHERE antes de um DELETE?">
+
+Porque o SELECT mostra exatamente quais linhas o WHERE escolhe, sem mudar nada. Se aparecerem linhas demais (ou as erradas), você corrige o filtro antes de qualquer estrago. O DELETE não tem lixeira: o que ele apaga só volta de um backup.
+
+</Explique>
+
+## Erros comuns
+
+- **`UPDATE` ou `DELETE` sem `WHERE`**.
+- **Esquecer as aspas** em textos e datas: `WHERE validade < 2026-11-01` vira uma conta de subtração.
+- **Gravar datas em formatos misturados** (`19/11/2026` e `2026-11-19`): a ordem e as comparações quebram. Use sempre `AAAA-MM-DD`.
+- **Esquecer o `COMMIT`**: a transação fica aberta e as mudanças não valem para os outros.
+
+<Tarefa titulo="Gerente por um dia">
+
+No banco da cafeteria (com a tabela `cupons` criada):
+
+1. Crie o cupom `NATAL20`, de 20%, válido até `2026-12-25`.
+2. Aumente em R$ 1,00 o preço de todas as **comidas**. Antes, rode o `SELECT` para conferir quais serão afetadas.
+3. Desative (`ativo = 0`) o cupom `CAFE10`, sem apagar.
+4. Numa transação, crie o pedido 6 para a cliente Bia (id 2), hoje, com 1 cappuccino (produto 2). Antes de confirmar, desista e desfaça tudo. Confira que o pedido 6 não existe.
+
+<Dica>
+
+O item 3 é um `UPDATE` com `WHERE codigo = 'CAFE10'`. No item 4, use `BEGIN`, os dois `INSERT` e `ROLLBACK` no lugar do `COMMIT`. Depois, `SELECT * FROM pedidos WHERE id = 6;` deve voltar vazio.
+
+</Dica>
+
+<Resposta>
+
+```sql
+-- 1
+INSERT INTO cupons (codigo, desconto, validade)
+VALUES ('NATAL20', 20, '2026-12-25');
+
+-- 2
+SELECT nome, preco FROM produtos WHERE categoria = 'comida';
+UPDATE produtos SET preco = preco + 1 WHERE categoria = 'comida';
+
+-- 3
+UPDATE cupons SET ativo = 0 WHERE codigo = 'CAFE10';
+
+-- 4
+BEGIN;
+INSERT INTO pedidos (id, cliente_id, data) VALUES (6, 2, '2026-11-19');
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade) VALUES (6, 2, 1);
+ROLLBACK;
+
+SELECT * FROM pedidos WHERE id = 6;
+```
+
+O último `SELECT` não traz nenhuma linha: o `ROLLBACK` desfez os dois `INSERT`.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual comando apaga TODOS os produtos?"
+  opcoes={["DELETE FROM produtos WHERE id = 1;", "DELETE FROM produtos;", "SELECT * FROM produtos;"]}
+  correta={1}
+  explicacao="Sem WHERE, o DELETE vale para todas as linhas. Por isso, SELECT com o mesmo WHERE antes."
+/>
+
+<Quiz
+  pergunta="Para que serve o ROLLBACK numa transação?"
+  opcoes={["Confirmar as mudanças", "Desfazer tudo o que foi feito desde o BEGIN", "Criar um backup"]}
+  correta={1}
+  explicacao="ROLLBACK desfaz; COMMIT confirma. É o tudo ou nada."
+/>
+
+<Cartoes itens={[
+  { frente: "NOT NULL, UNIQUE, CHECK e DEFAULT", verso: "Não pode vazio; não pode repetir; precisa cumprir uma condição; valor padrão quando ninguém informa." },
+  { frente: "Estrutura do INSERT", verso: "INSERT INTO tabela (colunas) VALUES (valores);" },
+  { frente: "Estrutura do UPDATE", verso: "UPDATE tabela SET coluna = valor WHERE filtro;" },
+  { frente: "A regra de ouro antes de UPDATE e DELETE", verso: "Rodar um SELECT com o mesmo WHERE e conferir as linhas." },
+  { frente: "BEGIN, COMMIT e ROLLBACK", verso: "Abre a transação; confirma tudo; desfaz tudo." },
+  { frente: "Como guardar dinheiro sem erro de arredondamento?", verso: "Tipo decimal exato (numeric) ou centavos em inteiro." },
+]} />
+
+## Resumindo
+
+- `CREATE TABLE` define colunas, tipos e regras; o banco vira o fiscal da despensa.
+- `INSERT` guarda, `UPDATE` altera, `DELETE` apaga, sempre com `WHERE` (menos o `INSERT`).
+- **SELECT antes** de `UPDATE` e `DELETE`, com o mesmo `WHERE`.
+- Transações garantem tudo ou nada: `BEGIN`, `COMMIT`, `ROLLBACK`.

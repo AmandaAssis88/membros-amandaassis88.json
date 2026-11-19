@@ -190,7 +190,7 @@
 }
 .em-breve {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 12px;
   margin-top: 16px;
   padding: 0;

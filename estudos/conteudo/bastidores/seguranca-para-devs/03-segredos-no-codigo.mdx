@@ -1,0 +1,195 @@
+<Aquecimento perguntas={[
+  { p: "Por que guardar sal + hash lento em vez da senha?", r: "Porque, se o banco vazar, as senhas não aparecem e cada uma precisa ser adivinhada devagar, separadamente." },
+  { p: "Quais algoritmos usar para senhas?", r: "Argon2 ou bcrypt (ou PBKDF2 com muitas rodadas). Nunca MD5 ou SHA simples." },
+  { p: "Qual tipo de segundo fator é mais seguro que o SMS?", r: "App autenticador ou chave de segurança física." },
+]} />
+
+Robôs vasculham o GitHub o dia inteiro procurando senhas e chaves de API publicadas por engano. Quando acham, usam em minutos: para gastar a conta de nuvem da empresa, ler o banco de dados ou mandar spam. Esta aula é sobre não entregar a chave da cozinha para eles.
+
+<Chute pergunta="Você commitou uma chave de API, percebeu, apagou o arquivo e fez outro commit. Está resolvido?">
+
+Não. O commit antigo continua no **histórico** do Git, e quem clonar o repositório (ou um robô que já leu o push) tem a chave. A única correção de verdade é **trocar a chave** (revogar a antiga e gerar uma nova). Apagar do histórico ajuda a limpar, mas não desfaz o vazamento.
+
+</Chute>
+
+## O que é um segredo
+
+Qualquer coisa que dá acesso a algo:
+
+- Senhas de banco de dados.
+- **Chaves de API** (de pagamento, de IA, de envio de e-mail, de mapas).
+- **Tokens** de acesso (do GitHub, de serviços de nuvem).
+- Chaves privadas (de SSH, de certificados).
+
+<Nota tipo="analogia" titulo="Pensa assim: a chave do cofre do restaurante">
+
+Ninguém cola a chave do cofre na porta da geladeira, mesmo que só os funcionários entrem na cozinha. Um repositório, mesmo privado, é a porta da geladeira: muita gente passa por ali, ele é copiado para vários computadores e um dia pode virar público.
+
+</Nota>
+
+## Onde os segredos moram: variáveis de ambiente
+
+O código lê o segredo de **fora** dele, de uma **variável de ambiente**. No computador de quem desenvolve, ela costuma ficar num arquivo `.env`:
+
+```texto
+# .env  (NUNCA vai para o Git)
+BANCO_SENHA=s3nh4-sup3r-l0nga
+CHAVE_PAGAMENTO=sk_live_xxxxxxxxxxxxxxxxx
+```
+
+E o `.env` entra no `.gitignore`, que você conheceu na trilha de Git:
+
+```texto
+# .gitignore
+.env
+```
+
+Para o resto da equipe saber **quais** variáveis precisa, o projeto tem um `.env.example` (esse sim vai para o Git), **sem os valores**:
+
+```texto
+# .env.example
+BANCO_SENHA=
+CHAVE_PAGAMENTO=
+```
+
+O código lê assim:
+
+<Abas>
+<Aba rotulo="Python">
+
+```python-exemplo
+import os
+
+senha = os.environ["BANCO_SENHA"]
+chave = os.environ.get("CHAVE_PAGAMENTO")
+```
+
+Para carregar o `.env` automaticamente no desenvolvimento, a biblioteca `python-dotenv` faz isso com `load_dotenv()`.
+
+</Aba>
+<Aba rotulo="Java">
+
+```java-exemplo
+String senha = System.getenv("BANCO_SENHA");
+if (senha == null) {
+    throw new IllegalStateException("Defina a variável BANCO_SENHA");
+}
+```
+
+Frameworks como o Spring leem variáveis de ambiente direto nas configurações.
+
+</Aba>
+</Abas>
+
+Em produção, os segredos ficam no painel do serviço onde o sistema roda (Vercel, Cloudflare, AWS, Render...) ou num **cofre de segredos**. No GitHub Actions, existem os **Secrets** do repositório.
+
+## O que vai para o navegador é público
+
+Tudo que está no código de front-end (o JavaScript que roda no navegador) pode ser lido por **qualquer pessoa**: é só abrir o DevTools. Por isso existem dois tipos de chave:
+
+| Tipo | Pode ir para o front-end? | Exemplo |
+| --- | --- | --- |
+| **Chave pública** (ou "publicável") | Sim, foi feita para isso | A chave `anon` do Supabase, a chave publicável de pagamento |
+| **Chave secreta** | **Nunca** | A `service_role` do Supabase, a chave secreta de pagamento |
+
+<Nota tipo="curiosidade" titulo="Um exemplo que você já viu">
+
+O site de inscrição da Unidunedev usa o Supabase. A chave **anon** fica no front-end, e tudo bem: as regras do banco (as políticas de RLS) só deixam essa chave **inserir** uma inscrição, nunca ler as dos outros. Já a chave **service_role**, que passa por cima de todas as regras, nunca sai do painel do Supabase. É a defesa em camadas na prática: chave pública **e** regra no banco.
+
+</Nota>
+
+## Vazou. E agora?
+
+<Passos itens={[
+  { icone: "🔄", titulo: "1. Troque", texto: "revogue a chave e gere outra, na hora" },
+  { icone: "🔍", titulo: "2. Investigue", texto: "alguém usou? confira os registros do serviço" },
+  { icone: "🧹", titulo: "3. Limpe", texto: "tire do código e, se possível, do histórico" },
+  { icone: "🛡️", titulo: "4. Previna", texto: ".gitignore, varredura automática, revisão" },
+]} />
+
+A ordem importa: **trocar vem primeiro**. Limpar o histórico sem trocar a chave é trancar a porta depois que copiaram a chave.
+
+<Nota tipo="dica" titulo="O GitHub ajuda">
+
+O GitHub tem o **secret scanning**, que procura chaves conhecidas nos repositórios e avisa, e a **push protection**, que **bloqueia** o push quando detecta um segredo. Em repositórios públicos, eles já vêm ativados para muitos tipos de chave. Se o GitHub bloquear um push seu, não force: leia o aviso.
+
+</Nota>
+
+## Hábitos que evitam o vazamento
+
+- Crie o `.gitignore` **antes** do primeiro commit.
+- Olhe o `git status` e o `git diff --staged` antes de commitar (a trilha de Git ensinou: é a sua última conferência).
+- Cuidado com o `git add .` em projetos com `.env`, configurações locais e arquivos gerados.
+- Nunca cole segredos em issues, PRs, chats, prints ou na IA.
+- Use **chaves diferentes** para desenvolvimento e produção, cada uma com o **menor acesso** possível.
+
+<Explique pergunta="Por que trocar a chave é o primeiro passo quando um segredo vaza, e não apagar o commit?">
+
+Porque, no momento em que o segredo foi para um repositório (principalmente público), ele pode já ter sido copiado: por quem clonou, por robôs que leem os pushes ou por caches. Apagar o commit não desfaz essas cópias. Revogar a chave a torna inútil para qualquer pessoa que a tenha, e só depois vale a pena limpar o histórico.
+
+</Explique>
+
+<Tarefa titulo="Auditoria do repositório">
+
+Você entrou num projeto e encontrou estes arquivos. Diga o que está errado em cada um e como deveria ficar:
+
+```texto
+.gitignore
+  node_modules/
+
+config.py
+  BANCO_SENHA = "cafe@2026"
+  STRIPE_SECRET_KEY = "sk_live_51H..."
+
+src/app.js   (roda no navegador)
+  const supabase = createClient(URL, "eyJ...service_role...")
+
+README.md
+  Para rodar, peça a senha do banco no grupo do WhatsApp.
+```
+
+<Dica>
+
+Pense: o que falta no `.gitignore`? Onde deveriam estar os valores do `config.py`? Qual chave pode ir para o navegador? Como a equipe deveria saber quais variáveis configurar?
+
+</Dica>
+
+<Resposta>
+
+1. **`.gitignore`**: falta o `.env` (e outros arquivos locais).
+2. **`config.py`**: senha e chave secreta **no código**. Ler de variáveis de ambiente (`os.environ`). Como já foram commitadas, **trocar as duas** imediatamente.
+3. **`src/app.js`**: a chave `service_role` **no navegador** dá acesso total ao banco para qualquer visitante. Usar a chave `anon` com políticas de RLS, e **trocar** a `service_role` exposta.
+4. **`README.md`**: segredo circulando em grupo de mensagens. Criar um `.env.example` com os nomes das variáveis e entregar os valores por um gerenciador de senhas ou cofre da equipe.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual arquivo vai para o Git?"
+  opcoes={[".env com os valores", ".env.example só com os nomes das variáveis", "Os dois"]}
+  correta={1}
+  explicacao="O .env (com valores) fica no .gitignore. O .env.example mostra quais variáveis existem, sem os segredos."
+/>
+
+<Quiz
+  pergunta="Uma chave secreta foi parar num repositório público. Qual é o PRIMEIRO passo?"
+  opcoes={["Apagar o arquivo e fazer um commit", "Revogar a chave e gerar uma nova", "Deixar o repositório privado"]}
+  correta={1}
+  explicacao="A chave pode já ter sido copiada. Só a troca a torna inútil para quem a tem."
+/>
+
+<Cartoes itens={[
+  { frente: "Onde guardar segredos no desenvolvimento?", verso: "Num .env (no .gitignore), lido como variável de ambiente." },
+  { frente: "Para que serve o .env.example?", verso: "Mostrar à equipe quais variáveis o projeto precisa, sem os valores." },
+  { frente: "O que vai para o navegador é...", verso: "Público. Só chaves feitas para isso (publicáveis), nunca as secretas." },
+  { frente: "A ordem quando um segredo vaza", verso: "Trocar, investigar, limpar e prevenir." },
+  { frente: "O que é a push protection do GitHub?", verso: "Bloqueia o push quando detecta um segredo conhecido no código." },
+]} />
+
+## Resumindo
+
+- Segredos moram em **variáveis de ambiente**, nunca no código; `.env` no `.gitignore` e `.env.example` no Git.
+- Tudo que roda no navegador é público: só chaves publicáveis, com regras no servidor.
+- Vazou? **Troque primeiro**, depois investigue, limpe e previna.
+- Confira o `git diff --staged` antes de cada commit.

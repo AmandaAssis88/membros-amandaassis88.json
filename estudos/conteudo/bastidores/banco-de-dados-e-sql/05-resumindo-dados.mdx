@@ -1,0 +1,280 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre INNER JOIN e LEFT JOIN?", r: "O INNER traz só o que tem par nas duas tabelas; o LEFT traz todas as linhas da esquerda, com NULL quando não há par." },
+  { p: "Como achar os clientes que nunca compraram?", r: "LEFT JOIN pedidos e WHERE pedidos.id IS NULL." },
+  { p: "Qual pergunta fazer antes de confiar num relatório com JOIN?", r: "Uma linha do resultado representa o quê?" },
+]} />
+
+O dono da cafeteria não quer ver pedido por pedido. Ele quer **números**: quanto vendeu, qual o ticket médio, qual o produto campeão, qual dia foi mais movimentado. Nesta aula, você transforma linhas em respostas.
+
+<Chute pergunta="Para saber quanto cada cliente gastou, você precisa buscar os pedidos e somar num programa em Python?">
+
+Não. O próprio banco soma, conta e tira médias, agrupando por cliente, com `SUM` e `GROUP BY`. Além de mais simples, é muito mais rápido: o banco processa os dados onde eles estão, sem mandar milhões de linhas pela rede para o seu programa.
+
+</Chute>
+
+## Funções de agregação
+
+Elas pegam **muitas linhas** e devolvem **um valor**:
+
+| Função | Devolve |
+| --- | --- |
+| `COUNT(*)` | Quantas linhas |
+| `COUNT(coluna)` | Quantas linhas com a coluna preenchida (ignora NULL) |
+| `SUM(coluna)` | A soma |
+| `AVG(coluna)` | A média |
+| `MIN(coluna)` / `MAX(coluna)` | O menor / o maior |
+
+```sql
+SELECT COUNT(*) AS total_produtos,
+       AVG(preco) AS preco_medio,
+       MIN(preco) AS mais_barato,
+       MAX(preco) AS mais_caro
+FROM produtos;
+```
+
+| total_produtos | preco_medio | mais_barato | mais_caro |
+| --- | --- | --- | --- |
+| 6 | 7.5 | 5.0 | 10.0 |
+
+<Nota tipo="cuidado" titulo="COUNT(*) × COUNT(coluna)">
+
+`SELECT COUNT(*), COUNT(cidade) FROM clientes;` devolve **4** e **3**: a Duda conta como cliente, mas não tem cidade. As agregações **ignoram o NULL**, e isso muda médias e contagens sem avisar.
+
+</Nota>
+
+## GROUP BY: um resultado por grupo
+
+E se a pergunta for "quantos produtos e qual o preço médio **por categoria**"?
+
+```sql
+SELECT categoria,
+       COUNT(*) AS quantos,
+       AVG(preco) AS preco_medio
+FROM produtos
+GROUP BY categoria;
+```
+
+| categoria | quantos | preco_medio |
+| --- | --- | --- |
+| bebida | 3 | 7.0 |
+| comida | 3 | 8.0 |
+
+<Nota tipo="analogia" titulo="Pensa assim: separar as comandas em pilhas">
+
+No fim do dia, você separa as comandas em pilhas, uma por categoria, e faz a conta de cada pilha. O `GROUP BY` faz as pilhas; as funções de agregação fazem a conta de cada uma. O resultado tem **uma linha por pilha**.
+
+</Nota>
+
+A regra de ouro: no `SELECT` de uma consulta com `GROUP BY`, só podem aparecer **as colunas do agrupamento** e **funções de agregação**. Faz sentido: se o grupo é "bebida", não existe **um** nome de produto para mostrar, existem três.
+
+### Agrupando com JOIN: o faturamento
+
+```sql
+SELECT p.id AS pedido,
+       SUM(pr.preco * i.quantidade) AS total
+FROM pedidos p
+JOIN itens_pedido i ON i.pedido_id = p.id
+JOIN produtos pr ON pr.id = i.produto_id
+GROUP BY p.id
+ORDER BY total DESC;
+```
+
+| pedido | total |
+| --- | --- |
+| 1 | 21.0 |
+| 3 | 18.0 |
+| 4 | 17.0 |
+| 2 | 13.0 |
+
+Os itens de cada pedido viraram uma linha só, com a soma.
+
+## HAVING: filtrando os grupos
+
+O `WHERE` filtra **linhas** antes de agrupar. Para filtrar **grupos** depois de calcular, existe o `HAVING`:
+
+```sql
+SELECT pr.nome, SUM(i.quantidade) AS vendidos
+FROM itens_pedido i
+JOIN produtos pr ON pr.id = i.produto_id
+GROUP BY pr.nome
+HAVING SUM(i.quantidade) >= 2
+ORDER BY vendidos DESC;
+```
+
+| nome | vendidos |
+| --- | --- |
+| Cappuccino | 3 |
+| Pão de queijo | 2 |
+
+"Os produtos que venderam 2 unidades ou mais." Não dava para usar `WHERE` aqui, porque a soma só existe depois de agrupar.
+
+<Passos itens={[
+  { icone: "🗂️", titulo: "FROM e JOIN", texto: "junta as tabelas" },
+  { icone: "🔍", titulo: "WHERE", texto: "filtra as linhas" },
+  { icone: "📚", titulo: "GROUP BY", texto: "faz as pilhas" },
+  { icone: "🎯", titulo: "HAVING", texto: "filtra as pilhas" },
+  { icone: "📋", titulo: "SELECT", texto: "calcula as colunas" },
+  { icone: "↕️", titulo: "ORDER BY e LIMIT", texto: "ordena e corta" },
+]} />
+
+Essa é a ordem em que o banco **pensa**, mesmo que você escreva o `SELECT` primeiro.
+
+## A armadilha da contagem dobrada
+
+Lembra da aula passada: depois de um `JOIN` com os itens, cada pedido aparece **uma vez por item**. Veja o que acontece ao contar pedidos assim:
+
+```sql
+SELECT c.nome, COUNT(p.id) AS pedidos
+FROM clientes c
+JOIN pedidos p ON p.cliente_id = c.id
+JOIN itens_pedido i ON i.pedido_id = p.id
+GROUP BY c.id;
+```
+
+| nome | pedidos |
+| --- | --- |
+| Ana | 3 |
+| Bia | 2 |
+| Caio | 2 |
+
+**Errado!** A Ana fez 2 pedidos, não 3. O `COUNT` contou as **linhas de item**. A correção é contar os pedidos **distintos**:
+
+```sql
+SELECT c.nome,
+       COUNT(DISTINCT p.id) AS pedidos,
+       SUM(pr.preco * i.quantidade) AS gasto
+FROM clientes c
+JOIN pedidos p ON p.cliente_id = c.id
+JOIN itens_pedido i ON i.pedido_id = p.id
+JOIN produtos pr ON pr.id = i.produto_id
+GROUP BY c.id
+ORDER BY gasto DESC;
+```
+
+| nome | pedidos | gasto |
+| --- | --- | --- |
+| Ana | 2 | 39.0 |
+| Caio | 1 | 17.0 |
+| Bia | 1 | 13.0 |
+
+<Nota tipo="ia" titulo="O erro que roda sem erro">
+
+A primeira consulta roda, devolve números bonitos e está errada. É o tipo de erro que a IA comete e que ninguém percebe até o relatório chegar na reunião. Confira sempre um caso que você sabe de cabeça ("a Ana fez quantos pedidos mesmo?") antes de confiar no resultado.
+
+</Nota>
+
+## Consulta dentro de consulta
+
+O **ticket médio** é a média do total **por pedido**. Primeiro calculamos o total de cada pedido; depois, a média desses totais. Dá para colocar uma consulta dentro da outra (uma **subconsulta**):
+
+```sql
+SELECT ROUND(AVG(total), 2) AS ticket_medio
+FROM (
+  SELECT p.id, SUM(pr.preco * i.quantidade) AS total
+  FROM pedidos p
+  JOIN itens_pedido i ON i.pedido_id = p.id
+  JOIN produtos pr ON pr.id = i.produto_id
+  GROUP BY p.id
+) AS totais;
+```
+
+| ticket_medio |
+| --- |
+| 17.25 |
+
+A consulta de dentro é exatamente a do faturamento por pedido. A de fora tira a média dos quatro totais: (21 + 18 + 17 + 13) ÷ 4 = 17,25.
+
+<Explique pergunta="Qual a diferença entre WHERE e HAVING?">
+
+O WHERE filtra as linhas antes de agrupar, olhando os dados originais (por exemplo, só pedidos de novembro). O HAVING filtra os grupos depois que as agregações foram calculadas (por exemplo, só os produtos com 2 ou mais unidades vendidas). Uma condição sobre SUM, COUNT ou AVG precisa ir no HAVING, porque esses valores só existem depois do GROUP BY.
+
+</Explique>
+
+## Erros comuns
+
+- **Coluna no `SELECT` que não está no `GROUP BY`** nem numa agregação: o PostgreSQL dá erro; o SQLite deixa passar e escolhe um valor qualquer (pior ainda).
+- **`WHERE SUM(...) > 10`**: agregação vai no `HAVING`.
+- **Contar linhas depois de um `JOIN`** achando que está contando pedidos: use `COUNT(DISTINCT ...)`.
+- **Média com `NULL`**: `AVG` ignora os vazios, o que pode ser ou não o que você quer.
+
+<Tarefa titulo="O relatório do fim do mês">
+
+Monte as consultas do relatório:
+
+1. Quantos pedidos houve **em cada dia**?
+2. Quanto cada **categoria** (bebida e comida) faturou?
+3. Quantos clientes há **por cidade**, incluindo quem não informou?
+4. Qual cliente **gastou mais**? Mostre só ele.
+
+<Dica>
+
+O 1 é `GROUP BY p.data` na tabela de pedidos. O 2 junta itens e produtos e agrupa por `pr.categoria`. O 3 agrupa clientes por `cidade` (o NULL vira um grupo). O 4 é a consulta do "gasto" com `ORDER BY gasto DESC LIMIT 1`.
+
+</Dica>
+
+<Resposta>
+
+```sql
+-- 1
+SELECT data, COUNT(*) AS pedidos
+FROM pedidos
+GROUP BY data
+ORDER BY data;
+
+-- 2
+SELECT pr.categoria, SUM(pr.preco * i.quantidade) AS faturamento
+FROM itens_pedido i
+JOIN produtos pr ON pr.id = i.produto_id
+GROUP BY pr.categoria;
+
+-- 3
+SELECT cidade, COUNT(*) AS clientes
+FROM clientes
+GROUP BY cidade
+ORDER BY clientes DESC;
+
+-- 4
+SELECT c.nome, SUM(pr.preco * i.quantidade) AS gasto
+FROM clientes c
+JOIN pedidos p ON p.cliente_id = c.id
+JOIN itens_pedido i ON i.pedido_id = p.id
+JOIN produtos pr ON pr.id = i.produto_id
+GROUP BY c.id
+ORDER BY gasto DESC
+LIMIT 1;
+```
+
+Resultados: (1) dia 10 com 2 pedidos, dias 11 e 12 com 1 cada; (2) bebida 39,00 e comida 30,00; (3) São Paulo 2, Recife 1 e NULL 1; (4) Ana, com 39,00.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Para mostrar só as categorias com preço médio acima de R$ 7, onde vai a condição AVG(preco) > 7?"
+  opcoes={["No WHERE", "No HAVING", "No ORDER BY"]}
+  correta={1}
+  explicacao="Condições sobre agregações filtram grupos, depois do GROUP BY: HAVING."
+/>
+
+<Quiz
+  pergunta="Depois de juntar pedidos com itens, como contar quantos pedidos cada cliente fez?"
+  opcoes={["COUNT(*)", "COUNT(DISTINCT p.id)", "SUM(p.id)"]}
+  correta={1}
+  explicacao="Cada pedido aparece uma vez por item. DISTINCT conta cada pedido uma vez só."
+/>
+
+<Cartoes itens={[
+  { frente: "As cinco agregações básicas", verso: "COUNT, SUM, AVG, MIN e MAX." },
+  { frente: "O que faz o GROUP BY?", verso: "Separa as linhas em grupos e calcula as agregações de cada um: uma linha por grupo." },
+  { frente: "WHERE × HAVING", verso: "WHERE filtra linhas antes de agrupar; HAVING filtra grupos depois." },
+  { frente: "COUNT(*) × COUNT(coluna)", verso: "COUNT(*) conta todas as linhas; COUNT(coluna) ignora as que têm NULL." },
+  { frente: "O que é uma subconsulta?", verso: "Uma consulta dentro de outra, usada como se fosse uma tabela." },
+]} />
+
+## Resumindo
+
+- `COUNT`, `SUM`, `AVG`, `MIN` e `MAX` transformam muitas linhas num número.
+- `GROUP BY` faz um resultado por grupo; `HAVING` filtra os grupos.
+- Depois de um `JOIN`, conte com `COUNT(DISTINCT ...)` para não contar em dobro.
+- Confira sempre um número que você sabe de cabeça antes de confiar no relatório.

@@ -1,0 +1,153 @@
+<Chute pergunta="Segurança é trabalho só da equipe de segurança, ou toda pessoa desenvolvedora precisa saber?">
+
+Toda pessoa desenvolvedora. A maior parte das falhas que viram notícia nasce em código comum: uma senha esquecida no repositório, uma consulta montada com o texto do usuário, um campo que aceita qualquer coisa. A equipe de segurança ajuda, mas quem escreve o código é quem fecha (ou abre) a porta.
+
+</Chute>
+
+## A vigilância sanitária da cozinha
+
+<Nota tipo="analogia" titulo="Pensa assim: a vigilância sanitária">
+
+Ninguém entra num restaurante para ver a vigilância sanitária. Mas sem ela, a cozinha pode estar contaminada sem ninguém perceber, até alguém passar mal. Higiene na cozinha não é um evento: é o hábito de **todo** cozinheiro lavar as mãos, guardar a carne na temperatura certa e não deixar a porta dos fundos aberta. Segurança no software é a mesma coisa: pequenos hábitos de todo dev, todos os dias.
+
+</Nota>
+
+Esta trilha não ensina a invadir sistemas. Ela ensina o que **todo dev** precisa saber para não deixar portas abertas: guardar senhas, esconder segredos, desconfiar da entrada do usuário, proteger o navegador e reconhecer os ataques mais comuns. Para quem quiser seguir carreira na área, a padaria tem a profissão **Cibersegurança** (o bolo de rolo).
+
+## O que estamos protegendo: os três pilares
+
+Segurança da informação costuma ser resumida em três palavras, conhecidas pela sigla em inglês **CIA**:
+
+| Pilar | Pergunta | Na cafeteria | Quando falha |
+| --- | --- | --- | --- |
+| **Confidencialidade** | Só quem pode, vê? | Só o caixa vê o faturamento | Vazamento de dados de clientes |
+| **Integridade** | O dado está certo e ninguém mexeu sem poder? | O preço do cardápio não muda sozinho | Alguém altera o saldo ou o preço |
+| **Disponibilidade** | Está funcionando quando precisa? | O caixa funciona na hora do almoço | Site fora do ar por um ataque |
+
+## Pensar como quem ataca
+
+Para proteger, ajuda imaginar **como** alguém tentaria causar problema. As equipes fazem isso com perguntas simples sobre cada funcionalidade:
+
+<Passos itens={[
+  { icone: "🚪", titulo: "Por onde entra?", texto: "formulários, URLs, arquivos, APIs" },
+  { icone: "🎭", titulo: "E se mentirem?", texto: "e se o usuário mandar outra coisa?" },
+  { icone: "💎", titulo: "O que é valioso?", texto: "senhas, dados pessoais, dinheiro" },
+  { icone: "💥", titulo: "E se der errado?", texto: "quanto estrago, e como perceber?" },
+]} />
+
+Isso tem nome: **modelagem de ameaças**. Você não precisa de ferramenta: só da pergunta "o que alguém mal-intencionado faria aqui?".
+
+<Nota tipo="dica" titulo="A regra que resume metade da trilha">
+
+**Nunca confie no que vem de fora.** Tudo que vem do usuário, do navegador, de outro sistema ou de um arquivo pode ter sido alterado. O navegador é do usuário: ele pode mudar o HTML, o JavaScript e qualquer requisição. A validação que importa é a que acontece **no servidor**.
+
+</Nota>
+
+## Princípios que valem em qualquer linguagem
+
+| Princípio | Quer dizer | Na cozinha |
+| --- | --- | --- |
+| **Menor privilégio** | Cada pessoa e cada programa só com o acesso que precisa | O garçom não tem a chave do cofre |
+| **Defesa em camadas** | Várias barreiras, para uma falha não derrubar tudo | Cadeado na despensa **e** câmera **e** inventário |
+| **Seguro por padrão** | O jeito mais fácil é o jeito seguro | A porta dos fundos já vem trancada |
+| **Falhar fechado** | Na dúvida, nega | Sem a comanda, o prato não sai |
+| **Não inventar criptografia** | Usar bibliotecas testadas | Não fabricar o próprio extintor |
+
+<Nota tipo="curiosidade" titulo="O bolo de rolo">
+
+A profissão de Cibersegurança é o bolo de rolo da padaria por causa da **defesa em camadas**: uma camada fina por cima da outra. Nenhuma camada sozinha segura tudo, mas juntas formam algo difícil de atravessar.
+
+</Nota>
+
+## Leis e responsabilidade
+
+No Brasil, duas leis aparecem muito:
+
+- **LGPD** (Lei Geral de Proteção de Dados, Lei 13.709/2018): regras para coletar, guardar e usar **dados pessoais** (nome, CPF, e-mail, localização). Vazamentos podem gerar multas e obrigam a empresa a avisar as pessoas afetadas.
+- **Lei 12.737/2012**: torna crime invadir dispositivos alheios sem autorização.
+
+<Nota tipo="cuidado" titulo="Só com permissão">
+
+Testar a segurança de um sistema que não é seu, **sem autorização por escrito**, pode ser crime, mesmo "só para ver se dá". Para praticar, existem ambientes feitos para isso, como os CTFs, que você vai conhecer na profissão de Cibersegurança.
+
+</Nota>
+
+## Os ataques que mais aparecem
+
+Você vai ver cada um nas próximas aulas:
+
+| Ataque | Em uma frase | Aula |
+| --- | --- | --- |
+| Vazamento de senhas | Senhas guardadas do jeito errado são expostas | 2 |
+| Segredos no repositório | Chaves de API publicadas no GitHub | 3 |
+| Injeção | O texto do usuário vira comando | 4 |
+| XSS | O texto do usuário vira código no navegador de outra pessoa | 5 |
+| Phishing | Enganar uma pessoa para entregar a senha | 6 |
+
+<Nota tipo="ia" titulo="IA e segurança">
+
+A IA ajuda muito a revisar código procurando falhas, desde que você peça. E também escreve código inseguro com frequência, porque aprendeu com muito código inseguro da internet. A trilha **Programando com IA**, na mesa posta, tem uma aula só sobre isso.
+
+</Nota>
+
+<Explique pergunta="Por que validar os dados só no JavaScript do navegador não protege o sistema?">
+
+Porque o navegador está nas mãos do usuário. Ele pode desligar o JavaScript, mudar o código pelo DevTools ou mandar a requisição direto para o servidor com outra ferramenta, pulando a validação. A validação no navegador serve para a experiência (avisar rápido); a que protege é a feita no servidor, que o usuário não controla.
+
+</Explique>
+
+<Tarefa titulo="Modelagem de ameaças da cafeteria">
+
+O app da cafeteria tem: cadastro com nome, e-mail e celular; login com senha; carrinho com cupom de desconto; pagamento por Pix; e uma área do gerente com o faturamento.
+
+Para **três** dessas partes, responda as quatro perguntas: por onde entra, e se mentirem, o que é valioso, e se der errado. Diga qual pilar (C, I ou D) está em risco.
+
+<Dica>
+
+Pense em coisas concretas: e se alguém mudar o valor do desconto na requisição? E se um cliente comum acessar a URL da área do gerente? E se a senha for guardada como texto?
+
+</Dica>
+
+<Resposta>
+
+Um exemplo:
+
+| Parte | Por onde entra | E se mentirem? | Valioso | Pilar |
+| --- | --- | --- | --- | --- |
+| Cupom | Campo do cupom e a requisição do carrinho | Mandar `desconto: 100` direto na requisição | O dinheiro da loja | Integridade: o servidor precisa recalcular o desconto a partir do cupom, sem confiar no valor que veio do navegador |
+| Área do gerente | A URL `/gerente` | Um cliente digitar a URL | Faturamento | Confidencialidade: o servidor confere se o usuário é gerente em cada requisição (menor privilégio) |
+| Login | E-mail e senha | Testar milhares de senhas | As contas | Confidencialidade: limite de tentativas, senha com hash e 2FA |
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Onde a validação dos dados realmente protege o sistema?"
+  opcoes={["No JavaScript do navegador", "No servidor", "No CSS"]}
+  correta={1}
+  explicacao="O navegador é controlado pelo usuário. A validação do servidor é a única que ele não consegue pular."
+/>
+
+<Quiz
+  pergunta="O garçom não tem a chave do cofre. Qual princípio é esse?"
+  opcoes={["Menor privilégio", "Disponibilidade", "Falhar aberto"]}
+  correta={0}
+  explicacao="Cada pessoa e cada programa só com o acesso de que precisa para o seu trabalho."
+/>
+
+<Cartoes itens={[
+  { frente: "Os três pilares (CIA)", verso: "Confidencialidade, Integridade e Disponibilidade." },
+  { frente: "O que é modelagem de ameaças?", verso: "Perguntar, para cada funcionalidade: por onde entra, e se mentirem, o que é valioso, e se der errado." },
+  { frente: "A regra que resume metade da trilha", verso: "Nunca confie no que vem de fora: valide no servidor." },
+  { frente: "Defesa em camadas", verso: "Várias barreiras, para uma falha não derrubar tudo (o bolo de rolo)." },
+  { frente: "O que é a LGPD?", verso: "A lei brasileira de proteção de dados pessoais (13.709/2018)." },
+]} />
+
+## Resumindo
+
+- Segurança é hábito de todo dev, como a higiene na cozinha.
+- Proteja os três pilares: **confidencialidade**, **integridade** e **disponibilidade**.
+- Pense como quem ataca e **nunca confie no que vem de fora**.
+- Menor privilégio, defesa em camadas, seguro por padrão, falhar fechado e nada de criptografia caseira.
+- Teste só o que é seu ou o que você tem autorização para testar.

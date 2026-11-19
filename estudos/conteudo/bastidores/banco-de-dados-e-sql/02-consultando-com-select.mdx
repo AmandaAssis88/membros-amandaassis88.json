@@ -1,0 +1,312 @@
+<Aquecimento perguntas={[
+  { p: "O que é uma chave primária?", r: "A coluna (geralmente id) com valor único que identifica cada linha e não muda." },
+  { p: "Por que a tabela de pedidos guarda cliente_id em vez do nome?", r: "Porque o id é único e estável; os dados do cliente ficam num lugar só." },
+  { p: "Qual a grande diferença do SQL para Python ou Java?", r: "No SQL você diz o que quer; o banco decide como buscar." },
+]} />
+
+Hora de abrir a despensa e procurar coisas. Nesta aula você monta a cafeteria inteira num banco de verdade e aprende o comando que vai usar 90% do tempo: o `SELECT`.
+
+<Chute pergunta="Para ver só as bebidas que custam menos de R$ 8, você precisa de um programa com laço e if?">
+
+Não. Em SQL, uma linha resolve: `SELECT nome FROM produtos WHERE categoria = 'bebida' AND preco < 8;`. Você descreve o filtro, e o banco faz o "laço" por você, do jeito mais rápido que ele conhece.
+
+</Chute>
+
+## Montando a cafeteria
+
+Abra o [SQLite Online](https://sqliteonline.com/) (ou o DB Browser for SQLite), apague o que estiver no editor, cole o script inteiro abaixo e clique em **Run**. Ele cria as quatro tabelas e coloca os dados.
+
+```sql
+CREATE TABLE produtos (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  categoria TEXT NOT NULL,
+  preco REAL NOT NULL
+);
+
+CREATE TABLE clientes (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  cidade TEXT
+);
+
+CREATE TABLE pedidos (
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id),
+  data TEXT NOT NULL
+);
+
+CREATE TABLE itens_pedido (
+  pedido_id INTEGER NOT NULL REFERENCES pedidos(id),
+  produto_id INTEGER NOT NULL REFERENCES produtos(id),
+  quantidade INTEGER NOT NULL
+);
+
+INSERT INTO produtos (id, nome, categoria, preco) VALUES
+  (1, 'Café coado', 'bebida', 5.00),
+  (2, 'Cappuccino', 'bebida', 9.00),
+  (3, 'Chá gelado', 'bebida', 7.00),
+  (4, 'Pão de queijo', 'comida', 6.00),
+  (5, 'Bolo de cenoura', 'comida', 8.00),
+  (6, 'Croissant', 'comida', 10.00);
+
+INSERT INTO clientes (id, nome, cidade) VALUES
+  (1, 'Ana', 'São Paulo'),
+  (2, 'Bia', 'Recife'),
+  (3, 'Caio', 'São Paulo'),
+  (4, 'Duda', NULL);
+
+INSERT INTO pedidos (id, cliente_id, data) VALUES
+  (1, 1, '2026-11-10'),
+  (2, 2, '2026-11-10'),
+  (3, 1, '2026-11-11'),
+  (4, 3, '2026-11-12');
+
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade) VALUES
+  (1, 2, 1),
+  (1, 4, 2),
+  (2, 1, 1),
+  (2, 5, 1),
+  (3, 2, 2),
+  (4, 3, 1),
+  (4, 6, 1);
+```
+
+Não se preocupe em entender o `CREATE TABLE` e o `INSERT` agora: eles são o assunto da próxima aula. Por enquanto, eles só enchem a despensa.
+
+<Nota tipo="dica" titulo="Errou alguma coisa?">
+
+No SQLite Online, recarregar a página começa um banco do zero. Cole o script de novo e pronto: você pode bagunçar à vontade.
+
+</Nota>
+
+## SELECT: escolhendo as colunas
+
+```sql
+SELECT * FROM produtos;
+```
+
+O `*` quer dizer "todas as colunas". Resultado:
+
+| id | nome | categoria | preco |
+| --- | --- | --- | --- |
+| 1 | Café coado | bebida | 5.0 |
+| 2 | Cappuccino | bebida | 9.0 |
+| 3 | Chá gelado | bebida | 7.0 |
+| 4 | Pão de queijo | comida | 6.0 |
+| 5 | Bolo de cenoura | comida | 8.0 |
+| 6 | Croissant | comida | 10.0 |
+
+Para escolher só algumas colunas, liste-as:
+
+```sql
+SELECT nome, preco FROM produtos;
+```
+
+<Nota tipo="dica" titulo="Na vida real, evite o SELECT *">
+
+Em sistemas de verdade, as tabelas têm dezenas de colunas. Pedir só o que você vai usar deixa a consulta mais rápida e o código mais claro. O `*` é ótimo para explorar; no código, liste as colunas.
+
+</Nota>
+
+## WHERE: filtrando as linhas
+
+```sql
+SELECT nome, preco
+FROM produtos
+WHERE categoria = 'bebida';
+```
+
+| nome | preco |
+| --- | --- |
+| Café coado | 5.0 |
+| Cappuccino | 9.0 |
+| Chá gelado | 7.0 |
+
+O `WHERE` funciona como o `if` da Lógica: só as linhas em que a condição é verdadeira aparecem.
+
+| Operador | Significa | Exemplo |
+| --- | --- | --- |
+| `=` | igual (um sinal só, diferente de Python e Java!) | `categoria = 'bebida'` |
+| `<>` ou `!=` | diferente | `categoria <> 'bebida'` |
+| `<`, `>`, `<=`, `>=` | comparações | `preco >= 7` |
+| `AND`, `OR`, `NOT` | e, ou, não | `preco >= 7 AND categoria = 'comida'` |
+| `BETWEEN a AND b` | entre (incluindo as pontas) | `preco BETWEEN 6 AND 9` |
+| `IN (...)` | está na lista | `id IN (1, 3, 5)` |
+| `LIKE` | parecido com um padrão | `nome LIKE '%queijo%'` |
+
+Textos vão entre **aspas simples**: `'bebida'`.
+
+```sql
+SELECT nome, preco
+FROM produtos
+WHERE preco >= 7 AND categoria = 'comida';
+```
+
+| nome | preco |
+| --- | --- |
+| Bolo de cenoura | 8.0 |
+| Croissant | 10.0 |
+
+### LIKE: procurando por pedaço de texto
+
+O `%` quer dizer "qualquer coisa, de qualquer tamanho":
+
+- `'Café%'`: começa com "Café".
+- `'%gelado'`: termina com "gelado".
+- `'%ão%'`: tem "ão" em algum lugar.
+
+```sql
+SELECT nome FROM produtos WHERE nome LIKE '%ão%';
+```
+
+| nome |
+| --- |
+| Pão de queijo |
+
+## ORDER BY e LIMIT: ordenando e cortando
+
+```sql
+SELECT nome, preco
+FROM produtos
+ORDER BY preco DESC
+LIMIT 3;
+```
+
+| nome | preco |
+| --- | --- |
+| Croissant | 10.0 |
+| Cappuccino | 9.0 |
+| Bolo de cenoura | 8.0 |
+
+- `ORDER BY preco` ordena do menor para o maior. `DESC` inverte (do maior para o menor).
+- `LIMIT 3` traz só as 3 primeiras linhas. Juntos, respondem "quais os 3 produtos mais caros?".
+- Dá para ordenar por mais de uma coluna: `ORDER BY categoria, preco` (primeiro por categoria; quem empata, por preço).
+
+## NULL: o valor que não existe
+
+A cliente Duda não informou a cidade. A coluna dela está **vazia**, e em SQL isso se chama **`NULL`**: não é zero, não é texto vazio, é "sem valor".
+
+E aqui mora uma pegadinha famosa:
+
+```sql
+SELECT nome FROM clientes WHERE cidade = NULL;
+```
+
+Resultado: **nenhuma linha**! Em SQL, nada é igual a `NULL`, nem o próprio `NULL`. Para procurar valores vazios, use `IS NULL`:
+
+```sql
+SELECT nome FROM clientes WHERE cidade IS NULL;
+```
+
+| nome |
+| --- |
+| Duda |
+
+<Nota tipo="cuidado" titulo="O NULL que some do relatório">
+
+`WHERE cidade <> 'São Paulo'` também **não traz a Duda**, porque comparar `NULL` com qualquer coisa não dá "verdadeiro". Se o relatório precisa dela, escreva `WHERE cidade <> 'São Paulo' OR cidade IS NULL`. Esse é um dos erros mais comuns em consultas, inclusive nas escritas por IA.
+
+</Nota>
+
+## A ordem das partes
+
+Um `SELECT` completo segue sempre esta ordem:
+
+```sql
+SELECT colunas
+FROM tabela
+WHERE filtro
+ORDER BY ordem
+LIMIT quantidade;
+```
+
+<Explique pergunta="Por que WHERE cidade = NULL não encontra a Duda, e o que usar no lugar?">
+
+Porque NULL significa 'sem valor', e em SQL qualquer comparação com NULL (até com outro NULL) não dá verdadeiro: o resultado é 'desconhecido', e o WHERE só deixa passar o que é verdadeiro. Para testar se algo está vazio, existe um operador próprio: IS NULL (e IS NOT NULL para o contrário).
+
+</Explique>
+
+## Erros comuns
+
+- **Aspas duplas em textos**: use `'bebida'`. Em vários bancos, aspas duplas são para nomes de colunas.
+- **`==` em vez de `=`**: o SQL usa um sinal só.
+- **`= NULL`** em vez de `IS NULL`.
+- **Esquecer o ponto e vírgula** quando há vários comandos no editor.
+- **Ordem errada**: `WHERE` depois do `ORDER BY` dá erro.
+
+<Tarefa titulo="Perguntas do dono da cafeteria">
+
+Escreva uma consulta para cada pergunta, usando o banco da cafeteria:
+
+1. Quais produtos custam **entre R$ 6 e R$ 9**, do mais barato para o mais caro?
+2. Quais **bebidas** custam **menos de R$ 8**, em ordem alfabética?
+3. Qual é a **comida mais barata**? (Uma linha só.)
+4. Quais clientes **não são de São Paulo**, incluindo quem não informou a cidade?
+
+<Dica>
+
+Use `BETWEEN` no 1, `AND` com `ORDER BY nome` no 2, `ORDER BY preco` com `LIMIT 1` no 3, e lembre do `IS NULL` no 4.
+
+</Dica>
+
+<Resposta>
+
+```sql
+-- 1
+SELECT nome, preco FROM produtos
+WHERE preco BETWEEN 6 AND 9
+ORDER BY preco, nome;
+
+-- 2
+SELECT nome, preco FROM produtos
+WHERE categoria = 'bebida' AND preco < 8
+ORDER BY nome;
+
+-- 3
+SELECT nome, preco FROM produtos
+WHERE categoria = 'comida'
+ORDER BY preco
+LIMIT 1;
+
+-- 4
+SELECT nome FROM clientes
+WHERE cidade <> 'São Paulo' OR cidade IS NULL;
+```
+
+Resultados: (1) Pão de queijo, Chá gelado, Bolo de cenoura, Cappuccino; (2) Café coado, Chá gelado; (3) Pão de queijo; (4) Bia e Duda.
+
+O `--` começa um comentário em SQL.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual consulta traz os 2 produtos mais baratos?"
+  opcoes={["SELECT nome FROM produtos ORDER BY preco DESC LIMIT 2;", "SELECT nome FROM produtos ORDER BY preco LIMIT 2;", "SELECT nome FROM produtos LIMIT 2 ORDER BY preco;"]}
+  correta={1}
+  explicacao="ORDER BY preco (crescente) e depois LIMIT 2. DESC traria os mais caros, e LIMIT antes de ORDER BY é erro de sintaxe."
+/>
+
+<Quiz
+  pergunta="Como encontrar os clientes sem cidade cadastrada?"
+  opcoes={["WHERE cidade = NULL", "WHERE cidade IS NULL", "WHERE cidade = ''"]}
+  correta={1}
+  explicacao="NULL não é igual a nada. Use IS NULL. Texto vazio ('') é outra coisa, diferente de NULL."
+/>
+
+<Cartoes itens={[
+  { frente: "A ordem das partes de um SELECT", verso: "SELECT, FROM, WHERE, ORDER BY, LIMIT." },
+  { frente: "O que faz o % no LIKE?", verso: "Representa qualquer sequência de caracteres: '%queijo%' tem 'queijo' em qualquer lugar." },
+  { frente: "Como ordenar do maior para o menor?", verso: "ORDER BY coluna DESC." },
+  { frente: "O que é NULL?", verso: "Ausência de valor. Não é zero nem texto vazio." },
+  { frente: "Como testar NULL?", verso: "IS NULL ou IS NOT NULL. Nunca = NULL." },
+]} />
+
+## Resumindo
+
+- `SELECT colunas FROM tabela` consulta; `WHERE` filtra; `ORDER BY` ordena; `LIMIT` corta.
+- Operadores: `=`, `<>`, `<`, `>=`, `AND`, `OR`, `BETWEEN`, `IN`, `LIKE`.
+- Textos entre aspas simples.
+- `NULL` é "sem valor": use `IS NULL`, e lembre que ele some de comparações comuns.

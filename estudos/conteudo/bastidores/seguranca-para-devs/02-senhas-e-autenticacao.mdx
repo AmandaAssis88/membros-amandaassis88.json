@@ -1,0 +1,220 @@
+<Aquecimento perguntas={[
+  { p: "Quais são os três pilares da segurança (CIA)?", r: "Confidencialidade, Integridade e Disponibilidade." },
+  { p: "Por que a validação no navegador não protege o sistema?", r: "Porque o navegador é controlado pelo usuário; só a validação no servidor não pode ser pulada." },
+  { p: "O que é o princípio do menor privilégio?", r: "Cada pessoa e cada programa só com o acesso de que precisa." },
+]} />
+
+Toda semana alguma empresa tem o banco de dados vazado. A diferença entre um susto e um desastre está em **como as senhas estavam guardadas**. Nesta aula você aprende o jeito certo, que é surpreendentemente diferente do que a maioria imagina.
+
+<Chute pergunta="O sistema precisa saber qual é a sua senha para conferir o seu login?">
+
+Não! Um sistema bem feito **nunca guarda a sua senha**. Ele guarda uma espécie de "impressão digital" dela (o **hash**). No login, calcula a impressão digital do que você digitou e compara. Se o banco vazar, quem roubou tem as impressões digitais, não as senhas.
+
+</Chute>
+
+## Os três jeitos de guardar uma senha
+
+| Jeito | Como fica no banco | Se o banco vazar |
+| --- | --- | --- |
+| ❌ Texto puro | `cafe123` | Todas as senhas expostas na hora |
+| ❌ Criptografada | `x9Fk2...` (dá para desfazer com a chave) | Se a chave vazar junto, todas expostas |
+| ✅ Hash lento com sal | `a3f1...$9c2e...` (não dá para desfazer) | Cada senha precisa ser adivinhada, uma a uma, devagar |
+
+## Hash: a impressão digital
+
+Uma **função hash** transforma qualquer texto num código de tamanho fixo, e:
+
+- É **de mão única**: dá para calcular o hash a partir da senha, mas não a senha a partir do hash.
+- É **determinística**: a mesma entrada dá sempre o mesmo resultado.
+- **Qualquer mudança** na entrada muda completamente o resultado.
+
+<Nota tipo="analogia" titulo="Pensa assim: o suco">
+
+Dá para fazer suco a partir da laranja, mas não dá para transformar o suco de volta em laranja. E duas laranjas iguais dão o mesmo suco. O hash é o suco da senha.
+
+</Nota>
+
+```python
+import hashlib
+
+for senha in ["cafe123", "cafe123", "cafe124"]:
+    print(senha, "→", hashlib.sha256(senha.encode()).hexdigest()[:16], "...")
+```
+
+```saida
+cafe123 → 3102859ebaa2353c ...
+cafe123 → 3102859ebaa2353c ...
+cafe124 → 553aa4dc9a833abe ...
+```
+
+Uma letra de diferença, um hash completamente diferente.
+
+## Por que um hash simples não basta
+
+Repare: a mesma senha dá **sempre** o mesmo hash. Isso cria dois problemas:
+
+1. **Tabelas prontas**: atacantes têm listas enormes com o hash das senhas mais comuns. Viu o hash `3102859e...`? Já sabem que é `cafe123`.
+2. **Senhas iguais aparecem iguais**: se a Ana e a Bia usam `cafe123`, o banco vazado mostra que as duas têm a mesma senha.
+
+E o SHA-256 foi feito para ser **rápido**: um computador comum calcula bilhões por segundo. Ótimo para conferir arquivos, péssimo para senhas, porque deixa testar bilhões de palpites por segundo.
+
+## O jeito certo: sal + hash lento
+
+<Passos itens={[
+  { icone: "🧂", titulo: "Sal", texto: "um valor aleatório diferente para cada usuário, misturado à senha" },
+  { icone: "🐢", titulo: "Lento de propósito", texto: "milhares de rodadas, para cada palpite custar caro" },
+  { icone: "💾", titulo: "Guarda os dois", texto: "o sal e o hash, nunca a senha" },
+]} />
+
+```python
+import hashlib
+import hmac
+import os
+
+ITERACOES = 600_000
+
+
+def gerar_hash(senha):
+    sal = os.urandom(16)
+    resumo = hashlib.pbkdf2_hmac("sha256", senha.encode(), sal, ITERACOES)
+    return sal.hex() + "$" + resumo.hex()
+
+
+def conferir(senha, guardado):
+    sal_hex, resumo_hex = guardado.split("$")
+    tentativa = hashlib.pbkdf2_hmac("sha256", senha.encode(), bytes.fromhex(sal_hex), ITERACOES)
+    return hmac.compare_digest(tentativa.hex(), resumo_hex)
+
+
+guardado_ana = gerar_hash("cafe123")
+guardado_bia = gerar_hash("cafe123")
+print("Ana e Bia têm o mesmo hash?", guardado_ana == guardado_bia)
+print("Login com cafe123:", conferir("cafe123", guardado_ana))
+print("Login com cafe124:", conferir("cafe124", guardado_ana))
+```
+
+```saida
+Ana e Bia têm o mesmo hash? False
+Login com cafe123: True
+Login com cafe124: False
+```
+
+- `os.urandom(16)` gera o **sal**: 16 bytes aleatórios, diferentes para cada pessoa. Agora, senhas iguais têm hashes diferentes, e as tabelas prontas não servem.
+- `pbkdf2_hmac` com **600 mil rodadas** deixa cada cálculo lento de propósito. Para você, no login, é um instante; para quem testa bilhões de palpites, vira um obstáculo enorme.
+- `hmac.compare_digest` compara sem vazar, pelo tempo de resposta, quantos caracteres bateram.
+
+<Nota tipo="cuidado" titulo="Na vida real, use uma biblioteca pronta">
+
+Este exemplo existe para você **entender** o mecanismo. Em projetos reais, use bibliotecas feitas para senhas, que já cuidam de tudo: **Argon2** ou **bcrypt** (em Python, `argon2-cffi` ou `bcrypt`; em Java, o `BCryptPasswordEncoder` do Spring Security). Frameworks como Django e serviços como o Supabase Auth já fazem isso por você. A regra: **não invente criptografia**.
+
+</Nota>
+
+## Do lado de quem usa: senhas fortes e 2FA
+
+### Tamanho vence complicação
+
+`Tr0ub@dor` parece forte, mas é curta e segue um padrão que os programas de ataque conhecem. `xicara azul pao frances domingo` é longa, fácil de lembrar e muito mais difícil de adivinhar. As recomendações atuais priorizam o **comprimento** (frases-senha), e não regras do tipo "uma maiúscula, um símbolo".
+
+### Um gerenciador de senhas
+
+Usar a mesma senha em tudo é o maior risco: vazou num site, vale em todos. Um **gerenciador de senhas** (Bitwarden, 1Password, o do navegador) cria e lembra uma senha diferente e longa para cada site. Você só decora uma.
+
+### Autenticação em dois fatores (2FA)
+
+Mesmo que a senha vaze, o login pede um **segundo fator**:
+
+| Fator | Exemplo | Força |
+| --- | --- | --- |
+| Algo que você **sabe** | Senha | Pode vazar |
+| Algo que você **tem** | Código do app autenticador, chave física | Bem mais forte |
+| Algo que você **é** | Digital, rosto | Prático no celular |
+
+<Nota tipo="dica" titulo="SMS é melhor que nada, mas...">
+
+Código por SMS pode ser desviado por golpes de troca de chip. Prefira um **app autenticador** (Google Authenticator, Microsoft Authenticator, o do gerenciador de senhas) ou uma **chave de segurança**. Ative o 2FA no GitHub, no e-mail e no banco hoje.
+
+</Nota>
+
+## Do lado de quem desenvolve: o login
+
+Mais alguns cuidados que todo sistema de login precisa:
+
+- **Limite de tentativas**: depois de várias senhas erradas, espere ou peça uma verificação.
+- **Mensagem genérica**: "e-mail ou senha inválidos", sem dizer qual dos dois errou (senão o atacante descobre quais e-mails existem).
+- **Nunca registre senhas** em logs, nem por engano.
+- **HTTPS sempre**: senha trafegando sem criptografia pode ser lida no caminho.
+- **Recuperação de senha** por link de uso único e com validade curta, nunca mandando a senha por e-mail (se o sistema consegue te mandar a sua senha, ele está guardando errado).
+
+<Explique pergunta="Para que serve o sal no hash de senhas?">
+
+O sal é um valor aleatório, diferente para cada usuário, misturado à senha antes do hash. Com ele, a mesma senha gera hashes diferentes para pessoas diferentes, então o atacante não consegue usar tabelas prontas de hashes nem descobrir quem tem a mesma senha. Cada senha precisa ser atacada separadamente.
+
+</Explique>
+
+<Tarefa titulo="Revise o cadastro">
+
+Um colega escreveu este trecho para o cadastro da cafeteria. Encontre os problemas e diga como corrigir:
+
+```python-exemplo
+import hashlib
+
+def cadastrar(email, senha):
+    hash_senha = hashlib.md5(senha.encode()).hexdigest()
+    print("Novo usuário:", email, "senha:", senha)
+    banco.salvar(email, hash_senha)
+
+def login(email, senha):
+    usuario = banco.buscar(email)
+    if usuario is None:
+        return "E-mail não cadastrado"
+    if hashlib.md5(senha.encode()).hexdigest() != usuario.hash_senha:
+        return "Senha errada"
+    return "Bem-vindo!"
+```
+
+<Dica>
+
+Procure: o algoritmo de hash (MD5 é rápido e antigo), a falta de sal, a senha aparecendo onde não devia e as mensagens que contam demais. Pense também no que falta no login.
+
+</Dica>
+
+<Resposta>
+
+1. **MD5 sem sal**: rápido demais e sem sal; senhas iguais ficam iguais. Trocar por Argon2 ou bcrypt (ou, no mínimo, PBKDF2 com sal e muitas rodadas).
+2. **A senha vai para o log** no `print`. Nunca registrar senha.
+3. **Mensagens diferentes** para e-mail inexistente e senha errada: o atacante descobre quais e-mails estão cadastrados. Usar "e-mail ou senha inválidos" nos dois casos.
+4. **Comparação com `!=`**: usar comparação em tempo constante (`hmac.compare_digest`), ou deixar a biblioteca de senhas comparar.
+5. **Falta limite de tentativas** no login.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Como um sistema bem feito confere a sua senha no login?"
+  opcoes={["Descriptografa a senha guardada e compara", "Calcula o hash do que você digitou (com o sal guardado) e compara com o hash guardado", "Manda a senha por e-mail para conferir"]}
+  correta={1}
+  explicacao="O sistema nunca guarda nem recupera a senha: compara as 'impressões digitais'."
+/>
+
+<Quiz
+  pergunta="Qual destas é a senha mais difícil de adivinhar?"
+  opcoes={["Cafe@2026", "P@ssw0rd!", "pao de queijo quentinho no domingo"]}
+  correta={2}
+  explicacao="Comprimento vence complicação. Frases longas e incomuns resistem muito mais a ataques."
+/>
+
+<Cartoes itens={[
+  { frente: "Por que nunca guardar a senha em texto puro?", verso: "Se o banco vazar, todas as senhas ficam expostas na hora." },
+  { frente: "O que é hash?", verso: "Uma 'impressão digital' de mão única: calcula a partir da senha, mas não volta para a senha." },
+  { frente: "O que o sal resolve?", verso: "Senhas iguais ganham hashes diferentes, e tabelas prontas param de funcionar." },
+  { frente: "Quais algoritmos usar para senhas?", verso: "Argon2 ou bcrypt (ou PBKDF2 com muitas rodadas). Nunca MD5 ou SHA simples." },
+  { frente: "Os três tipos de fator de autenticação", verso: "Algo que você sabe (senha), tem (app, chave) e é (digital, rosto)." },
+]} />
+
+## Resumindo
+
+- Senha **nunca** fica guardada: guarde **sal + hash lento** (Argon2, bcrypt).
+- Hash rápido e sem sal (MD5, SHA simples) não protege senhas.
+- Use frases-senha longas, um gerenciador de senhas e **2FA** com app autenticador.
+- No login: limite de tentativas, mensagem genérica, nada de senha em log e HTTPS sempre.

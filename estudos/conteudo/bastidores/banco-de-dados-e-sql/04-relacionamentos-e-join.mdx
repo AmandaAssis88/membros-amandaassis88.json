@@ -1,0 +1,227 @@
+<Aquecimento perguntas={[
+  { p: "O que fazer antes de um UPDATE ou DELETE?", r: "Rodar um SELECT com o mesmo WHERE e conferir as linhas afetadas." },
+  { p: "Para que servem BEGIN, COMMIT e ROLLBACK?", r: "Abrir uma transação, confirmar tudo ou desfazer tudo." },
+  { p: "Por que a tabela pedidos guarda cliente_id e não o nome?", r: "O id é único e estável; os dados do cliente ficam num lugar só." },
+]} />
+
+Cada coisa na sua prateleira: clientes numa tabela, pedidos em outra, produtos em outra. Ótimo para organizar. Mas o dono da cafeteria quer ver "o **nome** do cliente de cada pedido" e "**o que** cada um comprou". A informação está espalhada em várias tabelas. Juntar essas tabelas numa resposta só é o trabalho do **JOIN**.
+
+<Chute pergunta="A tabela de pedidos só tem cliente_id. Como mostrar o nome do cliente ao lado de cada pedido?">
+
+Juntando as duas tabelas pela coluna que elas têm em comum: `pedidos.cliente_id` aponta para `clientes.id`. O `JOIN` faz exatamente isso: para cada pedido, ele busca o cliente com o id correspondente e monta uma linha com os dados dos dois.
+
+</Chute>
+
+## Chave estrangeira: a seta entre as tabelas
+
+Na criação da tabela de pedidos, apareceu esta linha:
+
+```sql
+cliente_id INTEGER NOT NULL REFERENCES clientes(id)
+```
+
+`cliente_id` é uma **chave estrangeira** (*foreign key*): uma coluna que guarda a chave primária de **outra** tabela. Ela é a seta que liga o pedido ao cliente, e o banco pode garantir que ninguém crie um pedido para um cliente que não existe.
+
+<Nota tipo="analogia" titulo="Pensa assim: a comanda com o número da mesa">
+
+A comanda da cozinha não traz o nome e o telefone do cliente: traz o **número da mesa**. Para saber quem está na mesa 7, o garçom olha o mapa do salão. A chave estrangeira é o número da mesa; o JOIN é olhar o mapa.
+
+</Nota>
+
+<Nota tipo="dica" titulo="No SQLite, ligue a fiscalização">
+
+Por padrão, o SQLite **não confere** as chaves estrangeiras. Para ele recusar um pedido com cliente inexistente, rode antes: `PRAGMA foreign_keys = ON;`. No PostgreSQL e no MySQL, a conferência já vem ligada.
+
+</Nota>
+
+## INNER JOIN: só o que combina
+
+```sql
+SELECT p.id AS pedido, c.nome AS cliente, p.data
+FROM pedidos p
+JOIN clientes c ON c.id = p.cliente_id
+ORDER BY p.id;
+```
+
+| pedido | cliente | data |
+| --- | --- | --- |
+| 1 | Ana | 2026-11-10 |
+| 2 | Bia | 2026-11-10 |
+| 3 | Ana | 2026-11-11 |
+| 4 | Caio | 2026-11-12 |
+
+Peça por peça:
+
+- `FROM pedidos p`: a tabela principal, com o **apelido** `p` (para não escrever `pedidos` toda hora).
+- `JOIN clientes c`: a tabela que vai ser juntada, com o apelido `c`.
+- `ON c.id = p.cliente_id`: a **regra de ligação**: junte a linha do pedido com a do cliente cujo id é igual ao `cliente_id`.
+- `p.id AS pedido`: `AS` dá um nome mais claro para a coluna no resultado.
+- `p.id` e `c.nome`: o apelido na frente diz de qual tabela vem a coluna (as duas tabelas têm `id`!).
+
+`JOIN` sozinho é o mesmo que `INNER JOIN`: traz só as linhas que **têm par** nas duas tabelas.
+
+## LEFT JOIN: todo mundo da esquerda, com ou sem par
+
+Repare que a Duda não apareceu acima: ela não tem pedidos, então não tem par. E se a pergunta for "**todos** os clientes e seus pedidos, se houver"?
+
+```sql
+SELECT c.nome, p.id AS pedido
+FROM clientes c
+LEFT JOIN pedidos p ON p.cliente_id = c.id
+ORDER BY c.nome, p.id;
+```
+
+| nome | pedido |
+| --- | --- |
+| Ana | 1 |
+| Ana | 3 |
+| Bia | 2 |
+| Caio | 4 |
+| Duda | NULL |
+
+O `LEFT JOIN` mantém **todas** as linhas da tabela da esquerda (a do `FROM`) e preenche com `NULL` quando não há par.
+
+| Tipo | Traz |
+| --- | --- |
+| `INNER JOIN` (ou só `JOIN`) | Só as linhas que combinam nas duas tabelas |
+| `LEFT JOIN` | Todas as da esquerda, e da direita só o que combina (o resto vira NULL) |
+
+<Nota tipo="dica" titulo="Quem nunca comprou?">
+
+Uma pergunta clássica que o `LEFT JOIN` resolve: "quais clientes nunca fizeram pedido?". Junte e filtre quem ficou sem par:
+
+```sql
+SELECT c.nome
+FROM clientes c
+LEFT JOIN pedidos p ON p.cliente_id = c.id
+WHERE p.id IS NULL;
+```
+
+Resultado: **Duda**.
+
+</Nota>
+
+## Juntando várias tabelas
+
+Para saber **o que** a Ana comprou no pedido 1, precisamos de quatro tabelas: o pedido, o cliente, os itens e os produtos. Basta encadear os `JOIN`s, cada um com a sua regra de ligação:
+
+```sql
+SELECT c.nome AS cliente,
+       pr.nome AS produto,
+       i.quantidade,
+       pr.preco * i.quantidade AS subtotal
+FROM pedidos p
+JOIN clientes c ON c.id = p.cliente_id
+JOIN itens_pedido i ON i.pedido_id = p.id
+JOIN produtos pr ON pr.id = i.produto_id
+WHERE p.id = 1;
+```
+
+| cliente | produto | quantidade | subtotal |
+| --- | --- | --- | --- |
+| Ana | Cappuccino | 1 | 9.0 |
+| Ana | Pão de queijo | 2 | 12.0 |
+
+Repare que dá para fazer contas no `SELECT`: `pr.preco * i.quantidade`.
+
+<Passos itens={[
+  { icone: "🧾", titulo: "pedidos", texto: "o ponto de partida" },
+  { icone: "🙋", titulo: "+ clientes", texto: "pelo cliente_id" },
+  { icone: "📋", titulo: "+ itens_pedido", texto: "pelo pedido_id" },
+  { icone: "☕", titulo: "+ produtos", texto: "pelo produto_id" },
+]} />
+
+## A armadilha do JOIN: linhas que se multiplicam
+
+Quando você junta um pedido com os seus itens, o pedido aparece **uma vez para cada item**. A Ana tem 1 pedido com 2 itens: o pedido aparece em **duas** linhas. Se você somar ou contar sem cuidado, conta o pedido em dobro.
+
+<Nota tipo="cuidado" titulo="Confira o número de linhas">
+
+Antes de confiar num relatório com `JOIN`, faça a pergunta: "**uma linha do resultado representa o quê?**" Um pedido? Um item? Um cliente? Se a resposta não estiver clara, o número no fim (a soma, a contagem) provavelmente está errado. Esse é o erro mais comum em consultas geradas por IA, porque elas **rodam sem erro** e só mostram um número errado.
+
+</Nota>
+
+<Explique pergunta="Qual a diferença entre INNER JOIN e LEFT JOIN? Dê um exemplo em que o resultado muda.">
+
+O INNER JOIN só traz as linhas que têm par nas duas tabelas; o LEFT JOIN traz todas as linhas da tabela da esquerda, preenchendo com NULL quando não há par. Listando clientes e pedidos, a Duda (que nunca comprou) some no INNER JOIN e aparece no LEFT JOIN com pedido NULL.
+
+</Explique>
+
+## Erros comuns
+
+- **Esquecer o `ON`** (ou errar a coluna): o banco junta **cada** linha com **todas** as outras, e o resultado explode.
+- **Coluna ambígua**: `SELECT id` com duas tabelas que têm `id` dá erro. Use o apelido: `p.id`.
+- **Usar `INNER JOIN` quando a pergunta é "todos"**: quem não tem par some sem avisar.
+- **Filtrar a tabela da direita no `WHERE` depois de um `LEFT JOIN`** (`WHERE p.data = ...`): as linhas com `NULL` caem fora, e ele vira um `INNER JOIN` disfarçado.
+
+<Tarefa titulo="O caderno do garçom">
+
+Escreva as consultas:
+
+1. Todos os pedidos com a **data**, o **nome do cliente** e a **cidade**.
+2. Os **produtos** comprados pela **Ana** (em qualquer pedido), com a quantidade.
+3. **Todos os produtos** e em quais pedidos apareceram, inclusive os que nunca foram vendidos (procure algum que fique com `NULL`).
+
+<Dica>
+
+O 2 é o JOIN de quatro tabelas com `WHERE c.nome = 'Ana'`. No 3, comece pela tabela `produtos` (ela é a "esquerda") e faça `LEFT JOIN itens_pedido`.
+
+</Dica>
+
+<Resposta>
+
+```sql
+-- 1
+SELECT p.id, p.data, c.nome, c.cidade
+FROM pedidos p
+JOIN clientes c ON c.id = p.cliente_id;
+
+-- 2
+SELECT pr.nome AS produto, i.quantidade, p.id AS pedido
+FROM pedidos p
+JOIN clientes c ON c.id = p.cliente_id
+JOIN itens_pedido i ON i.pedido_id = p.id
+JOIN produtos pr ON pr.id = i.produto_id
+WHERE c.nome = 'Ana';
+
+-- 3
+SELECT pr.nome, i.pedido_id
+FROM produtos pr
+LEFT JOIN itens_pedido i ON i.produto_id = pr.id
+ORDER BY pr.nome;
+```
+
+No 2, a Ana comprou cappuccino (1) e pão de queijo (2) no pedido 1, e cappuccino (2) no pedido 3. No 3, todos os seis produtos foram vendidos pelo menos uma vez, então nenhum fica com `NULL`. Para ver um `NULL`, insira um produto novo e rode de novo.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que é uma chave estrangeira?"
+  opcoes={["Uma senha de outro banco", "Uma coluna que guarda a chave primária de outra tabela", "Uma tabela importada de outro país"]}
+  correta={1}
+  explicacao="Como o cliente_id no pedido: a seta que liga uma tabela à outra."
+/>
+
+<Quiz
+  pergunta="Para listar TODOS os clientes, inclusive os que nunca compraram, qual JOIN usar a partir de clientes?"
+  opcoes={["INNER JOIN pedidos", "LEFT JOIN pedidos", "Nenhum, não dá"]}
+  correta={1}
+  explicacao="O LEFT JOIN mantém todas as linhas da tabela da esquerda (clientes), com NULL quando não há pedido."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é chave estrangeira?", verso: "Uma coluna que guarda o id de outra tabela, ligando as duas (ex.: pedidos.cliente_id → clientes.id)." },
+  { frente: "INNER JOIN", verso: "Traz só as linhas que têm par nas duas tabelas." },
+  { frente: "LEFT JOIN", verso: "Traz todas as linhas da esquerda; sem par, a direita vem NULL." },
+  { frente: "Como achar quem nunca comprou?", verso: "LEFT JOIN pedidos e WHERE pedidos.id IS NULL." },
+  { frente: "A pergunta que evita relatório errado", verso: "Uma linha do resultado representa o quê?" },
+]} />
+
+## Resumindo
+
+- **Chave estrangeira** liga as tabelas; `PRAGMA foreign_keys = ON` faz o SQLite conferir.
+- `JOIN ... ON` junta as linhas pela regra de ligação; apelidos e `AS` deixam tudo legível.
+- `INNER JOIN` traz só o que combina; `LEFT JOIN` traz todos da esquerda.
+- Cuidado com linhas que se multiplicam: saiba o que cada linha do resultado representa.

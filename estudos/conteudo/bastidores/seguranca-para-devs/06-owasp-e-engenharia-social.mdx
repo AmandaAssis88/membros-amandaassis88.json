@@ -1,0 +1,175 @@
+<Aquecimento perguntas={[
+  { p: "O que é XSS e como evitar?", r: "Texto de fora mostrado como HTML vira código no navegador de outra pessoa. Evita-se escapando a saída (textContent, templates) e sanitizando quando inevitável." },
+  { p: "Para que servem HttpOnly, Secure e SameSite num cookie?", r: "JS não lê o cookie; ele só viaja por HTTPS; e não vai em requisições de outros sites." },
+  { p: "Qual a proteção principal contra injeção?", r: "Separar dado de comando: consultas com parâmetros, argumentos em lista." },
+]} />
+
+Fechando a trilha, duas visões de cima: a lista que o mundo inteiro usa para saber **quais falhas mais acontecem**, e o ataque que não precisa de nenhuma falha no código, porque mira **as pessoas**.
+
+<Chute pergunta="Qual é a falha de segurança mais comum em aplicações web hoje: injeção de SQL, senha fraca ou outra coisa?">
+
+Segundo a lista mais conhecida da área, a do OWASP, a primeira colocada é o **controle de acesso quebrado**: o sistema deixa alguém ver ou fazer o que não devia, como um cliente comum abrindo a página do gerente ou o pedido de outra pessoa só trocando um número na URL. Não é um ataque sofisticado: é uma conferência que faltou.
+
+</Chute>
+
+## O OWASP Top 10
+
+O **OWASP** (*Open Worldwide Application Security Project*) é uma comunidade aberta que publica materiais gratuitos de segurança. O mais famoso é o **Top 10**: as dez categorias de risco mais importantes em aplicações web, atualizado de tempos em tempos com dados de milhares de sistemas. A versão de 2025:
+
+| # | Categoria | Em português simples | Você viu em |
+| --- | --- | --- | --- |
+| A01 | Broken Access Control | Ver ou fazer o que não devia | Aula 1 (cupom, área do gerente) |
+| A02 | Security Misconfiguration | Configuração insegura: modo debug ligado, senha padrão, erros detalhados | Aula 4 |
+| A03 | Software Supply Chain Failures | Dependências e pacotes comprometidos ou desatualizados | Trilha de IA (pacotes inventados) |
+| A04 | Cryptographic Failures | Dados sensíveis sem criptografia, senhas mal guardadas | Aula 2 |
+| A05 | Injection | Texto de fora vira comando (SQL, XSS...) | Aulas 4 e 5 |
+| A06 | Insecure Design | O problema está no desenho, não num bug | Aula 1 (modelagem de ameaças) |
+| A07 | Authentication Failures | Login fraco, sem limite de tentativas, sem 2FA | Aula 2 |
+| A08 | Software or Data Integrity Failures | Confiar em código ou dados sem verificar a origem | Aula 3 |
+| A09 | Security Logging & Alerting Failures | Ninguém percebe o ataque porque não há registros nem alertas | Abaixo |
+| A10 | Mishandling of Exceptional Conditions | Erros mal tratados que deixam o sistema num estado inseguro | Abaixo |
+
+<Nota tipo="dica" titulo="Use o Top 10 como checklist de revisão">
+
+Não precisa decorar. Ao revisar uma funcionalidade (sua, de um colega ou da IA), passe pelas dez linhas e pergunte: "isso se aplica aqui?". Já pega a maior parte dos problemas.
+
+</Nota>
+
+### Controle de acesso: o número 1
+
+O caso clássico: a página do pedido é `/pedidos/42`. Um cliente troca para `/pedidos/43` e vê o pedido de outra pessoa. O sistema conferiu que o usuário **estava logado**, mas não conferiu se o pedido **era dele**.
+
+```python-exemplo
+def ver_pedido(usuario_logado, pedido_id):
+    pedido = banco.buscar_pedido(pedido_id)
+    if pedido is None or pedido.cliente_id != usuario_logado.id:
+        raise PermissaoNegada()
+    return pedido
+```
+
+A regra: **em cada requisição**, o servidor confere se **este** usuário pode fazer **esta** ação **neste** dado. Esconder o botão no front-end não é controle de acesso.
+
+<Nota tipo="curiosidade" titulo="As regras no banco também contam">
+
+No Supabase, as políticas de RLS (*Row Level Security*) fazem esse controle **no próprio banco**: a regra "cada cliente só lê os próprios pedidos" fica gravada na tabela. Mesmo que o código esqueça de conferir, o banco recusa. Defesa em camadas.
+
+</Nota>
+
+### Registros e alertas: perceber o ataque
+
+Se alguém testar 10 mil senhas, alguém precisa **ficar sabendo**. Por isso os sistemas registram eventos importantes (logins que falharam, mudanças de permissão, acessos negados) e disparam alertas quando algo foge do normal. Sem senhas e dados pessoais no log, como você viu na aula 2.
+
+### Erros que deixam portas abertas
+
+Um sistema que, ao dar erro no meio de uma verificação, **libera** o acesso em vez de negar, ou que mostra a mensagem técnica inteira para o usuário, está tratando mal as condições excepcionais. Lembre do princípio da aula 1: **falhar fechado**. Na dúvida, nega, registra e mostra uma mensagem simples.
+
+## Engenharia social: o ataque às pessoas
+
+A forma mais barata de entrar num sistema é **pedir a senha para alguém**, do jeito certo. Isso é **engenharia social**, e o tipo mais comum é o **phishing**: mensagens falsas que imitam uma empresa conhecida para fazer a pessoa clicar, digitar a senha ou baixar algo.
+
+<Nota tipo="analogia" titulo="Pensa assim: o falso fiscal">
+
+Um homem de colete chega na cafeteria dizendo ser da vigilância sanitária e pede para ver o cofre "para a inspeção". Ele não arrombou nada: alguém abriu a porta para ele. O phishing é o falso fiscal digital.
+
+</Nota>
+
+Os sinais que se repetem:
+
+<Passos itens={[
+  { icone: "⏰", titulo: "Urgência", texto: "sua conta será bloqueada em 2 horas" },
+  { icone: "🔗", titulo: "Link estranho", texto: "githuh.com, g1thub-login.net" },
+  { icone: "🔑", titulo: "Pede segredo", texto: "senha, código do 2FA, token" },
+  { icone: "🎁", titulo: "Bom demais", texto: "você ganhou, vaga garantida" },
+]} />
+
+- **Empresas sérias não pedem senha nem código de verificação** por mensagem, e-mail ou ligação.
+- **Desconfie da urgência**: ela existe para você não pensar.
+- **Não clique: digite o endereço** oficial no navegador ou use o app.
+- **Confira com outra pessoa** por outro canal ("você mandou mesmo esse Pix?").
+- **O 2FA com app ou chave física** segura muitos desses ataques, porque a senha sozinha não basta.
+
+<Nota tipo="cuidado" titulo="Golpes que miram devs">
+
+Há golpes feitos para quem programa: falsas vagas que pedem para você rodar um projeto "de teste" no seu computador (com código malicioso escondido), pacotes com nomes quase iguais aos verdadeiros, e mensagens fingindo ser do GitHub pedindo para "revalidar" o token. Rode projetos desconhecidos com cuidado e confira sempre a origem.
+
+</Nota>
+
+## O checklist do dev cuidadoso
+
+Juntando a trilha inteira:
+
+| Antes de entregar, confira | Aula |
+| --- | --- |
+| Cada requisição confere quem pode fazer o quê, no servidor | 1 e 6 |
+| Senhas com Argon2 ou bcrypt, login com limite de tentativas e 2FA | 2 |
+| Nenhum segredo no código, `.env` no `.gitignore` | 3 |
+| Consultas com parâmetros e validação com lista de permitidos | 4 |
+| Saída escapada, cookies protegidos, HTTPS | 5 |
+| Dependências confiáveis e atualizadas | 6 e trilha de IA |
+| Erros tratados sem expor detalhes, registros sem dados sensíveis | 6 |
+
+<Nota tipo="ia" titulo="Revisão de segurança com IA">
+
+Um ótimo uso da IA: *"Revise este código usando o OWASP Top 10 como checklist. Para cada categoria, diga se se aplica e se há problema."* Depois, confira cada apontamento você mesmo: a IA também erra em segurança, para mais e para menos.
+
+</Nota>
+
+<Explique pergunta="Por que esconder o botão 'Painel do gerente' no front-end não é controle de acesso?">
+
+Porque o front-end está nas mãos do usuário: ele pode digitar a URL do painel direto, chamar a API com outra ferramenta ou mudar o código no navegador. Esconder o botão só melhora a interface. O controle de acesso de verdade é o servidor conferir, em cada requisição, se aquele usuário tem permissão para aquela ação naquele dado.
+
+</Explique>
+
+<Tarefa titulo="Revisão final da cafeteria">
+
+Use o OWASP Top 10 para revisar esta descrição do app e apontar **pelo menos cinco** problemas, com a categoria de cada um:
+
+> "Para ver um pedido, o app chama `/api/pedidos?id=NUMERO`, e o servidor confere se o usuário está logado. O login aceita tentativas ilimitadas. Quando algo dá errado, a API devolve o erro completo do banco de dados, com o nome das tabelas. O projeto usa uma biblioteca de PDF que não é atualizada há 5 anos. Não há registro de logins que falharam. O painel do gerente fica escondido no menu para clientes."
+
+<Dica>
+
+Leia frase por frase e procure a linha correspondente na tabela do Top 10. Algumas frases cabem em mais de uma categoria.
+
+</Dica>
+
+<Resposta>
+
+1. **A01 · Controle de acesso**: o servidor confere se está logado, mas não se o pedido é **do** usuário. Qualquer cliente troca o id e vê pedidos alheios.
+2. **A07 · Autenticação**: login sem limite de tentativas.
+3. **A02 · Configuração** e **A10 · Condições excepcionais**: erro completo do banco exposto para o usuário. Registrar o detalhe no servidor e mostrar uma mensagem simples.
+4. **A03 · Cadeia de suprimentos**: dependência abandonada há 5 anos. Trocar por uma mantida e acompanhar atualizações de segurança.
+5. **A09 · Registros e alertas**: ninguém percebe uma tentativa de adivinhar senhas.
+6. **A01 · Controle de acesso** de novo: esconder o painel no menu não protege; o servidor precisa conferir se é gerente.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Um cliente troca /pedidos/42 por /pedidos/43 na URL e vê o pedido de outra pessoa. Qual categoria do OWASP?"
+  opcoes={["Injection", "Broken Access Control", "Cryptographic Failures"]}
+  correta={1}
+  explicacao="O servidor não conferiu se aquele pedido pertence àquele usuário: controle de acesso quebrado, o número 1 da lista."
+/>
+
+<Quiz
+  pergunta="Chega um e-mail 'do GitHub' dizendo que sua conta será suspensa em 1 hora se você não confirmar o token num link. O que fazer?"
+  opcoes={["Clicar rápido para não perder a conta", "Não clicar, abrir o GitHub digitando o endereço e conferir as notificações por lá", "Responder o e-mail com o token"]}
+  correta={1}
+  explicacao="Urgência, link e pedido de segredo: os três sinais de phishing. Vá pelo caminho oficial."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é o OWASP Top 10?", verso: "A lista das dez categorias de risco mais importantes em aplicações web, mantida pela comunidade OWASP." },
+  { frente: "O número 1 do OWASP Top 10:2025", verso: "Broken Access Control: ver ou fazer o que não devia." },
+  { frente: "A regra do controle de acesso", verso: "Em cada requisição, o servidor confere se este usuário pode fazer esta ação neste dado." },
+  { frente: "O que é phishing?", verso: "Mensagem falsa que imita alguém confiável para roubar senhas, códigos ou instalar algo." },
+  { frente: "Os sinais de phishing", verso: "Urgência, link estranho, pedido de segredo e oferta boa demais." },
+]} />
+
+## Resumindo
+
+- O **OWASP Top 10** é o checklist que o mercado usa; o número 1 é o **controle de acesso**.
+- Confira permissões no servidor, em cada requisição; registre o que importa e falhe fechado.
+- **Engenharia social** mira pessoas: desconfie de urgência, links e pedidos de segredo.
+- Se quiser fazer disso uma carreira, a padaria tem a profissão **Cibersegurança**, o bolo de rolo. 🛡️
