@@ -1,0 +1,299 @@
+<Aquecimento perguntas={[
+  { p: "Quais são as seis partes de um bom pedido para a IA?", r: "Contexto, tarefa, entrada e saída com exemplos, regras e casos de borda, restrições e formato da resposta." },
+  { p: "O seu código deu erro. O que você manda para a IA?", r: "O código, a mensagem de erro completa e o resultado que você esperava." },
+  { p: "Por que pedir um plano antes do código?", r: "Porque um plano errado é fácil de corrigir; um código errado custa muito mais." },
+]} />
+
+Esta é a habilidade mais importante da trilha. A IA escreve rápido, e quase sempre o código **parece** certo. O seu trabalho é descobrir se ele **está** certo. Hoje você vira o chef que prova o prato antes de ele sair da cozinha.
+
+<Chute pergunta="Se o código roda sem erro e mostra o resultado certo no exemplo, ele está correto?">
+
+Não necessariamente. Ele pode estar certo **naquele** exemplo e errado em outros: lista vazia, número negativo, valor exatamente no limite. Código que "roda" é só o primeiro degrau. Revisar é procurar justamente os casos em que ele quebra.
+
+</Chute>
+
+## A lista de verificação do chef
+
+Use esta lista sempre que receber um código, da IA ou de qualquer pessoa:
+
+<Passos itens={[
+  { icone: "📋", titulo: "1. Faz o pedido?", texto: "compare com a especificação, regra por regra" },
+  { icone: "▶️", titulo: "2. Roda?", texto: "rode de verdade, não confie no olho" },
+  { icone: "🧱", titulo: "3. Casos de borda", texto: "vazio, zero, negativo, limite exato" },
+  { icone: "🧠", titulo: "4. Eu entendo?", texto: "cada linha, sem exceção" },
+  { icone: "🔒", titulo: "5. É seguro?", texto: "entradas, senhas, dados" },
+  { icone: "🔎", titulo: "6. Existe?", texto: "imports e funções de verdade" },
+]} />
+
+### Os casos de borda que mais pegam
+
+| Tipo | Teste com |
+| --- | --- |
+| Vazio | lista `[]`, texto `""` |
+| Zero | `0`, divisão por zero |
+| Negativo | `-1` |
+| O limite exato | se a regra é "7 ou mais", teste **exatamente** `7` |
+| Fora do intervalo | nota `11`, idade `-5` |
+| Muito grande | uma lista com milhares de itens |
+
+<Nota tipo="dica" titulo="O limite exato é onde mora o bug">
+
+A IA (e as pessoas) erram muito o `>` contra o `>=`. Se a especificação diz "7 ou mais", teste com `6.9`, `7` e `7.1`. Os três precisam dar o resultado certo.
+
+</Nota>
+
+## Exercício 1: ache os 3 erros
+
+Você pediu para a IA esta especificação:
+
+```texto
+Função situacao(notas): recebe uma lista com qualquer quantidade de notas
+e devolve "Aprovado" se a média for 7 ou mais, "Recuperação" de 5 até
+abaixo de 7, e "Reprovado" abaixo de 5.
+Lista vazia deve lançar ValueError.
+```
+
+E ela respondeu:
+
+```python
+def situacao(notas):
+    media = sum(notas) / 3
+    if media > 7:
+        return "Aprovado"
+    elif media >= 5:
+        return "Recuperação"
+    else:
+        return "Reprovado"
+
+
+print(situacao([8, 9, 7]))
+```
+
+```saida
+Aprovado
+```
+
+Rodou e acertou o exemplo. Antes de abrir a resposta, procure **três** problemas comparando com a especificação.
+
+<details>
+<summary><b>Ver os 3 erros</b></summary>
+
+1. **`/ 3` fixo**: a especificação diz "qualquer quantidade de notas". Com 4 notas, a média sai errada. O certo é `len(notas)`.
+2. **`> 7` em vez de `>= 7`**: uma média exatamente 7 (como `[7, 7, 7]`) cai em "Recuperação". A regra diz "7 ou mais".
+3. **Lista vazia não é tratada**: a especificação pede `ValueError`. Com `/ 3` fixo, a lista vazia nem dá erro: `sum([]) / 3` é `0`, e a função devolve "Reprovado" calada. (Se trocar por `len(notas)`, aí vira `ZeroDivisionError`, que também não é o pedido.)
+
+</details>
+
+A versão corrigida, já com **testes** que provam cada regra:
+
+```python
+def situacao(notas):
+    if not notas:
+        raise ValueError("A lista de notas está vazia")
+    media = sum(notas) / len(notas)
+    if media >= 7:
+        return "Aprovado"
+    elif media >= 5:
+        return "Recuperação"
+    else:
+        return "Reprovado"
+
+
+assert situacao([8, 9, 7]) == "Aprovado"
+assert situacao([7, 7, 7]) == "Aprovado"
+assert situacao([7, 7, 7, 3]) == "Recuperação"
+assert situacao([5]) == "Recuperação"
+assert situacao([4.9]) == "Reprovado"
+
+try:
+    situacao([])
+    print("ERRO: deveria ter lançado ValueError")
+except ValueError:
+    print("Lista vazia recusada, como pedido")
+
+print("Todos os testes passaram!")
+```
+
+```saida
+Lista vazia recusada, como pedido
+Todos os testes passaram!
+```
+
+<Nota tipo="analogia" titulo="O assert é a colher de prova">
+
+`assert condição` não faz nada se a condição for verdadeira, e **para o programa com erro** se for falsa. Cada `assert` é uma colherada provando o prato: "com `[7, 7, 7]`, o resultado tem que ser Aprovado". Se um dia alguém (ou a IA) mexer na função e quebrar a regra, o teste avisa na hora.
+
+</Nota>
+
+## O bug que só aparece na segunda vez
+
+Alguns erros passam em qualquer teste rápido. Este é clássico em Python e aparece em código gerado por IA:
+
+```python
+def adicionar_item(item, pedido=[]):
+    pedido.append(item)
+    return pedido
+
+
+print(adicionar_item("café"))
+print(adicionar_item("bolo"))
+```
+
+```saida
+['café']
+['café', 'bolo']
+```
+
+O segundo pedido deveria ter só o bolo! Em Python, o valor padrão `[]` é criado **uma vez só**, quando a função é definida, e é reaproveitado em todas as chamadas. O certo:
+
+```python
+def adicionar_item(item, pedido=None):
+    if pedido is None:
+        pedido = []
+    pedido.append(item)
+    return pedido
+
+
+print(adicionar_item("café"))
+print(adicionar_item("bolo"))
+```
+
+```saida
+['café']
+['bolo']
+```
+
+Lição: **teste mais de uma vez, em sequência**. E quando não entender por que algo funciona, pergunte (para a IA, inclusive) até entender.
+
+## Revisar sem rodar: o teste de mesa
+
+Nem sempre dá para rodar na hora. O **teste de mesa**, que você viu na trilha de Lógica, é a revisão no papel: siga o código linha por linha, anotando o valor das variáveis.
+
+Para `situacao([7, 7, 7])` na versão com bug:
+
+| Linha | `media` | Condição | Resultado |
+| --- | --- | --- | --- |
+| `media = sum(notas) / 3` | 7.0 | | |
+| `if media > 7` | 7.0 | `7.0 > 7` é **falso** | |
+| `elif media >= 5` | 7.0 | verdadeiro | "Recuperação" ❌ |
+
+Achou o bug sem rodar nada.
+
+<Nota tipo="ia" titulo="Use a IA para revisar também (mas desconfie)">
+
+Peça: *"Liste os casos de borda que este código não trata e escreva um assert para cada um."* Depois, **rode os asserts**. Se a IA disser que está tudo certo, ótimo: confirme com os testes. Uma revisão sem teste é só uma opinião.
+
+</Nota>
+
+<Explique pergunta="Por que um código que passa no exemplo pode continuar errado? Como você descobre?">
+
+Porque o exemplo testa só um caminho. O erro costuma estar nos casos que o exemplo não cobre: lista vazia, o valor exatamente no limite, um número negativo, a segunda chamada da função. Para descobrir, a gente compara o código com a especificação regra por regra, testa os casos de borda (com asserts) e faz teste de mesa quando não dá para rodar.
+
+</Explique>
+
+## Erros comuns na revisão
+
+- **Ler por cima**: código bonito e bem comentado não é sinônimo de certo.
+- **Testar só o exemplo** que veio junto com a resposta.
+- **Confiar no "testei e funcionou"** da IA: ela não rodou, ela escreveu que rodou.
+- **Aceitar o que não entende**: se uma linha é mistério, ela é um risco.
+
+<Tarefa titulo="Ache os 3 erros: o troco">
+
+A especificação (da aula passada):
+
+```texto
+troco(compra, pago) devolve o troco com duas casas decimais.
+Valor pago menor que a compra: lançar ValueError("Valor pago insuficiente").
+Valores negativos: lançar ValueError.
+```
+
+O código da IA:
+
+```python
+def troco(compra, pago):
+    if pago < compra:
+        print("Valor pago insuficiente")
+    return round(pago - compra, 1)
+
+
+print(troco(17.50, 20))
+```
+
+Encontre os três erros, corrija e escreva pelo menos **4 asserts** (um deles para o caso de borda do valor exato).
+
+<Dica>
+
+Olhe o que acontece **depois** do `print` quando o valor é insuficiente: a função para? Quantas casas decimais o `round` deixa? E se a compra for `-5`? Para testar um `ValueError`, use `try` e `except`, como no exemplo da aula.
+
+</Dica>
+
+<Resposta>
+
+Os erros:
+
+1. **`print` em vez de `raise`**: a função avisa e continua, devolvendo um troco negativo (`troco(30, 20)` devolve `-10.0`).
+2. **`round(..., 1)`**: a especificação pede duas casas. `troco(17.55, 20)` deveria dar `2.45`.
+3. **Negativos não são verificados**.
+
+```python
+def troco(compra, pago):
+    if compra < 0 or pago < 0:
+        raise ValueError("Valores não podem ser negativos")
+    if pago < compra:
+        raise ValueError("Valor pago insuficiente")
+    return round(pago - compra, 2)
+
+
+assert troco(17.50, 20) == 2.5
+assert troco(17.55, 20) == 2.45
+assert troco(10, 10) == 0
+
+for compra, pago in [(30, 20), (-5, 10)]:
+    try:
+        troco(compra, pago)
+        print("ERRO: deveria recusar", compra, pago)
+    except ValueError as erro:
+        print("Recusado:", erro)
+
+print("Testes do troco passaram!")
+```
+
+```saida
+Recusado: Valor pago insuficiente
+Recusado: Valores não podem ser negativos
+Testes do troco passaram!
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="A regra é 'aprovado com média 7 ou mais'. Qual teste é o MAIS importante?"
+  opcoes={["Média 10", "Média exatamente 7", "Média 2"]}
+  correta={1}
+  explicacao="O limite exato é onde o > e o >= se diferenciam. 10 e 2 passam até no código errado."
+/>
+
+<Quiz
+  pergunta="A IA disse 'testei e está funcionando'. O que você faz?"
+  opcoes={["Confia, ela testou", "Roda os testes você mesmo, incluindo os casos de borda", "Pede para ela jurar"]}
+  correta={1}
+  explicacao="A IA normalmente não executa o código: ela escreve o texto mais provável, e 'testei' é só texto. Quem prova é o teste rodando."
+/>
+
+<Cartoes itens={[
+  { frente: "Seis perguntas da revisão", verso: "Faz o pedido? Roda? Casos de borda? Eu entendo? É seguro? Existe (imports e funções)?" },
+  { frente: "Casos de borda clássicos", verso: "Vazio, zero, negativo, o limite exato, fora do intervalo, muito grande." },
+  { frente: "O que faz o assert?", verso: "Nada, se a condição é verdadeira; para o programa com erro, se é falsa. É um teste automático." },
+  { frente: "O bug do pedido=[] em Python", verso: "O valor padrão mutável é criado uma vez e reaproveitado. Use None e crie a lista dentro da função." },
+  { frente: "O que é teste de mesa?", verso: "Seguir o código no papel, linha por linha, anotando o valor das variáveis." },
+]} />
+
+## Resumindo
+
+- Rodar e acertar o exemplo é só o começo: revise contra a especificação, regra por regra.
+- Teste os casos de borda, principalmente o **limite exato**.
+- `assert` transforma cada regra num teste que avisa quando algo quebra.
+- Revisão sem teste é opinião. Entender cada linha não é opcional.

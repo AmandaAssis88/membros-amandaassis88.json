@@ -1,0 +1,251 @@
+<Aquecimento perguntas={[
+  { p: "Qual o custo médio de buscar uma chave num dicionário?", r: "O(1), graças à tabela hash." },
+  { p: "Como o dicionário transforma o problema dos 'dois que somam' de O(n²) em O(n)?", r: "Guardando os valores já vistos e perguntando, em O(1), se o que falta já apareceu." },
+  { p: "Quando usar um conjunto (set)?", r: "Para guardar itens sem repetição e saber rapidamente se algo existe." },
+]} />
+
+Última aula da trilha: duas ferramentas de pensamento. A primeira é a **recursão**, um jeito elegante de resolver problemas que se repetem dentro de si mesmos. A segunda é um **método** para encarar qualquer problema novo, seja num exercício, numa entrevista ou no trabalho.
+
+<Chute pergunta="Uma função pode chamar ela mesma?">
+
+Pode, e isso se chama **recursão**. O truque é que cada chamada resolve um pedaço **menor** do problema, até chegar num caso tão pequeno que a resposta é óbvia. Sem esse caso pequeno, a função chamaria a si mesma para sempre.
+
+</Chute>
+
+## Recursão: o problema dentro do problema
+
+<Nota tipo="analogia" titulo="Pensa assim: as bonecas russas">
+
+Para contar quantas bonecas tem dentro de uma matriosca, você abre a de fora e... tem outra matriosca, igual, só que menor. Você repete o mesmo processo com ela. Até abrir uma que **não tem nada dentro**: essa é a resposta trivial. Aí você volta somando: 1 + 1 + 1...
+
+</Nota>
+
+Toda função recursiva tem duas partes:
+
+1. **Caso base**: o caso pequeno com resposta direta. Ele para a recursão.
+2. **Passo recursivo**: resolve o problema usando a **mesma função** num pedaço menor.
+
+### Exemplo: fatorial
+
+O fatorial de 5 (escrito 5!) é `5 × 4 × 3 × 2 × 1 = 120`. Repare que `5! = 5 × 4!`, e `4! = 4 × 3!`... É um problema dentro do problema.
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+def fatorial(n):
+    if n <= 1:
+        return 1
+    return n * fatorial(n - 1)
+
+
+print(fatorial(5))
+print(fatorial(10))
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+public class Main {
+    static long fatorial(int n) {
+        if (n <= 1) return 1;
+        return n * fatorial(n - 1);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(fatorial(5));
+        System.out.println(fatorial(10));
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+120
+3628800
+```
+
+### Como o computador executa isso: a pilha de chamadas
+
+Lembra da pilha da aula 4? Cada chamada fica **esperando** a de baixo terminar, empilhada:
+
+```texto
+fatorial(5) espera  5 × fatorial(4)
+  fatorial(4) espera  4 × fatorial(3)
+    fatorial(3) espera  3 × fatorial(2)
+      fatorial(2) espera  2 × fatorial(1)
+        fatorial(1) → 1          ← caso base: começa a voltar
+      fatorial(2) → 2 × 1 = 2
+    fatorial(3) → 3 × 2 = 6
+  fatorial(4) → 4 × 6 = 24
+fatorial(5) → 5 × 24 = 120
+```
+
+<Nota tipo="cuidado" titulo="Sem caso base, a pilha estoura">
+
+Se você esquecer o `if n <= 1`, a função se chama para sempre, a pilha de chamadas enche e o programa quebra: `RecursionError` em Python, `StackOverflowError` em Java. É daí que vem o nome do site **Stack Overflow**.
+
+</Nota>
+
+### Quando recursão brilha
+
+Para fatorial, um `for` resolve igual. A recursão brilha em problemas que são **naturalmente aninhados**:
+
+- **Pastas dentro de pastas**: somar o tamanho de uma pasta é somar os arquivos dela mais o tamanho de cada subpasta (que é... o mesmo problema).
+- **Árvores**: menus com submenus, comentários com respostas, a árvore de elementos de uma página web.
+- **Dividir para conquistar**: o Merge Sort da aula 3 é recursivo.
+
+```python
+cardapio = {
+    "Bebidas": {
+        "Quentes": ["café", "cappuccino", "chá"],
+        "Geladas": ["suco", "chá gelado"],
+    },
+    "Comidas": ["pão de queijo", "bolo"],
+}
+
+
+def contar_itens(secao):
+    if isinstance(secao, list):
+        return len(secao)
+    return sum(contar_itens(sub) for sub in secao.values())
+
+
+print(contar_itens(cardapio))
+```
+
+```saida
+7
+```
+
+`contar_itens` não sabe quantos níveis o cardápio tem, e não precisa saber: se for uma lista, conta (caso base); se for um grupo, soma o que cada subgrupo tem (passo recursivo).
+
+## Um método para resolver qualquer problema
+
+Agora, a habilidade que as entrevistas técnicas realmente avaliam: **como você pensa** diante de um problema que nunca viu.
+
+<Passos itens={[
+  { icone: "👂", titulo: "1. Entender", texto: "repita o problema com suas palavras; pergunte" },
+  { icone: "🧪", titulo: "2. Exemplos", texto: "invente entradas e saídas, inclusive de borda" },
+  { icone: "🐢", titulo: "3. Força bruta", texto: "um jeito que funciona, mesmo lento" },
+  { icone: "⚡", titulo: "4. Otimizar", texto: "onde está o trabalho repetido?" },
+  { icone: "💻", titulo: "5. Codar", texto: "com nomes claros" },
+  { icone: "✅", titulo: "6. Testar", texto: "teste de mesa com os seus exemplos" },
+]} />
+
+Na entrevista, **pense em voz alta**: o avaliador quer ver o caminho, não só a resposta. E começar pela força bruta é ótimo: mostra que você entendeu, e dá um ponto de partida para melhorar.
+
+### As perguntas que destravam a otimização
+
+| Se você está... | Pergunte-se |
+| --- | --- |
+| Procurando algo dentro de um laço | Um dicionário ou conjunto resolveria em O(1)? |
+| Procurando numa lista ordenada | Busca binária? |
+| Comparando todos com todos | Dá para ordenar antes e percorrer uma vez só? |
+| Resolvendo um problema aninhado | Recursão? |
+| Precisando do "mais recente" ou do "mais antigo" | Pilha ou fila? |
+
+<Nota tipo="ia" titulo="Treine sem a IA">
+
+Para treinar algoritmos, **desligue a IA**: o objetivo é exercitar o seu raciocínio. Depois de resolver (ou de travar de verdade), aí sim peça para a IA comparar a sua solução com outras e explicar o Big O de cada uma. É o jeito de usar a IA como professora, não como cola.
+
+</Nota>
+
+## Onde praticar
+
+- **Beecrowd** (antigo URI Online Judge): plataforma brasileira, em português, com milhares de problemas por nível.
+- **LeetCode** e **HackerRank**: os mais usados para preparar entrevistas (em inglês).
+- **OBI** (Olimpíada Brasileira de Informática) e **Maratona de Programação** (SBC): competições com problemas antigos disponíveis.
+
+<Explique pergunta="Quais são as duas partes obrigatórias de uma função recursiva, e o que acontece se faltar uma delas?">
+
+O caso base, que dá a resposta direta para o menor problema e faz a recursão parar, e o passo recursivo, que chama a mesma função com um problema menor. Sem caso base, a função se chama para sempre e a pilha de chamadas estoura. Sem diminuir o problema no passo recursivo, também nunca chega ao caso base.
+
+</Explique>
+
+<Tarefa titulo="Entrevista simulada: o primeiro repetido">
+
+Problema: dada uma lista de números de comanda, devolva o **primeiro número que aparece repetido** (o primeiro cuja segunda ocorrência vem antes de todos os outros repetidos). Se nenhum se repetir, devolva `None`.
+
+```texto
+[42, 7, 19, 7, 42, 3]  → 7     (o 7 se repete antes do 42)
+[1, 2, 3]              → None
+[]                     → None
+```
+
+Siga o método: escreva a **força bruta**, diga o Big O, depois **otimize** e diga o novo Big O.
+
+<Dica>
+
+Força bruta: para cada posição, olhe para trás procurando o mesmo número. Para otimizar, pergunte-se: "estou procurando algo dentro de um laço?". Um conjunto dos números já vistos responde "já apareceu?" em O(1).
+
+</Dica>
+
+<Resposta>
+
+```python
+def primeiro_repetido_bruto(lista):
+    for i in range(len(lista)):
+        for j in range(i):
+            if lista[j] == lista[i]:
+                return lista[i]
+    return None
+
+
+def primeiro_repetido(lista):
+    vistos = set()
+    for n in lista:
+        if n in vistos:
+            return n
+        vistos.add(n)
+    return None
+
+
+for teste in [[42, 7, 19, 7, 42, 3], [1, 2, 3], []]:
+    print(primeiro_repetido_bruto(teste), primeiro_repetido(teste))
+```
+
+```saida
+7 7
+None None
+None None
+```
+
+- Força bruta: dois laços, **O(n²)** de tempo e O(1) de memória.
+- Otimizada: uma passada com conjunto, **O(n)** de tempo e O(n) de memória. Trocamos memória por tempo, a troca mais comum dos algoritmos.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que acontece com uma função recursiva sem caso base?"
+  opcoes={["Ela devolve 0", "Ela se chama para sempre até a pilha de chamadas estourar", "O compilador cria um caso base sozinho"]}
+  correta={1}
+  explicacao="Sem um caso que pare, as chamadas se empilham até dar RecursionError ou StackOverflowError."
+/>
+
+<Quiz
+  pergunta="Numa entrevista, você não sabe a solução ótima. Qual o melhor começo?"
+  opcoes={["Ficar em silêncio até ter a resposta perfeita", "Explicar uma solução de força bruta, dizer o Big O e procurar onde otimizar, pensando em voz alta", "Dizer que nunca viu esse problema"]}
+  correta={1}
+  explicacao="O avaliador quer ver o raciocínio. Força bruta correta é um ótimo ponto de partida para otimizar."
+/>
+
+<Cartoes itens={[
+  { frente: "As duas partes da recursão", verso: "Caso base (para a recursão) e passo recursivo (chama a si mesma com um problema menor)." },
+  { frente: "Onde a recursão brilha?", verso: "Em problemas aninhados: pastas, árvores, menus, dividir para conquistar." },
+  { frente: "De onde vem o nome Stack Overflow?", verso: "Do estouro da pilha de chamadas, como numa recursão sem caso base." },
+  { frente: "Os seis passos para resolver um problema", verso: "Entender, exemplos, força bruta, otimizar, codar, testar." },
+  { frente: "A troca mais comum dos algoritmos", verso: "Gastar memória (um dicionário ou conjunto) para ganhar tempo." },
+]} />
+
+## Resumindo
+
+- **Recursão**: caso base + passo recursivo; ótima para problemas aninhados; cuidado com a pilha.
+- **Método**: entender, exemplos, força bruta, otimizar, codar, testar, pensando em voz alta.
+- As perguntas certas (dicionário? ordenar? binária? pilha?) destravam a otimização.
+- Treine sem IA, compare com IA depois. O café moído na hora é você quem mói. ☕

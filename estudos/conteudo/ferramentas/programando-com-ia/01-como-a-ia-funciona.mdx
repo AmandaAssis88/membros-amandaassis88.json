@@ -1,0 +1,171 @@
+<Chute pergunta="Quando uma IA como o ChatGPT ou o Claude responde uma pergunta de programação, ela está procurando a resposta num banco de dados?">
+
+Não. Ela não consulta uma lista de respostas prontas. Ela **gera o texto palavra por palavra**, escolhendo o que tem mais chance de vir em seguida, com base em tudo o que aprendeu lendo uma quantidade enorme de texto e código. Por isso ela acerta muito, e por isso também consegue errar com toda a confiança do mundo. Entender isso muda o jeito como você usa a ferramenta.
+
+</Chute>
+
+## A máquina de espresso automática
+
+<Nota tipo="analogia" titulo="Pensa assim: a máquina que faz café sozinha">
+
+Uma máquina de espresso automática é incrível: aperta um botão e sai um café. Mas quem sabe se o café ficou bom é o **barista**. Se o grão estiver velho, a moagem errada ou a xícara suja, a máquina faz o café do mesmo jeito, com a mesma cara de café bom. Ela não prova o que faz.
+
+A IA é essa máquina. Quem precisa saber de café, ou seja, de programação, é você.
+
+</Nota>
+
+Esta trilha não é sobre "deixar a IA programar por você". É sobre o que os profissionais fazem hoje: usar a IA para ir mais rápido **sem perder o controle** do que vai para o projeto.
+
+## Como uma IA de texto funciona, sem matemática
+
+As IAs que conversam com você são chamadas de **LLMs** (*Large Language Models*, grandes modelos de linguagem). O funcionamento, bem simplificado:
+
+<Passos itens={[
+  { icone: "📚", titulo: "Treino", texto: "lê uma quantidade gigante de texto e código" },
+  { icone: "🧩", titulo: "Padrões", texto: "aprende que palavras costumam vir depois de quais" },
+  { icone: "✍️", titulo: "Resposta", texto: "gera uma palavra por vez, a mais provável" },
+]} />
+
+Na prática, ela quebra o texto em pedacinhos chamados **tokens** (pedaços de palavras) e, a cada passo, escolhe o próximo token. Quando você pergunta "como somar dois números em Python?", ela já viu milhares de exemplos parecidos e o próximo token mais provável forma um código que funciona.
+
+Só que "provável" não é "verdadeiro". Repare no que isso significa:
+
+- Ela **não roda o código** que escreve (a não ser que a ferramenta tenha um ambiente para isso). Ela escreve o que **parece** certo.
+- Ela **não sabe que não sabe**. Se não tiver a informação, ela pode gerar algo com cara de resposta. Isso tem nome: **alucinação**.
+- Ela **não conhece o seu projeto** além do que você mostrar para ela.
+- Ela aprendeu até uma certa data. Uma biblioteca que mudou depois disso pode aparecer do jeito antigo.
+
+<Nota tipo="curiosidade" titulo="Por que ela parece tão segura?">
+
+Porque o texto que ela leu no treino é cheio de explicações escritas com confiança: documentação, tutoriais, respostas de fórum. Ela imita esse tom. A confiança da resposta não diz nada sobre se ela está certa.
+
+</Nota>
+
+## O que ela faz muito bem
+
+- **Explicar** um conceito de outro jeito, quantas vezes você pedir, sem perder a paciência.
+- **Explicar um código** que você não entendeu, linha por linha.
+- **Gerar exemplos** e exercícios para você praticar.
+- **Rascunhar** código repetitivo: estruturas, testes, conversões de formato.
+- **Achar a causa** de uma mensagem de erro (quando você manda o erro inteiro e o código).
+- **Revisar** o seu código e sugerir melhorias.
+
+## Onde ela tropeça
+
+- Inventar funções, parâmetros ou bibliotecas que **não existem**.
+- Escrever código que **funciona no exemplo** e quebra no caso de borda (lista vazia, número negativo, divisão por zero).
+- Escrever código **inseguro**: senha no meio do código, consulta de banco montada com texto do usuário.
+- **Concordar com você** quando você está errado ("tem razão, vou corrigir"), mesmo quando o código anterior estava certo.
+- Resolver um problema **diferente** do que você queria, porque o pedido estava vago.
+
+Cada um desses vira uma aula desta trilha.
+
+## Aprender × terceirizar
+
+Aqui está a parte que mais importa para quem está começando.
+
+<Nota tipo="cuidado" titulo="A regra de ouro desta trilha">
+
+**Se você não consegue explicar o código, ele não é seu.** Não importa quem escreveu (você, um colega ou a IA): antes de ir para o projeto, você precisa saber o que cada linha faz e por quê.
+
+</Nota>
+
+Pense na academia: se outra pessoa levantar o peso por você, o músculo não cresce. Quando a IA resolve o exercício inteiro, o exercício fica feito, mas o aprendizado não acontece. E é justamente esse aprendizado que vai te permitir, depois, **conferir** o que a IA faz.
+
+Um jeito saudável de usar a IA enquanto aprende:
+
+| Em vez de... | Peça... |
+| --- | --- |
+| "Faça o exercício de média de notas" | "Me dê uma dica para começar o exercício, sem o código" |
+| "Corrija meu código" | "Tem um erro no meu código. Me ajude a achar sem me dar a resposta" |
+| "Explique recursão" (e só ler) | "Explique recursão e depois me faça 3 perguntas para ver se entendi" |
+| Copiar a resposta | Escrever de novo sozinho, sem olhar |
+
+<Nota tipo="dica" titulo="Na faculdade">
+
+Muitas disciplinas têm regras sobre o uso de IA. Siga as regras do professor, e quando puder usar, conte que usou. Em prova e em entrevista técnica, quem vai estar lá é você.
+
+</Nota>
+
+<Explique pergunta="Por que uma IA pode inventar uma função que não existe, se ela 'leu a documentação'?">
+
+Porque ela não consulta a documentação na hora de responder: ela gera o texto mais provável a partir dos padrões que aprendeu. Se o nome de uma função 'parece' com o que costuma existir naquele contexto, ela pode escrever esse nome mesmo que a função nunca tenha existido. Ela não tem um jeito interno de conferir; quem confere é você.
+
+</Explique>
+
+## O seu papel muda (e fica mais importante)
+
+Com a IA escrevendo rascunhos, o trabalho de quem programa passa a ter mais disto:
+
+<Passos itens={[
+  { icone: "📝", titulo: "Especificar", texto: "dizer exatamente o que precisa ser feito" },
+  { icone: "🔍", titulo: "Revisar", texto: "ler e entender o código gerado" },
+  { icone: "🧪", titulo: "Testar", texto: "provar que funciona, inclusive nos casos difíceis" },
+  { icone: "🧭", titulo: "Decidir", texto: "escolher o caminho e assumir a responsabilidade" },
+]} />
+
+Nas próximas aulas você treina cada uma dessas: pedir bem, revisar, reconhecer os riscos, organizar o trabalho com **SDD** (o jeito que as equipes usam para trabalhar com IA de forma profissional) e ver como isso tudo acontece no dia a dia de uma empresa.
+
+<Tarefa titulo="Teste a máquina">
+
+Abra a IA que você usa e faça este experimento:
+
+1. Pergunte: **"Qual função da biblioteca padrão do Python calcula a mediana de uma lista?"** Anote a resposta.
+2. Confira na documentação oficial do Python (pesquise "python statistics median"). A resposta estava certa?
+3. Agora pergunte algo inventado: **"Como uso a função `lista.media()` do Python?"** (ela não existe). Veja se a IA avisa ou se "explica" a função mesmo assim.
+4. Escreva duas frases sobre o que você observou.
+
+<Dica>
+
+No passo 3, uma boa IA deve dizer que listas do Python não têm o método `media()`. Se ela inventar um jeito de usar, você acabou de ver uma alucinação de perto. Mesmo que ela acerte, guarde o hábito: **conferir na documentação**.
+
+</Dica>
+
+<Resposta>
+
+No passo 1, a resposta certa é `statistics.median()`, do módulo `statistics`:
+
+```python
+import statistics
+
+print(statistics.median([3, 1, 4, 1, 5]))
+```
+
+```saida
+3
+```
+
+No passo 3, o esperado é a IA dizer que `media()` não existe e sugerir `statistics.mean()` ou `sum(lista) / len(lista)`. Se ela "inventou" um uso, anote: foi uma alucinação. O importante do exercício é o hábito de conferir, não o resultado.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Por que uma IA de texto pode responder algo errado com total confiança?"
+  opcoes={["Porque ela está com defeito", "Porque ela gera o texto mais provável, sem conferir se é verdade", "Porque ela quer enganar"]}
+  correta={1}
+  explicacao="O modelo escolhe o próximo pedaço de texto mais provável. Provável não é verdadeiro, e o tom confiante vem do texto que ela aprendeu."
+/>
+
+<Quiz
+  pergunta="Qual é o uso mais saudável da IA enquanto você está aprendendo?"
+  opcoes={["Pedir o exercício pronto e copiar", "Pedir dicas, explicações e perguntas, e escrever o código você mesmo", "Nunca usar IA"]}
+  correta={1}
+  explicacao="A IA pode ser uma ótima professora particular. O que não pode é fazer o exercício no seu lugar, porque aí o aprendizado não acontece."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é um LLM?", verso: "Um modelo que aprendeu padrões de muito texto e gera a resposta um pedaço (token) por vez, escolhendo o mais provável." },
+  { frente: "O que é alucinação?", verso: "Quando a IA gera algo com cara de verdade que não é: uma função, um fato ou uma biblioteca que não existe." },
+  { frente: "A IA conhece o seu projeto?", verso: "Só o que você mostrar para ela. O resto ela supõe." },
+  { frente: "Regra de ouro da trilha", verso: "Se você não consegue explicar o código, ele não é seu." },
+  { frente: "Quatro coisas que ficam mais importantes com IA", verso: "Especificar, revisar, testar e decidir." },
+]} />
+
+## Resumindo
+
+- A IA gera texto **provável**, não verdadeiro: ótima ajudante, péssima juíza do próprio trabalho.
+- Ela explica, rascunha e revisa muito bem; inventa, esquece casos de borda e escreve código inseguro com a mesma facilidade.
+- Enquanto aprende, use a IA como professora, não como quem faz por você.
+- O barista é você: especificar, revisar, testar e decidir.

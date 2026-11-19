@@ -1,0 +1,168 @@
+<Aquecimento perguntas={[
+  { p: "Quais são as quatro camadas do SDD, em ordem?", r: "PRD (o quê e por quê), Tech Spec (como), Tasks (passo a passo) e Execução (código)." },
+  { p: "Por que executar cada task num chat novo?", r: "A leitura obrigatória dá o contexto completo, sem depender de uma conversa longa e confusa." },
+  { p: "Dê um exemplo de critério de aceite verificável.", r: "Ex.: 'cupom de 10% num pedido de R$ 50 deixa o total em R$ 45'." },
+]} />
+
+Última aula da trilha. Vamos juntar tudo e olhar como uma pessoa desenvolvedora usa IA num dia de trabalho de verdade: as ferramentas, o ciclo, os hábitos e o que o mercado espera de quem está chegando.
+
+<Chute pergunta="Numa empresa, quem é responsável por um bug que estava num código gerado por IA?">
+
+A pessoa que colocou o código no projeto. A IA não assina o commit, não aprova o Pull Request e não responde pelo problema em produção. Por isso as equipes que usam IA bem investem tanto em revisão e testes: a ferramenta acelera, a responsabilidade continua sendo de quem entrega.
+
+</Chute>
+
+## Os três jeitos de usar IA para programar
+
+| Jeito | Como funciona | Bom para |
+| --- | --- | --- |
+| 💬 **Chat** | Você conversa numa janela e copia o que fizer sentido | Tirar dúvidas, entender código e erros, planejar, gerar exemplos |
+| ✨ **Autocompletar no editor** | Sugere a próxima linha ou bloco enquanto você digita (o GitHub Copilot é um exemplo) | Código repetitivo, completar padrões que você já começou |
+| 🤖 **Agentes de código** | Leem o projeto, editam vários arquivos, rodam comandos e testes, e mostram o que mudaram (Claude Code e Cursor são exemplos) | Tarefas inteiras e bem especificadas, como as tasks do SDD |
+
+Quanto mais autonomia a ferramenta tem, **mais importante fica a especificação e a revisão**. Um agente que edita dez arquivos a partir de um pedido vago faz um estrago dez vezes maior.
+
+## O arquivo de instruções do projeto
+
+Projetos que usam agentes costumam ter um arquivo com as instruções para a IA, na raiz do repositório (nomes comuns: `CLAUDE.md`, `AGENTS.md`, ou uma pasta `rules/`, como no SDD). Ele diz coisas como:
+
+```texto
+# Instruções do projeto Cafeteria
+
+## Como rodar
+python -m pytest        ← roda os testes
+
+## Convenções
+- Nomes de variáveis e funções em português.
+- Toda regra de negócio nova precisa de teste.
+- Nunca commitar o arquivo .env.
+
+## Cuidado
+- A pasta legado/ não deve ser alterada.
+```
+
+É a mesma ideia do `rules/`: tudo que você explicaria para um colega novo, escrito uma vez só.
+
+## O ciclo de trabalho com IA
+
+Este é o ciclo que se repete o dia inteiro, em tarefas pequenas:
+
+<Passos itens={[
+  { icone: "🔎", titulo: "1. Entender", texto: "peça para a IA explicar o código que vai mudar" },
+  { icone: "🗺️", titulo: "2. Planejar", texto: "plano em passos, revisado por você" },
+  { icone: "🧪", titulo: "3. Teste primeiro", texto: "escreva (ou peça) o teste do que vai mudar" },
+  { icone: "💻", titulo: "4. Implementar", texto: "um passo pequeno" },
+  { icone: "▶️", titulo: "5. Rodar", texto: "os testes, todos" },
+  { icone: "👀", titulo: "6. Revisar o diff", texto: "git diff, linha por linha" },
+  { icone: "📒", titulo: "7. Commit", texto: "pequeno, com a sua mensagem" },
+]} />
+
+Repare como as trilhas se conectam:
+
+- O passo 6 usa o **`git diff`** da trilha de Git: é ali que você vê exatamente o que a IA mudou.
+- O passo 7 usa commits pequenos, **uma ideia por commit**, para conseguir desfazer com `git revert` se algo der errado.
+- Depois vem o **Pull Request**, revisado por outra pessoa.
+
+<Nota tipo="dica" titulo="Testes viraram a rede de segurança">
+
+Com IA escrevendo código rápido, os testes ficaram ainda mais valiosos: eles são o jeito de saber, em segundos, se a mudança quebrou algo. Muitos devs fazem assim: **escrevem o teste primeiro** (o critério de aceite virando `assert`) e só depois pedem a implementação. Se o teste passa, a IA acertou; se não, o teste mostra onde.
+
+</Nota>
+
+## Revisão de código com IA
+
+Muitas equipes colocam uma IA para fazer a **primeira passada** de revisão nos Pull Requests: ela aponta possíveis bugs, falhas de segurança e trechos confusos. Depois, uma pessoa revisa. A IA encontra coisas que passam batido no cansaço; a pessoa entende o contexto, o produto e o que realmente importa.
+
+## Hábitos de quem usa bem
+
+- **Um chat (ou sessão) por tarefa**: conversas longas acumulam suposições erradas. Comece de novo com a spec da tarefa.
+- **Ferramenta pelo risco**: para tarefas mecânicas (renomear, formatar, converter), um modelo rápido resolve. Para mudanças críticas (pagamento, segurança, dados), use o modelo mais cuidadoso, revise com mais calma e peça revisão de outra pessoa.
+- **Pedidos pequenos**: "faça o sistema inteiro" gera um diff impossível de revisar.
+- **Desconfie do que é bom demais**: se a IA "resolveu" em uma linha o que parecia difícil, entenda por quê antes de aceitar.
+- **Atualize a spec quando a decisão mudar**: uma spec desatualizada engana a próxima sessão.
+
+<Nota tipo="ia" titulo="Mostrar o processo vale mais que mostrar o código">
+
+Num portfólio, um projeto com **PRD, testes e commits organizados** mostra que você sabe trabalhar como uma equipe trabalha. Qualquer um gera código hoje; poucos iniciantes mostram que sabem especificar, testar e revisar.
+
+</Nota>
+
+## O que o mercado espera de quem está chegando
+
+A IA mudou o trabalho de quem programa, mas o que separa um bom profissional continua sendo a base:
+
+| Continua valendo (e vale mais) | Por quê |
+| --- | --- |
+| Fundamentos e lógica | Para entender e avaliar o que a IA gera |
+| Ler código | Você vai ler muito mais código do que escrever |
+| Testar e depurar | É como se prova que algo funciona |
+| Especificar com clareza | Bons pedidos, bons PRDs, boas issues |
+| Git, revisão e trabalho em equipe | É assim que o código chega ao produto |
+| Segurança e dados | Erros aqui custam caro, e a IA erra aqui com frequência |
+| Comunicação | Explicar decisões, pedir ajuda, dar e receber feedback |
+
+<Explique pergunta="Se a IA escreve código tão rápido, por que alguém contrataria uma pessoa desenvolvedora júnior?">
+
+Porque escrever código é só uma parte do trabalho. Alguém precisa entender o problema, especificar o que deve ser feito, avaliar se o código gerado está certo e seguro, testar, revisar, integrar com o resto do sistema e assumir a responsabilidade pelo que vai para produção. Um júnior que sabe usar IA com esse cuidado entrega mais e aprende mais rápido; o que perde espaço é só copiar e colar sem entender.
+
+</Explique>
+
+<Tarefa titulo="O ciclo completo numa missão">
+
+Escolha uma das **missões da comunidade** (o link está no fim desta aula) e aplique tudo o que viu na trilha:
+
+1. Escreva um **mini PRD** da missão (problema, escopo, fora de escopo, 3 regras, 3 critérios).
+2. Peça para a IA um **plano em passos** e revise. Anote o que você mudou no plano.
+3. Transforme os critérios em **asserts** antes de implementar.
+4. Implemente **um passo por vez**, rodando os testes a cada passo.
+5. Antes de cada commit, leia o **`git diff`** e confira se entende cada linha.
+6. No README do seu projeto, conte como usou a IA e o que você corrigiu nela.
+
+<Dica>
+
+Comece pela missão do gatinho, a mais curta. Se a IA sugerir algo que você ainda não estudou, peça uma versão mais simples com o que você já sabe, ou pare para estudar aquele tema no Café antes de seguir.
+
+</Dica>
+
+<Resposta>
+
+Não existe uma resposta única: o que importa é o processo. Um bom resultado tem:
+
+- PRD com fora de escopo e critérios que dá para testar.
+- Pelo menos um ajuste seu no plano da IA (sinal de que você revisou de verdade).
+- Testes escritos antes do código e todos passando no final.
+- Commits pequenos, com mensagens suas, que contam a história do projeto.
+- Um README honesto sobre o uso de IA. Isso é sinal de maturidade, não de fraqueza.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="No ciclo de trabalho com IA, qual passo vem logo antes do commit?"
+  opcoes={["Pedir para a IA fazer o commit", "Revisar o diff linha por linha", "Apagar os testes"]}
+  correta={1}
+  explicacao="O git diff mostra exatamente o que mudou. Ler antes de commitar é o que garante que você entende o que está entregando."
+/>
+
+<Quiz
+  pergunta="Para uma mudança no cálculo de pagamento, qual cuidado faz mais sentido?"
+  opcoes={["Usar o modelo mais rápido e commitar direto", "Revisar com mais calma, rodar todos os testes e pedir revisão de outra pessoa", "Não testar para economizar tempo"]}
+  correta={1}
+  explicacao="Ferramenta e cuidado pelo risco: mudanças críticas pedem mais revisão, mais testes e outra pessoa olhando."
+/>
+
+<Cartoes itens={[
+  { frente: "Três jeitos de usar IA para programar", verso: "Chat, autocompletar no editor e agentes de código." },
+  { frente: "Para que serve um CLAUDE.md, AGENTS.md ou rules/?", verso: "Guardar as instruções e convenções do projeto para a IA, escritas uma vez só." },
+  { frente: "O ciclo de trabalho com IA", verso: "Entender, planejar, teste primeiro, implementar, rodar, revisar o diff, commit." },
+  { frente: "Quem responde por um bug gerado pela IA?", verso: "Quem colocou o código no projeto. Por isso revisão e testes." },
+  { frente: "O que um portfólio com IA deve mostrar?", verso: "O processo: especificação, testes, commits organizados e o que você corrigiu." },
+]} />
+
+## Resumindo
+
+- Chat, autocompletar e agentes: quanto mais autonomia, mais importam a spec e a revisão.
+- O ciclo profissional: entender, planejar, testar primeiro, implementar pouco, rodar, revisar o diff, commitar.
+- Testes são a rede de segurança; a revisão final é humana.
+- A base (lógica, leitura de código, testes, Git, segurança, comunicação) vale mais do que nunca. O barista continua sendo você. ☕

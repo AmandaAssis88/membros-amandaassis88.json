@@ -64,3 +64,203 @@
     animation: none;
   }
 }
+
+/* Algoritmos (moedor), Programando com IA (máquina de espresso), SQL (despensa),
+   Segurança (vigilância sanitária) e Cibersegurança (bolo de rolo). */
+[data-trilha="algoritmos"] {
+  --t-acento: #e0b07a;
+  --t-tinta: #8a4e1e;
+  --t-suave: #f7ebdc;
+  --t-hero:
+    radial-gradient(circle at 80% 10%, rgba(224, 176, 122, 0.22), transparent 45%),
+    linear-gradient(160deg, #2a1d14 0%, #3d2a1c 55%, #4a3328 100%);
+}
+[data-trilha="ia"] {
+  --t-acento: #7dd3fc;
+  --t-tinta: #1f6f99;
+  --t-suave: #e3f2fa;
+  --t-hero:
+    radial-gradient(circle at 80% 10%, rgba(125, 211, 252, 0.2), transparent 45%),
+    linear-gradient(160deg, #1b2028 0%, #2a2f3a 55%, #4a3328 100%);
+}
+[data-trilha="sql"] {
+  --t-acento: #e8b04a;
+  --t-tinta: #8a5a12;
+  --t-suave: #faefd8;
+  --t-hero:
+    radial-gradient(circle at 80% 10%, rgba(232, 176, 74, 0.2), transparent 45%),
+    linear-gradient(160deg, #241d14 0%, #3a2c1a 55%, #4a3328 100%);
+}
+[data-trilha="seguranca"] {
+  --t-acento: #8fd0a8;
+  --t-tinta: #2f6b48;
+  --t-suave: #e4f3ea;
+  --t-hero:
+    radial-gradient(circle at 80% 10%, rgba(143, 208, 168, 0.2), transparent 45%),
+    linear-gradient(160deg, #19231d 0%, #26342a 55%, #4a3328 100%);
+}
+[data-trilha="ciberseguranca"] {
+  --t-acento: #f0a58a;
+  --t-tinta: #a8432e;
+  --t-suave: #fbe6df;
+  --t-hero:
+    radial-gradient(circle at 80% 10%, rgba(240, 165, 138, 0.2), transparent 45%),
+    linear-gradient(160deg, #241818 0%, #3a2524 55%, #4a3328 100%);
+}
+
+.alg-manivela {
+  transform-origin: 60px 36px;
+  animation: alg-girar 4s linear infinite;
+}
+@keyframes alg-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ia-olho {
+  animation: ia-piscar 4s ease-in-out infinite;
+}
+@keyframes ia-piscar {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.1;
+  }
+}
+.ia-pingo {
+  stroke-dasharray: 8;
+  animation: ia-pingar 1.4s linear infinite;
+}
+@keyframes ia-pingar {
+  from {
+    stroke-dashoffset: 16;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.seg-cadeado {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: boiar 3.4s ease-in-out infinite;
+}
+.ciber-espiral {
+  stroke-dasharray: 400;
+  animation: ciber-enrolar 6s ease-in-out infinite alternate;
+}
+@keyframes ciber-enrolar {
+  from {
+    stroke-dashoffset: 400;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Home: mapa da cafeteria e trilhas que ainda vão chegar */
+.mapa-cafe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -8px 0 32px;
+  padding: 0;
+  list-style: none;
+}
+.mapa-cafe a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--borda);
+  background: var(--cartao);
+  color: var(--tinta);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.mapa-cafe a:hover {
+  border-color: var(--caramelo, #c98a4a);
+}
+.secao-cafe {
+  scroll-margin-top: 90px;
+}
+.em-breve {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+.em-breve li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1.5px dashed var(--borda);
+  color: var(--tinta-suave);
+}
+.em-breve li > span:first-child {
+  font-size: 26px;
+  filter: grayscale(0.4);
+}
+.em-breve b {
+  display: block;
+  color: var(--tinta);
+  font-size: 15px;
+}
+.em-breve small {
+  font-size: 13px;
+}
+.em-breve em {
+  margin-left: auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--papel-2);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.salao-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: 12px;
+}
+.salao-links a {
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--borda);
+  background: var(--cartao);
+  color: var(--tinta);
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+.salao-links a:hover {
+  transform: translateY(-2px);
+}
+.salao-links span {
+  font-size: 26px;
+}
+.salao-links small {
+  color: var(--tinta-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alg-manivela,
+  .ia-olho,
+  .ia-pingo,
+  .seg-cadeado,
+  .ciber-espiral {
+    animation: none;
+  }
+}

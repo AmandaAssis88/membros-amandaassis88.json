@@ -1,0 +1,230 @@
+<Aquecimento perguntas={[
+  { p: "Por que a IA pode inventar uma função que não existe?", r: "Porque ela gera o texto mais provável a partir de padrões, sem consultar a documentação na hora. Provável não é verdadeiro." },
+  { p: "Qual é a regra de ouro desta trilha?", r: "Se você não consegue explicar o código, ele não é seu." },
+  { p: "Cite duas coisas que a IA faz muito bem.", r: "Explicar conceitos e código, gerar exemplos, rascunhar código repetitivo, achar a causa de erros, revisar." },
+]} />
+
+A maior parte das respostas ruins da IA começa num pedido ruim. A boa notícia: pedir bem é uma habilidade que se aprende, e ela é a mesma que você vai usar com pessoas, porque **um bom pedido é uma especificação**.
+
+<Chute pergunta="Você pede para a IA: 'faz um programa de notas'. O que ela vai fazer?">
+
+Vai adivinhar. Notas de quê? Quantas? Média simples ou ponderada? Mostra aprovado ou reprovado? Em qual linguagem? Ela vai escolher tudo por você, e provavelmente não do jeito que o seu professor pediu. Quanto mais vago o pedido, mais a IA preenche os buracos com suposições.
+
+</Chute>
+
+## O pedido do cliente no balcão
+
+<Nota tipo="analogia" titulo="Pensa assim: o pedido na cafeteria">
+
+"Me vê um café" pode virar qualquer coisa: espresso, coado, com leite, grande, pequeno. Agora compare: "um cappuccino **médio**, com leite **sem lactose**, **sem açúcar**, **para viagem**". O barista acerta de primeira, porque você disse **o que**, **as restrições** e **o formato**.
+
+</Nota>
+
+## A anatomia de um bom pedido
+
+Um pedido completo para a IA tem seis partes. Nem sempre você precisa de todas, mas pense em cada uma:
+
+| Parte | Responde | Exemplo |
+| --- | --- | --- |
+| **Contexto** | Quem é você e onde isso vai ser usado? | "Estou no 1º período, aprendendo Python." |
+| **Tarefa** | O que exatamente precisa ser feito? | "Escreva uma função que calcula a média de 3 notas." |
+| **Entrada e saída** | O que entra, o que sai? Com exemplos! | "Entrada: 7, 8, 9 → saída: 8.0" |
+| **Regras e casos de borda** | O que pode dar errado? | "Notas fora de 0 a 10 devem ser recusadas." |
+| **Restrições** | O que NÃO pode? | "Sem bibliotecas, só o que vimos: if, funções e listas." |
+| **Formato da resposta** | Como quer receber? | "Primeiro a explicação, depois o código comentado." |
+
+### Antes e depois
+
+**Pedido vago:**
+
+```texto
+faz um programa de notas em python
+```
+
+**Pedido bem feito:**
+
+```texto
+Estou no 1º período e aprendendo Python (já vi variáveis, if, funções e listas).
+
+Quero uma função chamada situacao(notas) que recebe uma lista de 3 notas
+e devolve "Aprovado" se a média for 7 ou mais, "Recuperação" se ficar
+entre 5 e 7, e "Reprovado" abaixo de 5.
+
+Exemplos:
+- [7, 8, 9]  → "Aprovado"
+- [5, 6, 5]  → "Recuperação"
+- [2, 3, 4]  → "Reprovado"
+
+Regras:
+- Se alguma nota estiver fora de 0 a 10, a função deve lançar ValueError.
+- Não use bibliotecas.
+
+Responda com o código e, embaixo, uma explicação curta de cada parte.
+Depois, me dê 3 casos de teste que eu deveria rodar.
+```
+
+Repare em três coisas:
+
+1. **Os exemplos de entrada e saída** são a parte mais poderosa. Eles tiram a ambiguidade melhor do que qualquer explicação.
+2. **As regras de borda** (nota fora do intervalo) evitam o código que "funciona no exemplo e quebra na vida real".
+3. **"Me dê casos de teste"** já prepara a próxima etapa: conferir.
+
+<Nota tipo="curiosidade" titulo="Exemplos no pedido têm nome">
+
+Dar exemplos de entrada e saída dentro do pedido é uma técnica conhecida como **few-shot** ("poucos exemplos"). A IA entende o padrão que você quer muito melhor quando vê alguns casos prontos.
+
+</Nota>
+
+## Técnicas que os profissionais usam
+
+### 1. Peça para ela perguntar antes
+
+Quando você ainda não sabe todos os detalhes:
+
+```texto
+Antes de escrever qualquer código, me faça as perguntas
+que você precisa para entender o que eu quero.
+```
+
+Isso inverte o jogo: em vez de a IA supor, ela levanta as dúvidas. É exatamente o que um bom profissional faz numa reunião.
+
+### 2. Peça um plano antes do código
+
+```texto
+Primeiro descreva em passos como você resolveria isso.
+Não escreva código ainda. Eu vou revisar o plano.
+```
+
+Um plano errado é fácil de corrigir. Cem linhas de código erradas, não.
+
+### 3. Dê o contexto real (com cuidado)
+
+Para um erro, mande **o código**, **a mensagem de erro completa** e **o que você esperava acontecer**:
+
+```texto
+Este código deveria mostrar a média, mas dá erro.
+
+Código:
+notas = [7, 8, 9]
+print("Média: " + sum(notas) / len(notas))
+
+Erro:
+TypeError: can only concatenate str (not "float") to str
+
+Esperado: Média: 8.0
+```
+
+<Nota tipo="cuidado" titulo="Nunca cole segredos">
+
+Senhas, tokens, chaves de API, dados de clientes e código privado da empresa **não vão para o chat** (a não ser que a sua empresa tenha uma IA aprovada para isso). Troque por valores falsos: `SENHA = "***"`. A aula 4 fala mais disso.
+
+</Nota>
+
+### 4. Itere: uma mudança por vez
+
+A primeira resposta raramente é a final. Em vez de reescrever o pedido inteiro, ajuste:
+
+- "Agora trate o caso de a lista vir vazia."
+- "Deixe os nomes das variáveis em português."
+- "Explique de novo a linha 4, não entendi."
+
+### 5. Peça para ela se revisar
+
+```texto
+Revise o código que você escreveu procurando bugs, casos de borda
+não tratados e problemas de segurança. Liste o que encontrar.
+```
+
+Funciona surpreendentemente bem. Mas atenção: **a revisão final é sua**. A IA revisando a si mesma é uma ajuda, não uma garantia.
+
+<Nota tipo="ia" titulo="O pedido certo para quem está aprendendo">
+
+Um dos melhores pedidos que existem para estudar: *"Sou iniciante. Não me dê a resposta. Me guie com perguntas até eu chegar na solução sozinho."* A IA vira uma professora particular com paciência infinita.
+
+</Nota>
+
+<Explique pergunta="Por que colocar exemplos de entrada e saída no pedido funciona melhor do que só descrever o que você quer?">
+
+Porque exemplos não deixam espaço para interpretação. 'Calcule a situação do aluno' pode ser entendido de vários jeitos, mas '[5, 6, 5] → Recuperação' mostra exatamente a regra. A IA (e qualquer pessoa) acerta mais quando vê o resultado esperado em casos concretos, inclusive nos casos de borda.
+
+</Explique>
+
+## Erros comuns
+
+- **Pedido de uma linha** para um problema de várias regras.
+- **Esquecer o seu nível**: a IA responde com recursos avançados que você não viu e não consegue revisar.
+- **Mandar só "deu erro"** sem o código e a mensagem completa.
+- **Aceitar a primeira resposta** sem testar.
+- **Pedir tudo de uma vez** ("faça o sistema inteiro"): peça em partes pequenas, como você faria com uma pessoa.
+
+<Tarefa titulo="Reescreva o pedido">
+
+Transforme este pedido vago num pedido completo, usando as seis partes da tabela:
+
+```texto
+faz um programa de troco
+```
+
+O programa deve receber o valor da compra e o valor pago e dizer o troco. Pense nas regras: e se o valor pago for menor? E se for igual? Precisa dizer quantas notas de cada valor?
+
+<Dica>
+
+Escolha: em que linguagem? Qual o seu nível? Que exemplos de entrada e saída deixam a regra clara? O que acontece com valor pago menor? Quer só o valor do troco ou as notas também? Que formato de resposta você quer?
+
+</Dica>
+
+<Resposta>
+
+Um exemplo (o seu pode ser diferente e estar ótimo):
+
+```texto
+Estou aprendendo Python no 1º período (já vi variáveis, if, while e funções).
+
+Quero uma função troco(compra, pago) que devolve o troco em reais,
+com duas casas decimais.
+
+Exemplos:
+- troco(17.50, 20)  → 2.50
+- troco(10, 10)     → 0.00
+- troco(30, 20)     → deve lançar ValueError("Valor pago insuficiente")
+
+Regras:
+- Valores negativos também devem lançar ValueError.
+- Não use bibliotecas.
+
+Responda com o código comentado e, depois, liste 4 casos de teste
+(incluindo os de borda) que eu deveria rodar.
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual parte de um pedido mais ajuda a IA a entender exatamente o que você quer?"
+  opcoes={["Escrever 'por favor'", "Exemplos de entrada e saída", "Pedir em letras maiúsculas"]}
+  correta={1}
+  explicacao="Exemplos concretos tiram a ambiguidade. Educação é ótima, mas não muda o entendimento da tarefa."
+/>
+
+<Quiz
+  pergunta="O seu código deu erro. O que mandar para a IA?"
+  opcoes={["Só 'não funciona, arruma'", "O código, a mensagem de erro completa e o resultado esperado", "Uma foto da tela tirada com o celular"]}
+  correta={1}
+  explicacao="Com o código, o erro exato e o que você esperava, a IA tem o contexto para achar a causa (e você também)."
+/>
+
+<Cartoes itens={[
+  { frente: "As seis partes de um bom pedido", verso: "Contexto, tarefa, entrada e saída (com exemplos), regras e casos de borda, restrições, formato da resposta." },
+  { frente: "O que é few-shot?", verso: "Dar alguns exemplos prontos de entrada e saída dentro do pedido." },
+  { frente: "Por que pedir um plano antes do código?", verso: "Plano errado é fácil de corrigir; código errado custa muito mais." },
+  { frente: "O que nunca colar num chat de IA?", verso: "Senhas, tokens, chaves, dados de clientes e código privado sem autorização." },
+  { frente: "Bom pedido para estudar", verso: "Não me dê a resposta: me guie com perguntas até eu chegar na solução." },
+]} />
+
+## Resumindo
+
+- Um bom pedido é uma **especificação**: contexto, tarefa, exemplos de entrada e saída, regras, restrições e formato.
+- Peça perguntas antes, plano antes do código e revisão depois.
+- Itere com mudanças pequenas e mande sempre o erro completo.
+- Nada de segredos no chat.

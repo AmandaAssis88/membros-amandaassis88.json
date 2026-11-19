@@ -1,0 +1,315 @@
+<Aquecimento perguntas={[
+  { p: "Qual a diferença entre pilha e fila?", r: "Pilha é LIFO (último entra, primeiro sai); fila é FIFO (primeiro entra, primeiro sai)." },
+  { p: "Qual estrutura usar para uma fila em Python, e por quê?", r: "collections.deque, porque tira do começo em O(1); lista.pop(0) é O(n)." },
+  { p: "Qual o Big O de procurar um item numa lista desordenada?", r: "O(n): busca linear." },
+]} />
+
+Procurar numa lista custa O(n). A busca binária baixa para O(log n), mas exige lista ordenada. E se desse para achar qualquer coisa em **um passo**, sem ordenar nada? Dá. É a estrutura de dados mais usada do dia a dia, e ela também é a resposta de metade dos problemas de entrevista.
+
+<Chute pergunta="Num armário de escaninhos com o nome de cada funcionário na porta, quanto tempo você leva para achar o escaninho da Ana: proporcional ao número de funcionários ou sempre o mesmo?">
+
+Sempre o mesmo: você vai direto na porta com o nome dela. Não precisa abrir as outras. É assim que funcionam os **dicionários** (ou mapas): você guarda cada valor junto de uma **chave** e acessa direto pela chave, em O(1) na média.
+
+</Chute>
+
+## Dicionário: chave → valor
+
+<Nota tipo="analogia" titulo="Pensa assim: os potes etiquetados da despensa">
+
+Na despensa organizada, cada pote tem uma **etiqueta**: "açúcar", "café", "farinha". Você não abre pote por pote para achar o café: lê a etiqueta e pega. A etiqueta é a **chave**; o que está dentro é o **valor**.
+
+</Nota>
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+precos = {"café": 5.0, "cappuccino": 9.0, "pão de queijo": 6.0}
+
+print(precos["cappuccino"])
+precos["bolo"] = 8.0
+precos["café"] = 5.5
+print("chá" in precos)
+print(precos.get("chá", "não temos"))
+
+for produto, preco in precos.items():
+    print(f"{produto}: R$ {preco:.2f}")
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Double> precos = new LinkedHashMap<>();
+        precos.put("café", 5.0);
+        precos.put("cappuccino", 9.0);
+        precos.put("pão de queijo", 6.0);
+
+        System.out.println(precos.get("cappuccino"));
+        precos.put("bolo", 8.0);
+        precos.put("café", 5.5);
+        System.out.println(precos.containsKey("chá"));
+        System.out.println(precos.getOrDefault("chá", -1.0));
+
+        for (Map.Entry<String, Double> item : precos.entrySet()) {
+            System.out.printf("%s: R$ %.2f%n", item.getKey(), item.getValue());
+        }
+    }
+}
+```
+
+Usamos `LinkedHashMap` para manter a ordem de inserção na hora de mostrar. O `HashMap` comum é igual em velocidade, mas não garante a ordem.
+
+</Aba>
+</Abas>
+
+```saida
+9.0
+False
+não temos
+café: R$ 5.50
+cappuccino: R$ 9.00
+pão de queijo: R$ 6.00
+bolo: R$ 8.00
+```
+
+(Em Java, as linhas 2 e 3 mostram `false` e `-1.0`.)
+
+Repare que `precos["café"] = 5.5` **substituiu** o valor: cada chave aparece uma vez só.
+
+## Como ele acha tão rápido? A ideia do hash
+
+Por baixo, o dicionário usa uma **tabela hash**. Funciona assim:
+
+<Passos itens={[
+  { icone: "🔤", titulo: "Chave", texto: "'cappuccino'" },
+  { icone: "🧮", titulo: "Função hash", texto: "transforma a chave num número" },
+  { icone: "🗄️", titulo: "Gaveta", texto: "o número diz em qual gaveta guardar ou procurar" },
+]} />
+
+A **função hash** pega a chave e calcula, sempre do mesmo jeito, um número que indica a gaveta. Para procurar, ela calcula de novo e vai direto na gaveta. Não importa se o dicionário tem 10 ou 10 milhões de itens: é um cálculo e um acesso. Por isso, na média, **O(1)**.
+
+<Nota tipo="curiosidade" titulo="E quando duas chaves caem na mesma gaveta?">
+
+Acontece, e tem nome: **colisão**. As tabelas hash guardam os dois itens na mesma gaveta (ou procuram a próxima livre) e conferem a chave exata. Com uma boa função hash, colisões são raras, e o custo médio continua O(1). É por isso que se diz "O(1) **na média**".
+
+</Nota>
+
+<Nota tipo="cuidado" titulo="Nem tudo pode ser chave">
+
+A chave precisa ser **imutável** (não pode mudar depois de guardada), senão o número calculado mudaria e o item "sumiria" da gaveta. Em Python, textos, números e tuplas podem ser chave; listas, não. Este "hash" não tem nada a ver com o hash de senhas da trilha de Segurança: a ideia de "transformar em número" é parecida, mas o objetivo é outro.
+
+</Nota>
+
+## Conjunto: só a chave, sem repetição
+
+Um **conjunto** (*set*) é como um dicionário só com as chaves: guarda itens **sem repetição** e responde "isto está aqui?" em O(1).
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+pedidos_do_dia = ["café", "chá", "café", "bolo", "chá", "café"]
+produtos_vendidos = set(pedidos_do_dia)
+print(len(produtos_vendidos), "produtos diferentes")
+print("suco" in produtos_vendidos)
+
+clientes_segunda = {"Ana", "Bia", "Caio"}
+clientes_terca = {"Bia", "Duda", "Caio"}
+print(sorted(clientes_segunda & clientes_terca))
+print(sorted(clientes_segunda | clientes_terca))
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> pedidosDoDia = List.of("café", "chá", "café", "bolo", "chá", "café");
+        Set<String> produtosVendidos = new HashSet<>(pedidosDoDia);
+        System.out.println(produtosVendidos.size() + " produtos diferentes");
+        System.out.println(produtosVendidos.contains("suco"));
+
+        Set<String> segunda = Set.of("Ana", "Bia", "Caio");
+        Set<String> terca = Set.of("Bia", "Duda", "Caio");
+        Set<String> ambos = new TreeSet<>(segunda);
+        ambos.retainAll(terca);
+        Set<String> todos = new TreeSet<>(segunda);
+        todos.addAll(terca);
+        System.out.println(ambos);
+        System.out.println(todos);
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+3 produtos diferentes
+False
+['Bia', 'Caio']
+['Ana', 'Bia', 'Caio', 'Duda']
+```
+
+(Em Java aparecem `false`, `[Bia, Caio]` e `[Ana, Bia, Caio, Duda]`.)
+
+`&` é a **interseção** (quem veio nos dois dias) e `|` é a **união** (quem veio em algum dia).
+
+## O truque que resolve problemas de entrevista
+
+Muitos problemas que parecem precisar de dois laços (O(n²)) caem para O(n) com um dicionário ou conjunto. O mais famoso:
+
+> **Dois itens que somam o valor**: dada uma lista de preços e um valor do vale-presente, ache dois produtos diferentes cujos preços somam exatamente o valor.
+
+**Jeito ingênuo**: testar todos os pares, O(n²).
+
+**Jeito esperto**: percorra a lista uma vez. Para cada preço, pergunte: "o que falta para chegar no valor já apareceu?". Guardar os que já apareceram num dicionário torna a pergunta O(1).
+
+```python
+def dois_que_somam(precos, valor):
+    vistos = {}
+    for i, preco in enumerate(precos):
+        falta = valor - preco
+        if falta in vistos:
+            return vistos[falta], i
+        vistos[preco] = i
+    return None
+
+
+cardapio = [9.0, 5.5, 12.0, 7.5, 6.0]
+print(dois_que_somam(cardapio, 13.5))
+print(dois_que_somam(cardapio, 100))
+```
+
+Antes de rodar, imagine que alguém (ou uma IA) te mandou este código junto com esta "saída":
+
+```texto
+(2, 3)
+None
+```
+
+Confira com um teste de mesa antes de acreditar. As posições 2 e 3 são `12.0` e `7.5`, que somam 19.5, e não 13.5. Seguindo o código de verdade:
+
+| Posição | Preço | Falta | Já visto? | `vistos` depois |
+| --- | --- | --- | --- | --- |
+| 0 | 9.0 | 4.5 | não | 9.0 → 0 |
+| 1 | 5.5 | 8.0 | não | + 5.5 → 1 |
+| 2 | 12.0 | 1.5 | não | + 12.0 → 2 |
+| 3 | 7.5 | 6.0 | não | + 7.5 → 3 |
+| 4 | 6.0 | **7.5** | **sim, na posição 3** | devolve (3, 4) |
+
+A resposta certa é `(3, 4)`: `7.5 + 6.0 = 13.5`. Rodando:
+
+```saida
+(3, 4)
+None
+```
+
+<Nota tipo="ia" titulo="Você acabou de revisar uma saída errada">
+
+Aquele `(2, 3)` foi colocado de propósito: é o tipo de saída "inventada" que uma IA pode escrever junto com o código, sem ter rodado nada. O teste de mesa pegou o erro antes de qualquer execução. **Nunca confie numa saída que você não viu rodar.**
+
+</Nota>
+
+<Explique pergunta="Por que trocar a lista por um dicionário transforma o problema dos 'dois que somam' de O(n²) em O(n)?">
+
+Porque o jeito ingênuo, para cada item, procura o par percorrendo a lista de novo (n vezes n). Com o dicionário, a pergunta 'o valor que falta já apareceu?' é respondida em O(1) na média. Então basta uma passada pela lista, fazendo uma pergunta rápida a cada item: O(n). Gastamos um pouco de memória (o dicionário) para economizar muito tempo.
+
+</Explique>
+
+## Quando usar cada um
+
+| Precisa de... | Use |
+| --- | --- |
+| Ordem e posições, itens repetidos | Lista |
+| Achar um valor por um nome ou código | Dicionário (`dict`, `HashMap`) |
+| Saber se algo existe, sem repetição | Conjunto (`set`, `HashSet`) |
+| Contar quantas vezes cada coisa aparece | Dicionário (item → contagem) |
+
+## Erros comuns
+
+- **`precos["chá"]` com chave que não existe**: dá `KeyError` em Python. Use `get()` ou confira com `in`.
+- **Procurar "em" lista dentro de um laço** (`if x in lista`): cada `in` numa lista é O(n), e o laço vira O(n²). Troque por um `set`.
+- **Esperar ordem de um `set` ou `HashMap`**: eles não garantem ordem. Ordene na hora de mostrar.
+
+<Tarefa titulo="O produto campeão">
+
+Dada a lista de pedidos do dia, conte **quantas vezes cada produto** foi pedido e mostre o **mais vendido**:
+
+```texto
+["café", "chá", "café", "bolo", "chá", "café", "suco", "bolo", "café"]
+```
+
+Faça em O(n): uma passada só pela lista.
+
+<Dica>
+
+Crie um dicionário vazio. Para cada pedido, some 1 na contagem dele: `contagem[p] = contagem.get(p, 0) + 1`. Depois, ache a chave com o maior valor (um laço sobre o dicionário ou `max(contagem, key=contagem.get)`).
+
+</Dica>
+
+<Resposta>
+
+```python
+pedidos = ["café", "chá", "café", "bolo", "chá", "café", "suco", "bolo", "café"]
+
+contagem = {}
+for p in pedidos:
+    contagem[p] = contagem.get(p, 0) + 1
+
+campeao = max(contagem, key=contagem.get)
+print(contagem)
+print("Mais vendido:", campeao, "com", contagem[campeao], "pedidos")
+```
+
+```saida
+{'café': 4, 'chá': 2, 'bolo': 2, 'suco': 1}
+Mais vendido: café com 4 pedidos
+```
+
+Python também tem pronto: `from collections import Counter` e `Counter(pedidos).most_common(1)`.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual o custo médio de buscar uma chave num dicionário (tabela hash)?"
+  opcoes={["O(1)", "O(log n)", "O(n)"]}
+  correta={0}
+  explicacao="A função hash calcula a gaveta direto pela chave. Na média, um passo, não importa o tamanho."
+/>
+
+<Quiz
+  pergunta="Você precisa saber rapidamente se um CPF já está cadastrado, sem guardar nada além dele. Qual estrutura?"
+  opcoes={["Lista", "Conjunto (set)", "Pilha"]}
+  correta={1}
+  explicacao="Conjuntos respondem 'está aqui?' em O(1) e não guardam repetidos."
+/>
+
+<Cartoes itens={[
+  { frente: "O que é um dicionário (mapa)?", verso: "Uma estrutura chave → valor que acha o valor pela chave em O(1) na média." },
+  { frente: "Como a tabela hash acha tão rápido?", verso: "Uma função hash transforma a chave num número que indica a gaveta." },
+  { frente: "O que é uma colisão?", verso: "Duas chaves caindo na mesma gaveta. A tabela trata e o custo médio continua O(1)." },
+  { frente: "Para que serve um conjunto (set)?", verso: "Guardar itens sem repetição e responder 'existe?' em O(1)." },
+  { frente: "O truque do 'dois que somam'", verso: "Guardar os vistos num dicionário e perguntar se o que falta já apareceu: O(n)." },
+]} />
+
+## Resumindo
+
+- **Dicionário**: chave → valor, busca em O(1) na média graças à tabela hash.
+- **Conjunto**: itens sem repetição, "existe?" em O(1), com união e interseção.
+- Trocar uma busca em lista por um dicionário ou conjunto costuma transformar O(n²) em O(n).
+- Rode o código antes de acreditar numa saída, inclusive a que vem pronta.

@@ -219,6 +219,127 @@ export function Bebida({ trilha, tamanho = 120 }: { trilha: TrilhaId; tamanho?: 
           </g>
         </g>
       )}
+
+      {trilha === "algoritmos" && (
+        <g>
+          <rect x="34" y="58" width="52" height="46" rx="6" fill="#8a5a3c" />
+          <rect x="34" y="58" width="52" height="10" fill="#6f4630" />
+          <rect x="52" y="82" width="16" height="14" rx="3" fill="#5a3826" />
+          <path d="M40 58l6-18h28l6 18z" fill="#c9a27a" />
+          <ellipse cx="60" cy="40" rx="14" ry="4" fill="#3b2418" />
+          <g className="alg-manivela">
+            <path
+              d="M60 36V22h22"
+              fill="none"
+              stroke="#5a5a5a"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+            <circle cx="84" cy="22" r="6" fill="#3b2418" />
+          </g>
+          <ellipse cx="22" cy="98" rx="5" ry="7" fill="#5a3826" transform="rotate(-25 22 98)" />
+          <ellipse cx="98" cy="100" rx="5" ry="7" fill="#5a3826" transform="rotate(20 98 100)" />
+        </g>
+      )}
+
+      {trilha === "ia" && (
+        <g>
+          <rect x="26" y="22" width="68" height="20" rx="6" fill="#4a4a52" />
+          <rect x="30" y="42" width="60" height="58" rx="4" fill="#6b6b75" />
+          <rect x="36" y="27" width="22" height="10" rx="3" fill="#1c1c22" />
+          <circle className="ia-olho" cx="42" cy="32" r="2.4" fill="#7dd3fc" />
+          <circle className="ia-olho" cx="52" cy="32" r="2.4" fill="#7dd3fc" />
+          <circle cx="78" cy="32" r="4" fill="#f4b860" />
+          <rect x="50" y="46" width="20" height="8" rx="2" fill="#2e2e36" />
+          <path
+            d="M56 54v8M64 54v8"
+            stroke="#3b2418"
+            strokeWidth="3"
+            strokeLinecap="round"
+            className="ia-pingo"
+          />
+          <path d="M46 76h28l-3 18H49z" fill="#fff8ef" />
+          <path d="M74 80h5a5 5 0 0 1 0 10h-5" fill="none" stroke="#fff8ef" strokeWidth="3" />
+          <rect x="24" y="100" width="72" height="6" rx="3" fill="#3a3a42" />
+        </g>
+      )}
+
+      {trilha === "sql" && (
+        <g>
+          <rect x="16" y="20" width="88" height="84" rx="4" fill="#8a5a3c" />
+          <rect x="20" y="24" width="80" height="76" fill="#f3e3cf" />
+          <rect x="16" y="58" width="88" height="5" fill="#8a5a3c" />
+          {[0, 1, 2].map((i) => (
+            <g key={`a${i}`}>
+              <rect
+                x={26 + i * 26}
+                y={34}
+                width="18"
+                height="22"
+                rx="4"
+                fill={["#e8b04a", "#c96a3a", "#7aa35a"][i]}
+              />
+              <rect x={26 + i * 26} y={31} width="18" height="5" rx="2" fill="#5a3826" />
+              <rect x={29 + i * 26} y={42} width="12" height="6" rx="1" fill="#fff8ef" />
+            </g>
+          ))}
+          {[0, 1, 2].map((i) => (
+            <g key={`b${i}`}>
+              <rect
+                x={26 + i * 26}
+                y={70}
+                width="18"
+                height="24"
+                rx="4"
+                fill={["#b98ad6", "#e8b04a", "#c96a3a"][i]}
+              />
+              <rect x={26 + i * 26} y={67} width="18" height="5" rx="2" fill="#5a3826" />
+              <rect x={29 + i * 26} y={78} width="12" height="6" rx="1" fill="#fff8ef" />
+            </g>
+          ))}
+        </g>
+      )}
+
+      {trilha === "seguranca" && (
+        <g>
+          <rect x="28" y="20" width="58" height="80" rx="6" fill="#c9a27a" />
+          <rect x="34" y="28" width="46" height="66" rx="2" fill="#fffaf3" />
+          <rect x="46" y="14" width="22" height="12" rx="3" fill="#6b6b75" />
+          {[0, 1, 2].map((i) => (
+            <g key={i}>
+              <path
+                d={`M40 ${42 + i * 16}l4 4 7-8`}
+                fill="none"
+                stroke="#3f7a59"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <rect x="56" y={41 + i * 16} width="18" height="4" rx="2" fill="#d9c8b4" />
+            </g>
+          ))}
+          <g className="seg-cadeado">
+            <path d="M84 78v-8a8 8 0 0 1 16 0v8" fill="none" stroke="#5a5a5a" strokeWidth="4" />
+            <rect x="80" y="78" width="24" height="20" rx="4" fill="#e8b04a" />
+            <circle cx="92" cy="88" r="3" fill="#5a3826" />
+          </g>
+        </g>
+      )}
+
+      {trilha === "ciberseguranca" && (
+        <g>
+          <ellipse cx="60" cy="98" rx="44" ry="7" fill="#e9dcef" />
+          <circle cx="60" cy="62" r="36" fill="#f0d9a8" stroke="#c98a4a" strokeWidth="4" />
+          <path
+            className="ciber-espiral"
+            d="M60 62m0 0a4 4 0 0 1 8 0a8 8 0 0 1-16 0a12 12 0 0 1 24 0a16 16 0 0 1-32 0a20 20 0 0 1 40 0a24 24 0 0 1-48 0a28 28 0 0 1 56 0"
+            fill="none"
+            stroke="#a8432e"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+        </g>
+      )}
     </svg>
   );
 }
@@ -229,6 +350,11 @@ const ITENS: Record<TrilhaId, string[]> = {
   c: ["0x7f", "&x", "*p", "{ }", "\\0", "0x1a", "int", "&", "*", ";"],
   python: ["", "", "", "", "", "", "", "", "", ""],
   java: ["", "", "", "", "", "", "", "", "", ""],
+  algoritmos: ["O(n)", "[ ]", "→", "log n", "{ }", "sort", "n²", "↺", "push", "pop"],
+  ia: ["prompt", "✦", "spec", "token", "✓?", "✦", "review", "PRD", "✦", "task"],
+  sql: ["SELECT", "*", "WHERE", "JOIN", "id", "ORDER BY", "COUNT", "▤", "INSERT", ";"],
+  seguranca: ["🔒", "hash", "2FA", "✓", ".env", "OWASP", "🔑", "sal", "✓", "https"],
+  ciberseguranca: ["🛡", "CTF", "flag{ }", "🔍", "SOC", "log", "🛡", "nmap", "blue", "red"],
   poo: ["class", "{ }", "self", "this", "new", "▣", "extends", "▣", "obj.", "{ }"],
   git: ["commit", "●", "main", "merge", "●─●", "push", "PR #1", "●", "branch", "pull"],
   produto: ["GET", "200", "→", "JSON", "←", "/api", "POST", "201", "→", "{ }"],

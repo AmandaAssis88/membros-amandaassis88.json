@@ -7,18 +7,23 @@ import type { ComponentType } from "react";
 export type TrilhaId =
   | "fundamentos"
   | "logica"
+  | "algoritmos"
   | "c"
   | "python"
   | "java"
   | "poo"
   | "git"
+  | "ia"
+  | "sql"
+  | "seguranca"
   | "produto"
   | "front-end"
   | "back-end"
   | "mobile"
   | "devops"
   | "ui-ux"
-  | "qa";
+  | "qa"
+  | "ciberseguranca";
 
 export type Aula = {
   /** Parte final da URL: /c/ponteiros */
@@ -35,7 +40,14 @@ export type Trilha = {
   nome: string;
   /** Pasta no repositório estudos (e em estudos/conteudo/) */
   pasta: string;
-  grupo: "fundamentos" | "disciplinas" | "linguagens" | "paradigmas" | "ferramentas" | "profissoes";
+  grupo:
+    | "fundamentos"
+    | "disciplinas"
+    | "linguagens"
+    | "paradigmas"
+    | "ferramentas"
+    | "cozinha"
+    | "profissoes";
   /** O item do cardápio: bebida (linguagens e bases) ou sobremesa/pão (profissões) */
   bebida: string;
   emoji: string;
@@ -98,6 +110,12 @@ export const GRUPOS: { id: Trilha["grupo"]; pasta: string; titulo: string; texto
     pasta: "ferramentas/",
     titulo: "Ferramentas",
     texto: "O prato e os talheres: sem eles, nenhuma receita chega à mesa.",
+  },
+  {
+    id: "cozinha",
+    pasta: "bastidores/",
+    titulo: "Bastidores",
+    texto: "A cozinha: ninguém vê, mas é ela que segura o restaurante inteiro.",
   },
   {
     id: "profissoes",
@@ -233,6 +251,88 @@ export const TRILHAS: Trilha[] = [
         titulo: "Funções",
         resumo: "Máquinas de suco: entra fruta, sai suco.",
         minutos: 12,
+      },
+    ],
+  },
+  {
+    id: "algoritmos",
+    nome: "Algoritmos e estruturas de dados",
+    pasta: "disciplinas/algoritmos",
+    grupo: "disciplinas",
+    bebida: "Café moído na hora",
+    emoji: "⚙️",
+    frase: "O grão, o processo e a precisão: fazer funcionar bem, não só funcionar.",
+    pratica: {
+      titulo: "Treine com problemas de verdade",
+      texto:
+        "O Beecrowd é brasileiro, em português, com milhares de problemas por nível. Treine sem IA e compare depois.",
+      url: "https://www.beecrowd.com.br/judge/pt/",
+      rotulo: "Abrir o Beecrowd",
+    },
+    documentacao: [
+      {
+        titulo: "Python: estruturas de dados (tutorial oficial)",
+        url: "https://docs.python.org/pt-br/3/tutorial/datastructures.html",
+        texto:
+          "Listas como pilhas e filas, deque, conjuntos e dicionários, na documentação oficial.",
+      },
+      {
+        titulo: "VisuAlgo",
+        url: "https://visualgo.net/pt",
+        texto: "Animações de ordenação, buscas, pilhas, filas e tabelas hash, passo a passo.",
+      },
+    ],
+    sobre:
+      "A Lógica ensina a fazer o programa funcionar. Algoritmos e estruturas de dados ensinam a escolher, entre vários jeitos que funcionam, o que aguenta muitos dados: medir o custo com Big O, buscar e ordenar com eficiência, usar pilhas, filas, dicionários e conjuntos, e pensar recursivamente. É o que cai nas entrevistas técnicas e o raciocínio que a IA não faz por você.",
+    aprender: [
+      "Medir a eficiência com Big O, sem matemática pesada",
+      "Busca linear e busca binária",
+      "Ordenação: dos jeitos simples ao dividir para conquistar",
+      "Pilhas, filas, dicionários e conjuntos",
+      "Recursão e um método para resolver problemas de entrevista",
+    ],
+    aulas: [
+      {
+        slug: "eficiencia",
+        arquivo: "01-eficiencia",
+        titulo: "Lógica × algoritmos: o que é eficiência",
+        resumo: "Contar passos e a notação Big O.",
+        minutos: 20,
+      },
+      {
+        slug: "busca",
+        arquivo: "02-busca",
+        titulo: "Busca linear e busca binária",
+        resumo: "Um milhão de itens em 20 passos.",
+        minutos: 22,
+      },
+      {
+        slug: "ordenacao",
+        arquivo: "03-ordenacao",
+        titulo: "Ordenação",
+        resumo: "Selection, Insertion, Merge Sort e o sort da linguagem.",
+        minutos: 25,
+      },
+      {
+        slug: "pilhas-e-filas",
+        arquivo: "04-pilhas-e-filas",
+        titulo: "Pilhas e filas",
+        resumo: "A pilha de pratos e a fila do caixa.",
+        minutos: 22,
+      },
+      {
+        slug: "dicionarios-e-conjuntos",
+        arquivo: "05-dicionarios-e-conjuntos",
+        titulo: "Dicionários e conjuntos",
+        resumo: "Os potes etiquetados da despensa: busca em O(1).",
+        minutos: 25,
+      },
+      {
+        slug: "recursao-e-resolucao",
+        arquivo: "06-recursao-e-resolucao",
+        titulo: "Recursão e como resolver problemas",
+        resumo: "Bonecas russas e o método da entrevista técnica.",
+        minutos: 25,
       },
     ],
   },
@@ -653,6 +753,93 @@ export const TRILHAS: Trilha[] = [
         titulo: "Pull Request e trabalho em equipe",
         resumo: "fork, PR, revisão de código e manter tudo em dia.",
         minutos: 28,
+      },
+    ],
+  },
+  {
+    id: "ia",
+    nome: "Programando com IA",
+    pasta: "ferramentas/programando-com-ia",
+    grupo: "ferramentas",
+    bebida: "Máquina de espresso automática",
+    emoji: "🤖",
+    frase: "Ajuda muito, mas quem precisa saber de café é o barista.",
+    pratica: {
+      titulo: "O ciclo completo numa missão",
+      texto:
+        "Escolha uma missão da comunidade e aplique tudo: mini PRD, plano revisado, testes primeiro e commits pequenos.",
+      url: `${ONBOARDING_URL}/missoes`,
+      rotulo: "Ver as missões",
+    },
+    documentacao: [
+      {
+        titulo: "OWASP: Top 10 para aplicações com LLM",
+        url: "https://genai.owasp.org/initiatives/top-10-for-llm-and-genai/",
+        texto: "Os principais riscos de segurança de sistemas que usam IA generativa.",
+      },
+      {
+        titulo: "Anthropic: guia de engenharia de prompts",
+        url: "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+        texto: "Técnicas oficiais para escrever pedidos claros, com exemplos e contexto.",
+      },
+      {
+        titulo: "GitHub Docs: boas práticas com o Copilot",
+        url: "https://docs.github.com/en/copilot/get-started/best-practices",
+        texto: "Como usar o assistente de código com cuidado: revisar, testar e dar contexto.",
+      },
+    ],
+    sobre:
+      "A IA escreve código rápido, mas não prova o que faz. Esta trilha ensina a usar a IA como os profissionais usam hoje: pedir com clareza, revisar e testar o que ela gera, reconhecer alucinações e código inseguro, e organizar o trabalho com SDD, o fluxo em que a especificação vem antes do código.",
+    aprender: [
+      "Como uma IA de texto funciona e por que ela erra com confiança",
+      "Pedir bem: o pedido como especificação, com exemplos de entrada e saída",
+      "Revisar o código gerado e achar os erros que o exemplo não mostra",
+      "Alucinações, pacotes inventados, código inseguro e quando não usar IA",
+      "SDD: PRD, Tech Spec, Tasks e execução com evidência",
+      "O ciclo de trabalho com IA nas empresas",
+    ],
+    aulas: [
+      {
+        slug: "como-a-ia-funciona",
+        arquivo: "01-como-a-ia-funciona",
+        titulo: "Como a IA funciona (e onde ela erra)",
+        resumo: "A máquina de espresso automática: rápida, mas não prova o café.",
+        minutos: 18,
+      },
+      {
+        slug: "pedir-bem",
+        arquivo: "02-pedir-bem",
+        titulo: "Pedir bem: o pedido é uma especificação",
+        resumo: "Contexto, exemplos de entrada e saída, regras e formato.",
+        minutos: 22,
+      },
+      {
+        slug: "revisar-o-codigo-da-ia",
+        arquivo: "03-revisar-o-codigo-da-ia",
+        titulo: "Revisar o código da IA",
+        resumo: "Ache os 3 erros: casos de borda, limites e testes com assert.",
+        minutos: 25,
+      },
+      {
+        slug: "riscos-e-quando-nao-usar",
+        arquivo: "04-riscos-e-quando-nao-usar",
+        titulo: "Riscos e quando não usar",
+        resumo: "Alucinações, pacotes falsos, código inseguro e dados que não são seus.",
+        minutos: 22,
+      },
+      {
+        slug: "sdd-primeiro-a-spec",
+        arquivo: "05-sdd-primeiro-a-spec",
+        titulo: "SDD: primeiro a spec, depois o código",
+        resumo: "PRD, Tech Spec, Tasks e execução, como as equipes trabalham com IA.",
+        minutos: 30,
+      },
+      {
+        slug: "ia-no-dia-a-dia-profissional",
+        arquivo: "06-ia-no-dia-a-dia-profissional",
+        titulo: "IA no dia a dia profissional",
+        resumo: "Chat, autocompletar, agentes e o ciclo de trabalho de verdade.",
+        minutos: 22,
       },
     ],
   },

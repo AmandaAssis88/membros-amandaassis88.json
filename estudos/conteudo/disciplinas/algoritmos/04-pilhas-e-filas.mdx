@@ -1,0 +1,303 @@
+<Aquecimento perguntas={[
+  { p: "Qual o Big O do Selection Sort e das ordenações prontas das linguagens?", r: "Selection Sort é O(n²); as prontas são O(n log n)." },
+  { p: "Qual a ideia do Merge Sort?", r: "Dividir ao meio até sobrar 1 item e intercalar as metades ordenadas." },
+  { p: "Em Python, o que lista.sort() devolve?", r: "None. Ela ordena a própria lista." },
+]} />
+
+Até agora você guardou dados em listas e mexeu neles do jeito que quis. Agora vem a parte de **estruturas de dados**: jeitos de guardar dados com **regras de entrada e saída**. Duas das mais usadas no mundo são também as mais fáceis de imaginar: a **pilha** e a **fila**.
+
+<Chute pergunta="Quando você aperta Ctrl+Z várias vezes, o editor desfaz a ação mais antiga ou a mais recente primeiro?">
+
+A mais recente. A última coisa que você fez é a primeira a ser desfeita. Isso é exatamente o comportamento de uma **pilha**: o último que entra é o primeiro que sai.
+
+</Chute>
+
+## Pilha: o último que entra é o primeiro que sai
+
+<Nota tipo="analogia" titulo="Pensa assim: a pilha de pratos">
+
+Na cozinha, os pratos limpos vão para o **topo** da pilha, e quem precisa de um prato pega **do topo**. Ninguém puxa o prato de baixo. O último prato lavado é o primeiro a ser usado.
+
+</Nota>
+
+Essa regra tem um nome em inglês muito usado: **LIFO** (*Last In, First Out*). As operações têm nomes próprios:
+
+| Operação | O que faz | Custo |
+| --- | --- | --- |
+| **push** (empilhar) | coloca no topo | O(1) |
+| **pop** (desempilhar) | tira do topo | O(1) |
+| **peek** (espiar) | olha o topo sem tirar | O(1) |
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+pratos = []
+pratos.append("prato azul")
+pratos.append("prato verde")
+pratos.append("prato branco")
+print("Topo:", pratos[-1])
+
+print("Usou:", pratos.pop())
+print("Usou:", pratos.pop())
+print("Sobrou:", pratos)
+```
+
+Em Python, uma lista comum funciona como pilha: `append` empilha e `pop()` tira do fim.
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class Main {
+    public static void main(String[] args) {
+        Deque<String> pratos = new ArrayDeque<>();
+        pratos.push("prato azul");
+        pratos.push("prato verde");
+        pratos.push("prato branco");
+        System.out.println("Topo: " + pratos.peek());
+
+        System.out.println("Usou: " + pratos.pop());
+        System.out.println("Usou: " + pratos.pop());
+        System.out.println("Sobrou: " + pratos);
+    }
+}
+```
+
+Em Java, o `ArrayDeque` com `push`, `pop` e `peek` é o jeito recomendado de fazer uma pilha.
+
+</Aba>
+</Abas>
+
+```saida
+Topo: prato branco
+Usou: prato branco
+Usou: prato verde
+Sobrou: ['prato azul']
+```
+
+(Em Java, a última linha mostra `[prato azul]`, sem aspas.)
+
+### Onde as pilhas aparecem
+
+- **Desfazer** (Ctrl+Z) em editores.
+- O botão **voltar** do navegador.
+- A **pilha de chamadas** (*call stack*): quando uma função chama outra, o programa empilha onde parou para voltar depois. É por isso que um erro mostra uma lista de funções, a famosa *stack trace*.
+- Conferir se **parênteses estão balanceados**, como o editor faz enquanto você digita.
+
+### Exemplo clássico: parênteses balanceados
+
+`(a + [b * c])` está certo; `(a + [b * c)]` está errado. A ideia: cada vez que abre, empilha; cada vez que fecha, o topo da pilha tem que ser o par correspondente.
+
+```python
+def balanceado(texto):
+    pares = {")": "(", "]": "[", "}": "{"}
+    pilha = []
+    for c in texto:
+        if c in "([{":
+            pilha.append(c)
+        elif c in ")]}":
+            if not pilha or pilha.pop() != pares[c]:
+                return False
+    return not pilha
+
+
+print(balanceado("(a + [b * c])"))
+print(balanceado("(a + [b * c)]"))
+print(balanceado("((cafe)"))
+```
+
+```saida
+True
+False
+False
+```
+
+O último caso falha porque sobrou um `(` na pilha: abriu e nunca fechou.
+
+## Fila: o primeiro que entra é o primeiro que sai
+
+<Nota tipo="analogia" titulo="Pensa assim: a fila do caixa">
+
+Quem chega entra no **fim** da fila; quem é atendido sai do **começo**. Seria injusto atender quem acabou de chegar. O primeiro a chegar é o primeiro a ser atendido.
+
+</Nota>
+
+Essa regra é **FIFO** (*First In, First Out*).
+
+| Operação | O que faz | Custo (bem implementada) |
+| --- | --- | --- |
+| **enqueue** (enfileirar) | entra no fim | O(1) |
+| **dequeue** (desenfileirar) | sai do começo | O(1) |
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+from collections import deque
+
+fila = deque()
+fila.append("pedido 1: cappuccino")
+fila.append("pedido 2: pão de queijo")
+fila.append("pedido 3: chá gelado")
+
+while fila:
+    print("Preparando", fila.popleft())
+print("Fila vazia!")
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+public class Main {
+    public static void main(String[] args) {
+        Queue<String> fila = new ArrayDeque<>();
+        fila.offer("pedido 1: cappuccino");
+        fila.offer("pedido 2: pão de queijo");
+        fila.offer("pedido 3: chá gelado");
+
+        while (!fila.isEmpty()) {
+            System.out.println("Preparando " + fila.poll());
+        }
+        System.out.println("Fila vazia!");
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Preparando pedido 1: cappuccino
+Preparando pedido 2: pão de queijo
+Preparando pedido 3: chá gelado
+Fila vazia!
+```
+
+<Nota tipo="cuidado" titulo="Por que não usar lista.pop(0) em Python?">
+
+Funciona, mas tirar do **começo** de uma lista obriga o Python a "empurrar" todos os outros itens uma casa para a esquerda: isso é O(n) a cada atendimento. Com uma fila grande, fica lento. O `deque` foi feito para tirar das duas pontas em O(1).
+
+</Nota>
+
+### Onde as filas aparecem
+
+- Pedidos da cozinha e do delivery, na ordem de chegada.
+- A **fila de impressão**.
+- Mensagens entre sistemas: um serviço coloca tarefas numa fila e outro vai processando (você vai ver isso em Arquitetura).
+- O algoritmo de **busca em largura**, que explora um mapa ou uma rede "em ondas", vizinho por vizinho.
+
+## Pilha × fila
+
+| | Pilha | Fila |
+| --- | --- | --- |
+| Regra | LIFO: último entra, primeiro sai | FIFO: primeiro entra, primeiro sai |
+| Na cozinha | Pilha de pratos | Fila do caixa |
+| Python | `list` com `append` e `pop()` | `collections.deque` com `append` e `popleft()` |
+| Java | `ArrayDeque` com `push` e `pop` | `ArrayDeque` com `offer` e `poll` |
+| Usos | Desfazer, voltar, chamadas de função | Pedidos, impressão, mensagens |
+
+<Explique pergunta="O botão 'voltar' do navegador funciona como pilha ou como fila? Por quê?">
+
+Como pilha. Cada página que você abre é empilhada; ao apertar voltar, sai a mais recente (o topo), e você volta para a anterior. Se fosse fila, o voltar te levaria para a primeira página que você abriu no dia.
+
+</Explique>
+
+## Erros comuns
+
+- **`pop()` em pilha vazia**: dá erro (`IndexError` em Python, `NoSuchElementException` em Java). Confira se tem algo antes.
+- **Usar lista como fila** com `pop(0)` em dados grandes.
+- **Confundir as pontas**: empilhar num lado e tirar do outro transforma a pilha em fila sem querer.
+
+<Tarefa titulo="O desfazer do editor">
+
+Crie um mini editor de texto com uma **pilha de histórico**:
+
+- `escrever(texto)` acrescenta o texto ao documento e guarda o estado anterior na pilha.
+- `desfazer()` volta ao estado anterior. Se não houver nada para desfazer, não faz nada.
+
+Teste: escreva "Café", depois " com leite", depois " e açúcar"; desfaça duas vezes e mostre o documento depois de cada passo.
+
+<Dica>
+
+Antes de mudar o documento, faça `historico.append(documento)`. No desfazer, se a pilha não estiver vazia, `documento = historico.pop()`.
+
+</Dica>
+
+<Resposta>
+
+```python
+documento = ""
+historico = []
+
+
+def escrever(texto):
+    global documento
+    historico.append(documento)
+    documento += texto
+    print("Documento:", repr(documento))
+
+
+def desfazer():
+    global documento
+    if historico:
+        documento = historico.pop()
+    print("Desfez:   ", repr(documento))
+
+
+escrever("Café")
+escrever(" com leite")
+escrever(" e açúcar")
+desfazer()
+desfazer()
+```
+
+```saida
+Documento: 'Café'
+Documento: 'Café com leite'
+Documento: 'Café com leite e açúcar'
+Desfez:    'Café com leite'
+Desfez:    'Café'
+```
+
+(`global` deixa a função mudar a variável `documento` criada fora dela. Numa versão maior, isso viraria uma classe `Editor`, como você vê na trilha de Orientação a Objetos.)
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual estrutura segue a regra LIFO (último a entrar, primeiro a sair)?"
+  opcoes={["Fila", "Pilha", "Lista ordenada"]}
+  correta={1}
+  explicacao="Pilha: como os pratos, o último colocado no topo é o primeiro a sair."
+/>
+
+<Quiz
+  pergunta="Por que usar deque em vez de lista.pop(0) para uma fila grande em Python?"
+  opcoes={["Porque deque é mais bonito", "Porque tirar do começo de uma lista é O(n) e no deque é O(1)", "Porque lista não aceita textos"]}
+  correta={1}
+  explicacao="A lista precisa mover todos os itens ao tirar o primeiro; o deque foi feito para tirar das pontas em tempo constante."
+/>
+
+<Cartoes itens={[
+  { frente: "Pilha: regra e exemplo", verso: "LIFO (último entra, primeiro sai). Pilha de pratos, Ctrl+Z, botão voltar." },
+  { frente: "Fila: regra e exemplo", verso: "FIFO (primeiro entra, primeiro sai). Fila do caixa, pedidos da cozinha." },
+  { frente: "Operações da pilha", verso: "push (empilhar), pop (desempilhar), peek (espiar o topo). Todas O(1)." },
+  { frente: "Fila em Python", verso: "collections.deque com append() e popleft()." },
+  { frente: "O que é a call stack?", verso: "A pilha onde o programa guarda as funções em andamento; aparece na stack trace dos erros." },
+]} />
+
+## Resumindo
+
+- **Estruturas de dados** são jeitos de guardar dados com regras de entrada e saída.
+- **Pilha (LIFO)**: pratos, desfazer, voltar, chamadas de função.
+- **Fila (FIFO)**: caixa, pedidos, impressão, mensagens entre sistemas.
+- Use a estrutura certa da linguagem: `deque` em Python, `ArrayDeque` em Java.

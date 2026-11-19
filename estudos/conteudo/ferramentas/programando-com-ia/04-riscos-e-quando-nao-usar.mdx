@@ -1,0 +1,193 @@
+<Aquecimento perguntas={[
+  { p: "Cite três casos de borda clássicos para testar.", r: "Vazio, zero, negativo, o limite exato, fora do intervalo, muito grande." },
+  { p: "A IA disse 'testei e funciona'. Isso basta?", r: "Não. Normalmente ela não executa o código. Quem prova é o teste rodando." },
+  { p: "O que faz um assert?", r: "Nada se a condição for verdadeira; para o programa com erro se for falsa." },
+]} />
+
+Na aula passada você caçou bugs. Agora vamos olhar os riscos que **não aparecem rodando o programa**: bibliotecas inventadas, código inseguro, vazamento de dados e a armadilha de não aprender. São esses que viram notícia.
+
+<Chute pergunta="A IA sugeriu 'pip install leitor-planilha-facil' para ler um Excel. Qual o perigo de rodar sem conferir?">
+
+O pacote pode não existir, e aí só dá erro. O pior caso é quando ele **existe**: há pessoas mal-intencionadas que publicam pacotes com nomes que as IAs costumam inventar, recheados de código malicioso. Rodar `pip install` (ou `npm install`) de um nome que você não conferiu é como comer uma coisa só porque alguém disse que era comida.
+
+</Chute>
+
+## Risco 1: alucinações
+
+A IA pode inventar:
+
+- **Funções e parâmetros**: `lista.media()`, `requests.get(url, retries=3)` (esse parâmetro não existe).
+- **Bibliotecas inteiras**: um pacote com nome plausível que ninguém nunca criou.
+- **Fatos**: "o Python 3 tem tipos obrigatórios", "o Java não tem herança múltipla de interfaces" (os dois são falsos).
+- **Fontes**: links e artigos que não existem.
+
+### Pacotes inventados viraram ataque
+
+Como as IAs tendem a inventar **os mesmos** nomes, alguém pode registrar esses nomes no PyPI (Python) ou no npm (JavaScript) com código malicioso dentro. Quem instala sem conferir, instala o ataque. Esse golpe ganhou até apelido em inglês: **slopsquatting**.
+
+<Nota tipo="cuidado" titulo="Antes de instalar qualquer pacote sugerido">
+
+1. Procure o nome em **pypi.org** (Python) ou **npmjs.com** (JavaScript).
+2. Veja se tem **documentação**, **repositório no GitHub**, **downloads** e **atualizações recentes**.
+3. Confira se o nome está escrito **exatamente** igual ao do projeto oficial (golpistas usam nomes quase iguais, como `reqeusts` no lugar de `requests`).
+4. Na dúvida, prefira a biblioteca padrão da linguagem ou uma que o seu professor ou a sua equipe já usam.
+
+</Nota>
+
+## Risco 2: código inseguro
+
+A IA aprendeu com muito código da internet, e muito código da internet é inseguro. Fique atento a estes padrões:
+
+### Senha ou chave dentro do código
+
+```python-exemplo
+API_KEY = "sk-live-8f3a9c..."
+banco = conectar("admin", "senha123")
+```
+
+Se isso for para o GitHub, qualquer pessoa vê. O certo é ler de uma **variável de ambiente** ou de um arquivo `.env` que está no `.gitignore`:
+
+```python-exemplo
+import os
+
+API_KEY = os.environ["API_KEY"]
+```
+
+### Montar consulta de banco com o texto do usuário
+
+```python-exemplo
+nome = input("Seu nome: ")
+cursor.execute("SELECT * FROM clientes WHERE nome = '" + nome + "'")
+```
+
+Se alguém digitar um texto com aspas e comandos SQL, ele muda a consulta. Isso se chama **injeção de SQL** e é uma das falhas mais exploradas do mundo. O certo é usar **parâmetros**, que o banco trata como dado, nunca como comando:
+
+```python-exemplo
+cursor.execute("SELECT * FROM clientes WHERE nome = ?", (nome,))
+```
+
+Você vai ver isso com calma nas trilhas de **Banco de dados e SQL** e de **Segurança para devs**, na cozinha.
+
+### Outros sinais de alerta
+
+- `eval(input(...))`: executa como código qualquer coisa que o usuário digitar.
+- Desligar verificações de segurança "para funcionar" (`verify=False` em requisições HTTPS).
+- Senhas guardadas sem **hash** no banco de dados.
+- Mensagens de erro que mostram detalhes internos para o usuário.
+
+<Nota tipo="ia" titulo="Peça a revisão de segurança explicitamente">
+
+*"Revise este código procurando problemas de segurança: segredos no código, injeção, entrada do usuário sem validação."* A IA é boa nisso quando você pede. Quando você não pede, ela costuma priorizar "funcionar".
+
+</Nota>
+
+## Risco 3: vazar o que não é seu
+
+Tudo que você cola num chat sai do seu computador e vai para o servidor da empresa da IA. Algumas ferramentas podem usar as conversas para treinar modelos, dependendo das configurações e do plano.
+
+| Pode colar | Nunca cole (sem autorização) |
+| --- | --- |
+| Exercícios da faculdade (se o professor permite IA) | Senhas, tokens, chaves de API |
+| Código de projetos seus e públicos | Dados pessoais: CPF, endereço, telefone, saúde |
+| Mensagens de erro sem dados sensíveis | Código privado da empresa |
+| Exemplos com dados falsos | Dados de clientes ou usuários |
+
+<Nota tipo="dica" titulo="Nas empresas">
+
+Muitas empresas têm uma IA **aprovada** e regras claras sobre o que pode ir para ela. Antes de usar qualquer ferramenta no trabalho, pergunte qual é a política. Vazar código ou dados de cliente pode custar o emprego e, no Brasil, ainda envolve a **LGPD** (a lei de proteção de dados pessoais).
+
+</Nota>
+
+## Risco 4: licenças e autoria
+
+Código gerado pode se parecer muito com código que já existe e tem licença. Em projetos sérios, as equipes conferem as licenças das dependências e evitam colar blocos grandes sem entender de onde vieram. Para você, agora, a regra prática é a mesma da faculdade: **diga quando usou IA** e entenda o que entregou.
+
+## Risco 5: não aprender
+
+É o risco mais silencioso. Se a IA faz todos os exercícios, você termina o semestre sem saber programar, e não percebe até a primeira prova, a primeira entrevista ou o primeiro bug que a IA não consegue resolver.
+
+## Quando NÃO usar a IA
+
+<Passos itens={[
+  { icone: "🌱", titulo: "No primeiro contato", texto: "com um conceito: tente sozinho primeiro" },
+  { icone: "📝", titulo: "Em prova e entrevista", texto: "e onde as regras proíbem" },
+  { icone: "🤷", titulo: "Quando não sabe avaliar", texto: "a resposta: aprenda o básico antes" },
+  { icone: "🔐", titulo: "Com dados sensíveis", texto: "fora das ferramentas aprovadas" },
+]} />
+
+E quando usar, um bom equilíbrio é a **regra dos 20 minutos**: tente resolver sozinho por uns 20 minutos. Travou? Peça uma **dica**, não a resposta. Travou de novo? Peça uma explicação e depois **reescreva sozinho**.
+
+<Explique pergunta="Por que rodar 'pip install' de um pacote que a IA sugeriu, sem conferir, pode ser perigoso mesmo que o pacote funcione?">
+
+Porque a IA pode ter inventado o nome, e pessoas mal-intencionadas registram justamente esses nomes inventados com código malicioso. O pacote pode até fazer o que promete e, ao mesmo tempo, roubar senhas ou instalar outra coisa. Conferir no PyPI ou no npm, ver o repositório, a documentação e a popularidade evita cair nisso.
+
+</Explique>
+
+<Tarefa titulo="Inspetor de segurança">
+
+A IA gerou este trecho para um sistema de login de uma cafeteria. Encontre **quatro** problemas de segurança e diga como corrigir cada um (não precisa escrever o código completo):
+
+```python-exemplo
+import pymysql
+
+SENHA_DO_BANCO = "cafe2026"
+
+def login(usuario, senha):
+    banco = pymysql.connect(user="root", password=SENHA_DO_BANCO, database="loja")
+    cursor = banco.cursor()
+    cursor.execute(
+        "SELECT * FROM usuarios WHERE nome = '" + usuario + "' AND senha = '" + senha + "'"
+    )
+    if cursor.fetchone():
+        return True
+    print("Erro no banco: usuário", usuario, "com senha", senha, "não encontrado")
+    return False
+```
+
+<Dica>
+
+Procure: um segredo onde não deveria, uma consulta montada com texto do usuário, a forma como a senha está guardada no banco (ela é comparada direto?) e informação sensível aparecendo onde não devia. O usuário `root` também é um alerta.
+
+</Dica>
+
+<Resposta>
+
+1. **Senha do banco no código** (`SENHA_DO_BANCO = "cafe2026"`): mover para variável de ambiente ou `.env` no `.gitignore`.
+2. **Injeção de SQL**: a consulta é montada juntando texto do usuário. Usar parâmetros: `cursor.execute("SELECT ... WHERE nome = %s", (usuario,))`.
+3. **Senha guardada e comparada em texto puro**: o banco deveria guardar só o **hash** da senha (com uma biblioteca própria para isso, como `bcrypt` ou `argon2`) e comparar o hash.
+4. **A senha aparece no log/tela** na mensagem de erro: nunca mostre senha. E a mensagem deve ser genérica ("usuário ou senha inválidos"), sem dizer qual dos dois errou.
+
+Bônus: conectar como `root` dá poder demais à aplicação. O certo é um usuário do banco com só as permissões necessárias.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="O que é slopsquatting?"
+  opcoes={["Um tipo de café", "Registrar pacotes com nomes que IAs costumam inventar, com código malicioso", "Um comando do Git"]}
+  correta={1}
+  explicacao="Como as IAs repetem os mesmos nomes inventados, golpistas registram esses nomes nos repositórios de pacotes. Confira sempre antes de instalar."
+/>
+
+<Quiz
+  pergunta="Qual destas informações você PODE colar num chat de IA pessoal?"
+  opcoes={["A chave de API do projeto da empresa", "Uma mensagem de erro com dados falsos no exemplo", "A planilha de clientes com CPF"]}
+  correta={1}
+  explicacao="Erros e exemplos sem dados sensíveis são seguros. Chaves, dados pessoais e código privado não vão para ferramentas não aprovadas."
+/>
+
+<Cartoes itens={[
+  { frente: "Como conferir um pacote sugerido pela IA?", verso: "Procurar no PyPI ou npm, ver repositório, documentação, downloads e se o nome está exatamente certo." },
+  { frente: "Onde guardar senhas e chaves do projeto?", verso: "Em variáveis de ambiente ou num .env que está no .gitignore. Nunca no código." },
+  { frente: "Como evitar injeção de SQL?", verso: "Usar consultas com parâmetros; nunca montar o SQL juntando texto do usuário." },
+  { frente: "O que nunca colar numa IA sem autorização?", verso: "Senhas, chaves, dados pessoais, dados de clientes e código privado da empresa." },
+  { frente: "Regra dos 20 minutos", verso: "Tente sozinho uns 20 min; travou, peça dica; travou de novo, peça explicação e reescreva sozinho." },
+]} />
+
+## Resumindo
+
+- A IA inventa funções, fatos e **pacotes**. Confira tudo antes de instalar ou acreditar.
+- Código gerado pode ser inseguro: segredos no código, injeção, `eval`, senhas sem hash.
+- O que você cola sai do seu computador. Nada de segredos ou dados de pessoas.
+- O risco mais silencioso é não aprender. Tente primeiro, peça dica, reescreva sozinho.

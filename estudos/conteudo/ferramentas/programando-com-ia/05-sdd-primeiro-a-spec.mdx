@@ -1,0 +1,298 @@
+<Aquecimento perguntas={[
+  { p: "O que é slopsquatting e como se proteger?", r: "Pacotes maliciosos registrados com nomes que as IAs costumam inventar. Confira no PyPI ou npm antes de instalar." },
+  { p: "Onde guardar a senha do banco de um projeto?", r: "Em variável de ambiente ou num .env que está no .gitignore. Nunca no código." },
+  { p: "Qual pedido você faz antes de deixar a IA escrever código?", r: "Pedir um plano (e perguntas) antes do código, para revisar a ideia enquanto ela ainda é barata de mudar." },
+]} />
+
+Até aqui você aprendeu a pedir e a revisar **um pedaço** de código. Mas como uma equipe usa IA para construir uma **funcionalidade inteira**, com várias telas, banco de dados e regras, sem virar bagunça? A resposta que muitas equipes adotaram tem nome: **SDD**.
+
+<Chute pergunta="Numa equipe que usa IA, qual etapa vem primeiro: escrever o código ou escrever o que vai ser feito?">
+
+Escrever o que vai ser feito. **SDD** significa *Spec-Driven Development*, desenvolvimento guiado por especificação. O lema é curto: **primeiro a spec, depois o código**. O código é a última etapa, não a primeira.
+
+</Chute>
+
+## Por que a spec ficou tão importante com IA
+
+<Nota tipo="analogia" titulo="Pensa assim: a comanda da cozinha">
+
+Num restaurante cheio, ninguém grita o pedido para a cozinha. Ele vai numa **comanda**: mesa, prato, ponto da carne, "sem cebola". Qualquer cozinheiro que pegar a comanda faz o prato certo, mesmo sem ter falado com o cliente. A spec é a comanda: qualquer pessoa, ou qualquer IA, consegue continuar o trabalho só lendo o papel.
+
+</Nota>
+
+A IA não lembra da conversa de ontem, não sabe as regras do seu projeto e preenche lacunas com suposições. Uma especificação escrita resolve os três problemas: ela vira um **contexto portátil**, que você entrega para a IA (ou para um colega) em qualquer etapa.
+
+## As quatro camadas
+
+Cada funcionalidade passa por quatro camadas. Cada uma só começa quando a anterior está **escrita e revisada**.
+
+<Passos itens={[
+  { icone: "🎯", titulo: "1. PRD", texto: "o quê e por quê" },
+  { icone: "🛠️", titulo: "2. Tech Spec", texto: "como construir" },
+  { icone: "🪜", titulo: "3. Tasks", texto: "o passo a passo" },
+  { icone: "💻", titulo: "4. Código", texto: "uma task por vez" },
+]} />
+
+| Camada | Responde | Quem costuma escrever |
+| --- | --- | --- |
+| **PRD** (*Product Requirements Document*) | Qual problema? Para quem? O que entra e o que fica fora? Quais regras? Como saber que deu certo? | Produto (com a IA entrevistando) |
+| **Tech Spec** (especificação técnica) | Quais componentes mudam? Que dados, APIs, riscos e decisões? | Engenharia |
+| **Tasks** | Em que passos pequenos, em que ordem, com que critérios? | Tech lead |
+| **Execução** | O código, uma task por vez, com evidência de que cada critério foi cumprido | Dev (com a IA) |
+
+Os documentos ficam em pastas no repositório, e **o mesmo nome** (o *slug*) liga os três:
+
+```texto
+sdd/
+├── prds/aviso-pedido-pronto.md
+├── techspecs/aviso-pedido-pronto.md
+├── tasks/aviso-pedido-pronto.md
+├── rules/      ← as convenções do projeto, que toda etapa respeita
+└── docs/       ← material de apoio: prints, anotações, documentação externa
+```
+
+Vamos seguir uma funcionalidade da nossa cafeteria do começo ao fim: **avisar o cliente quando o pedido ficar pronto**.
+
+## Etapa 1: o PRD (o quê e por quê)
+
+O PRD entende o **problema** antes de propor a solução. Uma técnica comum é deixar a IA **entrevistar você**, em blocos de perguntas: contexto e problema, quem usa, objetivo e métrica, o que entra e o que fica fora, regras de negócio e o fluxo passo a passo.
+
+Um PRD resumido:
+
+```texto
+# PRD · Aviso de pedido pronto            Status: Rascunho
+
+## Problema
+Nos horários de pico, os clientes ficam em pé no balcão esperando o nome
+ser chamado. O atendente grita o nome e muita gente não escuta.
+
+## Usuários
+Cliente que pediu no balcão; atendente que finaliza o pedido.
+
+## Objetivo e métrica
+Diminuir pedidos esquecidos no balcão. Meta: menos de 2 por dia.
+
+## Escopo
+Entra: aviso no painel da loja e por SMS quando o pedido fica pronto.
+Fora de escopo: aplicativo próprio, notificação por e-mail, pedidos por delivery.
+
+## Regras de negócio
+RN01 · O aviso só é enviado quando o atendente marca o pedido como "pronto".
+RN02 · O SMS só é enviado se o cliente informou o celular e aceitou receber.
+RN03 · Cada pedido gera no máximo 1 SMS, mesmo que seja marcado como pronto de novo.
+
+## Critérios de aceite
+- Ao marcar o pedido 42 como pronto, o painel mostra "Pedido 42 pronto" em até 5 s.
+- Cliente sem celular cadastrado não recebe SMS e o painel continua funcionando.
+- Marcar o mesmo pedido como pronto duas vezes envia um único SMS.
+```
+
+Repare em três detalhes que fazem toda a diferença:
+
+- **Fora de escopo explícito**: é o que impede a próxima etapa de crescer além do pedido.
+- **Regras com ID** (RN01, RN02...): cada uma vai ser rastreada até o código e os testes.
+- **Critério de aceite verificável**: "mostra 'Pedido 42 pronto' em até 5 s", e não "funciona bem".
+
+## Etapa 2: a Tech Spec (como construir)
+
+A Tech Spec transforma requisito em **decisão técnica**. Ela lê o PRD e as regras do projeto (`rules/`) e responde: quais componentes mudam, que dados guardar, quais APIs, como testar, quais riscos.
+
+Um trecho:
+
+```texto
+# Tech Spec · Aviso de pedido pronto
+
+## Componentes afetados
+- Pedido: novo status "pronto" e o campo smsEnviado (sim/não).
+- Notificador (novo): interface com Painel e Sms, para trocar o canal sem mexer no Pedido.
+
+## Regras de negócio → implementação
+| RN   | Onde              | Como                                                  |
+| RN01 | Pedido.marcarPronto | dispara os notificadores só nessa transição          |
+| RN02 | Sms               | ignora cliente sem celular ou sem consentimento       |
+| RN03 | Pedido            | só envia se smsEnviado for falso; depois marca como verdadeiro |
+
+## Segurança
+O número do celular é dado pessoal (LGPD): não aparece em logs.
+
+## Riscos
+⚠️ Provedor de SMS ainda não escolhido. Precisa de validação da equipe antes das tasks.
+```
+
+Duas regras de qualidade:
+
+- **Rastreabilidade**: toda RN do PRD tem uma linha na tabela. Regra sem linha não vira task e não é testada.
+- **O marcador ⚠️**: decisão que precisa da equipe antes de seguir. Tech Spec com ⚠️ em aberto não é aprovada.
+
+## Etapa 3: as Tasks (o passo a passo)
+
+A Tech Spec vira uma lista de tarefas **pequenas** (que cabem numa sessão de trabalho), numeradas pela ordem de dependência: banco, depois back-end, depois front-end, depois testes.
+
+```texto
+### TASK-002 · Enviar SMS uma única vez por pedido
+- Tamanho: M (2 a 4 h)
+- Depende de: TASK-001 (campo smsEnviado no banco)
+- Contexto: RN03 do PRD. Hoje, marcar o pedido como pronto duas vezes
+  mandaria dois SMS.
+- O que fazer:
+  1. Em Pedido.marcarPronto, só chamar o Sms se smsEnviado for falso.
+  2. Depois de enviar, gravar smsEnviado = verdadeiro.
+- Critérios de aceite:
+  - [ ] Marcar como pronto duas vezes chama o Sms uma vez só.
+  - [ ] Cliente sem celular: nenhuma chamada ao Sms e nenhum erro.
+  - [ ] Teste automático cobrindo os dois casos acima.
+- Leitura obrigatória: prds/aviso-pedido-pronto.md, techspecs/aviso-pedido-pronto.md,
+  rules/, src/pedido.py (padrão a seguir: src/pagamento.py)
+```
+
+A seção **"Leitura obrigatória"** é o que torna o SDD portátil: com ela, basta abrir um **chat novo** e pedir *"execute a TASK-002"*. A IA lê os arquivos certos e tem todo o contexto, sem depender da conversa anterior.
+
+## Etapa 4: a execução (uma task por vez, com evidência)
+
+Agora sim, o código. O fluxo de quem executa (pessoa ou IA):
+
+<Passos itens={[
+  { icone: "📂", titulo: "Carregar", texto: "a leitura obrigatória e as regras" },
+  { icone: "🔗", titulo: "Validar", texto: "as dependências estão prontas?" },
+  { icone: "🗺️", titulo: "Planejar", texto: "passos e arquivos que vai tocar" },
+  { icone: "💻", titulo: "Implementar", texto: "só o escopo da task" },
+  { icone: "🧪", titulo: "Verificar", texto: "cada critério, rodando os testes" },
+  { icone: "🧾", titulo: "Reportar", texto: "o que mudou e a evidência" },
+]} />
+
+No fim, um **relatório de execução** curto: o que foi feito, quais arquivos mudaram, cada critério de aceite como **atendido ou pendente** (com a evidência), quais testes rodaram e o que ficou para depois.
+
+<Nota tipo="cuidado" titulo="O que quem executa NÃO faz">
+
+- Não adianta trabalho de outra task ("já aproveitei e fiz a próxima").
+- Não inventa requisito: diante de dúvida, pergunta antes de codar.
+- Não marca critério como atendido sem evidência (teste rodando ou código que comprova).
+- Não deixa a task pela metade em silêncio: se travou, reporta.
+
+</Nota>
+
+## As regras do projeto (rules/)
+
+A pasta `rules/` guarda as convenções que **toda etapa respeita**: como nomear tabelas, como fazer commits, qual o padrão visual, o que nunca entra no Git. Cada regra diz **o que fazer e o porquê**, porque a IA aplica melhor quando entende o motivo.
+
+<Nota tipo="dica" titulo="Sinal de que falta uma regra">
+
+Se você corrigiu a IA **duas vezes pela mesma coisa** ("de novo usou inglês nos nomes!"), essa correção merece virar um arquivo em `rules/`. Na próxima vez, ela já começa sabendo.
+
+</Nota>
+
+## Onde a pessoa entra: os pontos de revisão
+
+O SDD não tira a pessoa do processo. Ele mostra **onde** ela é indispensável:
+
+| Depois de... | Confira |
+| --- | --- |
+| PRD | Problema claro, fora de escopo explícito, toda regra com ID, critérios verificáveis |
+| Tech Spec | Toda RN na tabela, nenhum ⚠️ em aberto, riscos com plano |
+| Tasks | Ordem de dependência, tasks pequenas, leitura obrigatória com caminhos reais, tasks de teste |
+| Cada execução | Mudança restrita à task, critérios com evidência, testes rodados |
+
+<Nota tipo="ia" titulo="Comandos e agentes">
+
+Em ferramentas de IA para programação, cada etapa costuma virar um **comando** (como `/criar-prd` ou `/executar-task`) que carrega um **agente**: um arquivo com a "persona" (por exemplo, "você é um product manager sênior"), as perguntas, o formato do documento e as regras de qualidade. A dica dos times que usam: para mudar o formato de um documento, **edite o agente**, não o comando. O comando só organiza a ordem das coisas.
+
+</Nota>
+
+<Explique pergunta="Por que, no SDD, cada task tem uma seção de 'leitura obrigatória' e é executada num chat novo?">
+
+Porque a IA não carrega memória confiável de uma conversa longa, e o histórico acumulado confunde. A leitura obrigatória lista exatamente os documentos e arquivos que dão o contexto da task (PRD, Tech Spec, regras, código de referência). Assim, qualquer pessoa ou IA, num chat novo, começa a task com o contexto certo e sem resto de conversa antiga.
+
+</Explique>
+
+## SDD do tamanho de um estudante
+
+Você não precisa de pastas e comandos para usar a ideia. Numa missão da comunidade ou num trabalho da faculdade:
+
+1. **Mini PRD** (meia página): problema, o que entra, o que fica fora, regras e critérios.
+2. **Plano**: peça para a IA propor a solução em passos e **revise**.
+3. **Tasks**: quebre em 3 a 6 passos pequenos, com critério de pronto.
+4. **Execução**: um passo por vez, testando cada critério antes de seguir.
+
+<Tarefa titulo="Escreva o seu mini PRD">
+
+A cafeteria quer aceitar **cupons de desconto** nos pedidos. Escreva:
+
+1. Um **mini PRD** com: problema, usuários, escopo (entra e **fora de escopo**), pelo menos **3 regras** com ID (RN01...) e pelo menos **3 critérios de aceite verificáveis**.
+2. Duas **tasks** no formato da aula (título com verbo, tamanho, dependência, o que fazer, critérios).
+
+<Dica>
+
+Pense nas regras que um dono de cafeteria ia querer: desconto máximo? Um cupom por pedido? Cupom com validade? Pode usar em qualquer produto? Para os critérios, use números: "cupom de 10% num pedido de R$ 50 dá total R$ 45".
+
+</Dica>
+
+<Resposta>
+
+Um exemplo de resposta (a sua pode ter outras regras, e tudo bem):
+
+```texto
+# PRD · Cupom de desconto
+
+## Problema
+A loja faz promoções no Instagram, mas o atendente calcula o desconto
+de cabeça e erra.
+
+## Usuários
+Cliente com cupom; atendente no caixa.
+
+## Escopo
+Entra: aplicar um cupom em porcentagem no total do pedido.
+Fora de escopo: cupom em valor fixo, cupom por produto, criação de cupons pelo app.
+
+## Regras de negócio
+RN01 · Um cupom por pedido.
+RN02 · Desconto máximo de 50%.
+RN03 · Cupom vencido é recusado com a mensagem "Cupom expirado".
+
+## Critérios de aceite
+- Cupom de 10% num pedido de R$ 50,00 deixa o total em R$ 45,00.
+- Aplicar um segundo cupom mostra "Só um cupom por pedido" e mantém o primeiro.
+- Cupom com data de ontem é recusado com "Cupom expirado".
+
+### TASK-001 · Guardar cupons com porcentagem e validade
+- Tamanho: P · Depende de: nenhuma
+- Critérios: [ ] cupom tem código, porcentagem (1 a 50) e data de validade
+
+### TASK-002 · Aplicar o cupom no total do pedido
+- Tamanho: M · Depende de: TASK-001
+- Critérios: [ ] RN01, RN02 e RN03 cobertas por testes automáticos
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual a ordem das camadas no SDD?"
+  opcoes={["Código, Tasks, Tech Spec, PRD", "PRD, Tech Spec, Tasks, Código", "Tech Spec, PRD, Código, Tasks"]}
+  correta={1}
+  explicacao="Primeiro o quê e por quê (PRD), depois como (Tech Spec), depois o passo a passo (Tasks) e, por último, o código."
+/>
+
+<Quiz
+  pergunta="Qual destes é um critério de aceite verificável?"
+  opcoes={["O aviso funciona bem", "O painel mostra 'Pedido 42 pronto' em até 5 segundos", "O cliente fica satisfeito"]}
+  correta={1}
+  explicacao="Dá para testar e dizer sim ou não. 'Funciona bem' e 'satisfeito' dependem de opinião."
+/>
+
+<Cartoes itens={[
+  { frente: "O que significa SDD?", verso: "Spec-Driven Development: primeiro a especificação, depois o código." },
+  { frente: "As quatro camadas do SDD", verso: "PRD (o quê e por quê), Tech Spec (como), Tasks (passo a passo) e Execução (código)." },
+  { frente: "Para que serve o 'fora de escopo' no PRD?", verso: "Impede que a solução cresça além do que foi pedido." },
+  { frente: "O que é a leitura obrigatória de uma task?", verso: "A lista de documentos e arquivos que dão o contexto completo, para executar num chat novo." },
+  { frente: "Quando criar uma regra em rules/?", verso: "Quando você corrigiu a IA duas vezes pela mesma coisa." },
+  { frente: "O que o marcador ⚠️ indica na Tech Spec?", verso: "Uma decisão que precisa ser validada pela equipe antes de seguir." },
+]} />
+
+## Resumindo
+
+- **SDD**: primeiro a spec, depois o código. A spec é a comanda que qualquer pessoa ou IA consegue seguir.
+- PRD (o quê e por quê) → Tech Spec (como) → Tasks (passo a passo) → Execução (uma task por vez, com evidência).
+- Regras com ID, fora de escopo explícito e critérios verificáveis tornam tudo rastreável.
+- A pessoa revisa cada etapa. A IA acelera; quem decide é você.

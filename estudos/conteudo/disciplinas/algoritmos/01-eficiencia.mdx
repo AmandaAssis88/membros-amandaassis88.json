@@ -1,0 +1,206 @@
+<Chute pergunta="Dois programas resolvem o mesmo problema e dão a mesma resposta. Um pode ser 'melhor' que o outro?">
+
+Pode, e muito. Um pode responder em um piscar de olhos e o outro levar horas, quando os dados crescem. A trilha de Lógica ensinou a fazer o programa **funcionar**. Esta trilha ensina a fazer ele funcionar **bem**: escolher o caminho e a estrutura certa para cada problema.
+
+</Chute>
+
+<Nota tipo="dica" titulo="Antes de começar">
+
+Esta trilha vem depois da **Lógica** e antes das linguagens. Os exemplos aparecem em **pseudocódigo**, **Python** e **Java**: leia a versão que você já conhece. Se ainda não programou em nenhuma linguagem, o pseudocódigo e as explicações bastam por enquanto.
+
+</Nota>
+
+## Lógica × Algoritmos
+
+| Lógica de programação | Algoritmos e estruturas de dados |
+| --- | --- |
+| **Como** dar instruções: variáveis, `se`, laços, funções | **Qual** o melhor jeito de resolver, entre vários que funcionam |
+| "O programa funciona?" | "Funciona rápido com 1 milhão de dados? Gasta memória demais?" |
+| Aprende a cozinhar | Aprende a organizar a cozinha para servir 500 pessoas |
+
+<Nota tipo="analogia" titulo="Pensa assim: o café moído na hora">
+
+Qualquer pessoa faz café. O barista que entende o **grão**, a **moagem** e o **processo** faz um café melhor, mais rápido e sem desperdício. Os algoritmos são o processo; as estruturas de dados são como você guarda os grãos para pegar o certo na hora certa.
+
+</Nota>
+
+## Por que isso importa (mesmo com computadores rápidos)
+
+Imagine o app da cafeteria procurando um cliente pelo CPF:
+
+- Com **100 clientes**, qualquer jeito serve.
+- Com **10 milhões de clientes**, o jeito ingênuo pode fazer o app travar, enquanto um jeito esperto responde instantaneamente.
+
+E é isso que cai nas **entrevistas técnicas**: elas usam problemas de algoritmos para ver como você pensa. A IA até escreve um algoritmo, mas é você quem precisa saber se ele vai aguentar o tamanho do problema.
+
+## Contando passos
+
+Em vez de medir em segundos (que mudam de computador para computador), a gente conta **quantos passos** o algoritmo dá conforme a entrada cresce. A entrada tem um tamanho que chamamos de **n** (por exemplo, n clientes).
+
+Veja três jeitos de responder perguntas sobre uma lista de n pedidos:
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+pedidos = [12, 7, 30, 7, 18, 25]
+
+# 1) Pegar o primeiro pedido: 1 passo, não importa o tamanho da lista
+primeiro = pedidos[0]
+
+# 2) Achar o maior: olha cada pedido uma vez (n passos)
+passos = 0
+maior = pedidos[0]
+for p in pedidos:
+    passos += 1
+    if p > maior:
+        maior = p
+print("Maior:", maior, "em", passos, "passos")
+
+# 3) Ver se tem pedido repetido comparando todos com todos (n × n passos)
+passos = 0
+repetido = False
+for i in range(len(pedidos)):
+    for j in range(len(pedidos)):
+        passos += 1
+        if i != j and pedidos[i] == pedidos[j]:
+            repetido = True
+print("Tem repetido?", repetido, "em", passos, "passos")
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        int[] pedidos = {12, 7, 30, 7, 18, 25};
+
+        // 1) Pegar o primeiro pedido: 1 passo
+        int primeiro = pedidos[0];
+
+        // 2) Achar o maior: n passos
+        int passos = 0;
+        int maior = pedidos[0];
+        for (int p : pedidos) {
+            passos++;
+            if (p > maior) maior = p;
+        }
+        System.out.println("Maior: " + maior + " em " + passos + " passos");
+
+        // 3) Repetidos comparando todos com todos: n × n passos
+        passos = 0;
+        boolean repetido = false;
+        for (int i = 0; i < pedidos.length; i++) {
+            for (int j = 0; j < pedidos.length; j++) {
+                passos++;
+                if (i != j && pedidos[i] == pedidos[j]) repetido = true;
+            }
+        }
+        System.out.println("Tem repetido? " + repetido + " em " + passos + " passos");
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+Maior: 30 em 6 passos
+Tem repetido? True em 36 passos
+```
+
+(Em Java aparece `true`, com letra minúscula.)
+
+Com 6 pedidos: 1, 6 e 36 passos. Agora imagine **1 milhão** de pedidos:
+
+| Algoritmo | Passos com n = 6 | Passos com n = 1.000.000 |
+| --- | --- | --- |
+| Pegar o primeiro | 1 | 1 |
+| Achar o maior | 6 | 1 milhão |
+| Todos com todos | 36 | **1 trilhão** |
+
+Um trilhão de passos, mesmo num computador rápido, é muito tempo. É aí que a escolha do algoritmo faz diferença.
+
+## A notação Big O
+
+Os programadores resumem esse crescimento com a notação **Big O** (lê-se "ó grande"). Ela diz **como os passos crescem** quando n cresce, ignorando detalhes pequenos.
+
+| Big O | Nome | Na cafeteria | Exemplo |
+| --- | --- | --- | --- |
+| **O(1)** | Constante | Pegar a xícara de cima da pilha | Acessar `lista[0]` |
+| **O(log n)** | Logarítmica | Achar um nome na agenda abrindo no meio | Busca binária (próxima aula) |
+| **O(n)** | Linear | Olhar cada mesa do salão uma vez | Achar o maior |
+| **O(n log n)** | "n log n" | Organizar as comandas de um jeito esperto | Os bons algoritmos de ordenação |
+| **O(n²)** | Quadrática | Cada cliente cumprimentar todos os outros | Comparar todos com todos |
+
+<Nota tipo="curiosidade" titulo="Por que 'ignorar detalhes'?">
+
+Se um algoritmo dá `2n + 5` passos, a gente diz que ele é **O(n)**. Com n muito grande, o que manda é o formato do crescimento (linha reta, curva, explosão), não o 2 nem o 5. Big O é uma régua para comparar jeitos de resolver, não um cronômetro.
+
+</Nota>
+
+## Memória também conta
+
+Além do tempo, um algoritmo usa **memória**. Copiar uma lista de 1 milhão de itens para resolver o problema usa memória O(n); resolver usando só duas variáveis usa O(1). Às vezes vale gastar memória para ganhar tempo, e vice-versa: escolher é parte do trabalho.
+
+<Explique pergunta="Explique a diferença entre um algoritmo O(n) e um O(n²) usando um exemplo do dia a dia.">
+
+Um O(n) faz uma quantidade de trabalho proporcional ao tamanho da entrada: se dobram os clientes, dobra o trabalho (como o garçom passando uma vez em cada mesa). Um O(n²) cresce muito mais rápido: se dobram os clientes, o trabalho quadruplica (como cada cliente ter que cumprimentar todos os outros). Com poucos dados os dois parecem iguais; com muitos dados, o O(n²) fica impossível.
+
+</Explique>
+
+<Tarefa titulo="Qual é o Big O?">
+
+Para cada situação, diga o Big O e explique em uma frase:
+
+1. Somar todos os valores de uma lista de n preços.
+2. Ver o último item de uma lista (`lista[-1]` em Python).
+3. Imprimir todas as combinações de "bebida + comida" de um cardápio com n bebidas e n comidas.
+4. Contar quantos pedidos foram de café, olhando a lista de n pedidos uma vez.
+
+<Dica>
+
+Pergunte: quantas vezes eu olho cada item? Uma vez só no total (constante)? Uma vez cada (linear)? Cada um com cada um (quadrático)?
+
+</Dica>
+
+<Resposta>
+
+1. **O(n)**: passa por cada preço uma vez.
+2. **O(1)**: acessar uma posição da lista é um passo só, não importa o tamanho.
+3. **O(n²)**: para cada uma das n bebidas, percorre as n comidas.
+4. **O(n)**: uma passada pela lista, contando.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual a diferença principal entre lógica de programação e algoritmos?"
+  opcoes={["Nenhuma, são a mesma coisa", "Lógica ensina a dar instruções; algoritmos ensinam a escolher o jeito mais eficiente entre os que funcionam", "Algoritmos só existem em Java"]}
+  correta={1}
+  explicacao="A lógica faz funcionar; algoritmos e estruturas de dados fazem funcionar bem, com muitos dados."
+/>
+
+<Quiz
+  pergunta="Um algoritmo O(n²) leva 1 segundo com 1.000 itens. Com 2.000 itens, leva mais ou menos quanto?"
+  opcoes={["2 segundos", "4 segundos", "1 segundo"]}
+  correta={1}
+  explicacao="Dobrar o n no O(n²) multiplica o trabalho por 2² = 4."
+/>
+
+<Cartoes itens={[
+  { frente: "Lógica × algoritmos", verso: "Lógica: como dar instruções. Algoritmos: qual o melhor jeito entre os que funcionam." },
+  { frente: "O que mede o Big O?", verso: "Como os passos (ou a memória) crescem quando o tamanho da entrada (n) cresce." },
+  { frente: "Exemplo de O(1)", verso: "Acessar lista[0]: um passo, não importa o tamanho." },
+  { frente: "Exemplo de O(n²)", verso: "Comparar todos os itens com todos (dois laços aninhados sobre a mesma lista)." },
+  { frente: "Por que 2n + 5 vira O(n)?", verso: "Com n muito grande, só importa o formato do crescimento; constantes não mudam a comparação." },
+]} />
+
+## Resumindo
+
+- Lógica faz funcionar; algoritmos fazem funcionar **bem**.
+- A gente mede contando **passos** em função de **n**, o tamanho da entrada.
+- Big O resume o crescimento: O(1), O(log n), O(n), O(n log n), O(n²).
+- Tempo e memória são escolhas. Saber escolher é o que as entrevistas querem ver.

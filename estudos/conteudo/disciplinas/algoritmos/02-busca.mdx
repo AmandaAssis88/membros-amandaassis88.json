@@ -1,0 +1,304 @@
+<Aquecimento perguntas={[
+  { p: "O que o Big O mede?", r: "Como o número de passos (ou a memória) cresce quando o tamanho da entrada n cresce." },
+  { p: "Qual o Big O de achar o maior valor de uma lista olhando cada item uma vez?", r: "O(n), linear." },
+  { p: "Se um algoritmo O(n²) leva 1 s com 1.000 itens, quanto leva com 2.000?", r: "Cerca de 4 s: dobrar n multiplica o trabalho por 4." },
+]} />
+
+Procurar coisas é uma das tarefas mais comuns de qualquer sistema: um cliente pelo CPF, um produto pelo código, uma música pelo nome. Nesta aula você vai ver dois jeitos de procurar e entender por que um deles é absurdamente mais rápido.
+
+<Chute pergunta="Pensei num número de 1 a 1.000. Você pode chutar e eu digo 'é maior' ou 'é menor'. Quantos chutes, no máximo, você precisa com a melhor estratégia?">
+
+**10 chutes**. Chute sempre o meio do intervalo que sobrou: 500, depois 250 ou 750, e assim por diante. Cada chute corta as possibilidades pela metade: 1.000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1. Essa é a busca binária, e ela é o assunto desta aula.
+
+</Chute>
+
+## Busca linear: um por um
+
+O jeito mais simples: olhar cada item, do começo ao fim, até achar.
+
+<Abas>
+<Aba rotulo="Pseudocódigo">
+
+```pseudo
+função busca_linear(lista, alvo)
+    para i de 0 até tamanho(lista) - 1 faça
+        se lista[i] = alvo então
+            retorne i
+        fim-se
+    fim-para
+    retorne -1
+fim-função
+```
+
+</Aba>
+<Aba rotulo="Python">
+
+```python
+def busca_linear(lista, alvo):
+    for i in range(len(lista)):
+        if lista[i] == alvo:
+            return i
+    return -1
+
+
+comandas = [42, 7, 19, 3, 88, 51]
+print(busca_linear(comandas, 88))
+print(busca_linear(comandas, 100))
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+public class Main {
+    static int buscaLinear(int[] lista, int alvo) {
+        for (int i = 0; i < lista.length; i++) {
+            if (lista[i] == alvo) return i;
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[] comandas = {42, 7, 19, 3, 88, 51};
+        System.out.println(buscaLinear(comandas, 88));
+        System.out.println(buscaLinear(comandas, 100));
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+4
+-1
+```
+
+Ela devolve a **posição** do item, ou `-1` quando não acha (uma convenção comum para "não existe").
+
+- **Melhor caso**: o item é o primeiro. 1 passo.
+- **Pior caso**: o item é o último ou não existe. n passos.
+- Big O: **O(n)**.
+
+A grande vantagem: funciona em **qualquer** lista, ordenada ou não.
+
+## Busca binária: corta pela metade
+
+<Nota tipo="analogia" titulo="Pensa assim: a agenda de telefones">
+
+Para achar "Souza" numa lista telefônica, ninguém começa pela letra A. Você abre no meio: caiu no "M"? Souza está depois. Abre no meio da segunda metade, e assim vai. Isso só funciona porque a lista está em **ordem alfabética**.
+
+</Nota>
+
+A busca binária **exige uma lista ordenada**. A cada passo, ela olha o item do meio e descarta a metade onde o alvo não pode estar.
+
+<Abas>
+<Aba rotulo="Pseudocódigo">
+
+```pseudo
+função busca_binaria(lista, alvo)
+    inicio <- 0
+    fim <- tamanho(lista) - 1
+    enquanto inicio <= fim faça
+        meio <- (inicio + fim) div 2
+        se lista[meio] = alvo então
+            retorne meio
+        senão se lista[meio] < alvo então
+            inicio <- meio + 1
+        senão
+            fim <- meio - 1
+        fim-se
+    fim-enquanto
+    retorne -1
+fim-função
+```
+
+</Aba>
+<Aba rotulo="Python">
+
+```python
+def busca_binaria(lista, alvo):
+    inicio, fim = 0, len(lista) - 1
+    passos = 0
+    while inicio <= fim:
+        passos += 1
+        meio = (inicio + fim) // 2
+        if lista[meio] == alvo:
+            print(f"  achou em {passos} passos")
+            return meio
+        elif lista[meio] < alvo:
+            inicio = meio + 1
+        else:
+            fim = meio - 1
+    print(f"  não achou, {passos} passos")
+    return -1
+
+
+comandas = [3, 7, 19, 42, 51, 88, 90, 104]
+print(busca_binaria(comandas, 88))
+print(busca_binaria(comandas, 20))
+
+numeros = list(range(1, 1_000_001))
+print(busca_binaria(numeros, 999_999))
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+public class Main {
+    static int buscaBinaria(int[] lista, int alvo) {
+        int inicio = 0, fim = lista.length - 1, passos = 0;
+        while (inicio <= fim) {
+            passos++;
+            int meio = (inicio + fim) / 2;
+            if (lista[meio] == alvo) {
+                System.out.println("  achou em " + passos + " passos");
+                return meio;
+            } else if (lista[meio] < alvo) {
+                inicio = meio + 1;
+            } else {
+                fim = meio - 1;
+            }
+        }
+        System.out.println("  não achou, " + passos + " passos");
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[] comandas = {3, 7, 19, 42, 51, 88, 90, 104};
+        System.out.println(buscaBinaria(comandas, 88));
+        System.out.println(buscaBinaria(comandas, 20));
+
+        int[] numeros = new int[1_000_000];
+        for (int i = 0; i < numeros.length; i++) numeros[i] = i + 1;
+        System.out.println(buscaBinaria(numeros, 999_999));
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+  achou em 2 passos
+5
+  não achou, 3 passos
+-1
+  achou em 19 passos
+999998
+```
+
+**Um milhão de itens, 19 passos** (no pior caso, 20). A busca linear precisaria de quase 1 milhão.
+
+### Teste de mesa: procurando o 88
+
+Lista: `[3, 7, 19, 42, 51, 88, 90, 104]` (posições 0 a 7).
+
+| Passo | início | fim | meio | `lista[meio]` | Decisão |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 0 | 7 | 3 | 42 | 42 < 88: descarta a esquerda, início = 4 |
+| 2 | 4 | 7 | 5 | 88 | Achou! Posição 5 |
+
+## Por que O(log n)?
+
+Cada passo **corta pela metade**. A pergunta "quantas vezes eu divido n por 2 até sobrar 1?" tem um nome na matemática: **logaritmo na base 2**, ou log₂ n.
+
+| n (itens) | Busca linear (pior caso) | Busca binária (pior caso) |
+| --- | --- | --- |
+| 1.000 | 1.000 | 10 |
+| 1.000.000 | 1.000.000 | 20 |
+| 1.000.000.000 | 1.000.000.000 | 30 |
+
+Cada vez que n fica **mil vezes maior**, a busca binária só precisa de **uns 10 passos a mais**.
+
+<Nota tipo="cuidado" titulo="O preço da busca binária">
+
+A lista precisa estar **ordenada**, e ordenar também custa (a próxima aula mostra quanto). Se você vai procurar uma vez só numa lista bagunçada, a busca linear ganha. Se vai procurar **muitas vezes**, vale ordenar uma vez e usar a binária sempre.
+
+</Nota>
+
+<Nota tipo="curiosidade" titulo="Você usa busca binária sem saber">
+
+O `git bisect`, do Git, usa busca binária para achar **qual commit** introduziu um bug: ele te leva ao commit do meio, você diz "tem o bug" ou "não tem", e em poucos passos ele acha o culpado entre centenas de commits.
+
+</Nota>
+
+<Explique pergunta="Por que a busca binária só funciona em listas ordenadas?">
+
+Porque a decisão de descartar metade da lista depende da ordem: se o item do meio é menor que o alvo, eu só posso jogar fora a metade da esquerda porque sei que todos os itens dela são ainda menores. Numa lista bagunçada, o alvo poderia estar em qualquer lado, e descartar metade seria descartar a resposta.
+
+</Explique>
+
+## Erros comuns
+
+- **Usar a binária em lista desordenada**: ela responde "não achei" para itens que estão lá.
+- **`while inicio < fim`** em vez de `<=`: esquece de olhar o último item que sobrou.
+- **Esquecer o `+ 1` / `- 1`** ao mover início e fim: o laço pode nunca terminar.
+
+<Tarefa titulo="Quantos passos?">
+
+1. Faça o teste de mesa da busca binária procurando o **20** na lista `[3, 7, 19, 42, 51, 88, 90, 104]`. Quantos passos até descobrir que ele não está lá?
+2. Quantos passos, no máximo, a busca binária precisa numa lista de **1.024** itens? E de **2.048**?
+3. Modifique a busca linear para devolver **quantas vezes** o alvo aparece na lista, em vez da posição.
+
+<Dica>
+
+No item 2, conte quantas vezes você divide por 2 até chegar em 1 (1.024 = 2¹⁰). No item 3, troque o `return i` por um contador que soma 1 a cada vez que acha, e devolva o contador no fim.
+
+</Dica>
+
+<Resposta>
+
+1. Início 0, fim 7, meio 3 (42 > 20, fim = 2). Início 0, fim 2, meio 1 (7 < 20, início = 2). Início 2, fim 2, meio 2 (19 < 20, início = 3). Agora início > fim: **3 passos** e não achou.
+2. **11** para 1.024 (10 divisões até 1, mais a última comparação) e **12** para 2.048. Dobrar a lista custa só um passo a mais.
+3. Em Python:
+
+```python
+def contar(lista, alvo):
+    vezes = 0
+    for item in lista:
+        if item == alvo:
+            vezes += 1
+    return vezes
+
+
+print(contar(["café", "chá", "café", "suco", "café"], "café"))
+```
+
+```saida
+3
+```
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual é a exigência da busca binária?"
+  opcoes={["A lista ter número par de itens", "A lista estar ordenada", "A lista ser de números"]}
+  correta={1}
+  explicacao="Sem ordem, não dá para saber qual metade descartar."
+/>
+
+<Quiz
+  pergunta="Numa lista ordenada de 1 milhão de itens, quantos passos a busca binária leva no pior caso?"
+  opcoes={["Cerca de 20", "Cerca de 1.000", "Cerca de 500.000"]}
+  correta={0}
+  explicacao="log₂ de 1 milhão é aproximadamente 20. Cada passo corta pela metade."
+/>
+
+<Cartoes itens={[
+  { frente: "Big O da busca linear", verso: "O(n): no pior caso, olha todos os itens." },
+  { frente: "Big O da busca binária", verso: "O(log n): cada passo descarta metade." },
+  { frente: "Quando a busca linear ganha?", verso: "Lista desordenada e poucas buscas: ordenar custaria mais que procurar." },
+  { frente: "Convenção para 'não achei'", verso: "Devolver -1 como posição." },
+  { frente: "Onde o Git usa busca binária?", verso: "No git bisect, para achar o commit que introduziu um bug." },
+]} />
+
+## Resumindo
+
+- **Busca linear**: um por um, funciona em qualquer lista, O(n).
+- **Busca binária**: olha o meio e descarta metade, exige lista ordenada, O(log n).
+- 1 milhão de itens: até 1 milhão de passos contra cerca de 20.
+- Ordenar tem custo: vale a pena quando você vai buscar muitas vezes.

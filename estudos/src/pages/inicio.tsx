@@ -8,7 +8,15 @@ import { CHAVE_TEMA, TEMA_PADRAO, normalizarTema, type TemaId } from "../cantinh
 import { MiniPlayer } from "../components/mini-player";
 import { HoraDeRevisar } from "../components/hora-de-revisar";
 import { CRIADOR } from "@/config";
-import { GRUPOS, PESOS, TRILHAS, duracao, minutosDaTrilha, type Trilha } from "../catalogo";
+import {
+  GRUPOS,
+  ONBOARDING_URL,
+  PESOS,
+  TRILHAS,
+  duracao,
+  minutosDaTrilha,
+  type Trilha,
+} from "../catalogo";
 import { idDaAula, useConcluidas } from "../progresso";
 
 function CartaoTrilha({ trilha, concluidas }: { trilha: Trilha; concluidas: string[] }) {
@@ -46,6 +54,54 @@ function CartaoTrilha({ trilha, concluidas }: { trilha: Trilha; concluidas: stri
   );
 }
 
+const MAPA = [
+  { id: "cardapio", icone: "☕", nome: "Balcão" },
+  { id: "acucareiro", icone: "🧊", nome: "Açucareiro" },
+  { id: "mesa", icone: "🍽️", nome: "Mesa posta" },
+  { id: "cozinha", icone: "👨‍🍳", nome: "Cozinha" },
+  { id: "profissoes", icone: "🥐", nome: "Padaria" },
+  { id: "para-viagem", icone: "🛍️", nome: "Para viagem" },
+  { id: "salao", icone: "🪑", nome: "Salão" },
+];
+
+const SALAO = [
+  {
+    icone: "🧑‍🤝‍🧑",
+    nome: "Mural da galera",
+    texto: "Quem já entrou na comunidade.",
+    url: `${ONBOARDING_URL}/mural`,
+  },
+  {
+    icone: "🚀",
+    nome: "Missões",
+    texto: "Histórias pequenas para programar de verdade.",
+    url: `${ONBOARDING_URL}/missoes`,
+  },
+  {
+    icone: "🧭",
+    nome: "Minha jornada",
+    texto: "Onde você está e o próximo passo.",
+    url: `${ONBOARDING_URL}/jornada`,
+  },
+];
+
+function EmBreve({ itens }: { itens: { icone: string; nome: string; item: string }[] }) {
+  return (
+    <ul className="em-breve" aria-label="Trilhas que estão chegando">
+      {itens.map((i) => (
+        <li key={i.nome}>
+          <span aria-hidden="true">{i.icone}</span>
+          <span>
+            <b>{i.nome}</b>
+            <small>{i.item}</small>
+          </span>
+          <em>em breve</em>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 const grupoDe = (id: Trilha["grupo"]) => GRUPOS.find((g) => g.id === id)!;
 
 function GrupoDoCardapio({
@@ -55,6 +111,8 @@ function GrupoDoCardapio({
   grupo: (typeof GRUPOS)[number];
   concluidas: string[];
 }) {
+  const trilhas = TRILHAS.filter((t) => t.grupo === grupo.id);
+  if (trilhas.length === 0) return null;
   return (
     <div className="cardapio-grupo">
       <p className="cardapio-pasta">
@@ -62,7 +120,7 @@ function GrupoDoCardapio({
         <small>{grupo.texto}</small>
       </p>
       <div className="cardapio-grade">
-        {TRILHAS.filter((t) => t.grupo === grupo.id).map((t) => (
+        {trilhas.map((t) => (
           <CartaoTrilha key={t.id} trilha={t} concluidas={concluidas} />
         ))}
       </div>
@@ -123,34 +181,75 @@ export function Inicio() {
 
       <HoraDeRevisar />
 
-      <section className="cardapio" id="cardapio">
+      <section className="cardapio secao-cafe" id="cardapio">
         <div className="secao-topo">
-          <p className="kicker">CARDÁPIO</p>
+          <p className="kicker">☕ BALCÃO DE BEBIDAS</p>
           <h2>O que vai ser hoje?</h2>
-          <p>Organizado igualzinho às pastas do repositório estudos no GitHub.</p>
+          <p>A base, para tomar todo dia. Quem está começando pede o café coado.</p>
         </div>
+        <ul className="mapa-cafe" aria-label="Partes da cafeteria">
+          {MAPA.map((m) => (
+            <li key={m.id}>
+              <a href={`#${m.id}`}>
+                <span aria-hidden="true">{m.icone}</span> {m.nome}
+              </a>
+            </li>
+          ))}
+        </ul>
         <div className="cardapio-base">
           {GRUPOS.filter((g) => g.id === "fundamentos" || g.id === "disciplinas").map((g) => (
             <GrupoDoCardapio key={g.id} grupo={g} concluidas={concluidas} />
           ))}
         </div>
         <GrupoDoCardapio grupo={grupoDe("linguagens")} concluidas={concluidas} />
-        <GrupoDoCardapio grupo={grupoDe("paradigmas")} concluidas={concluidas} />
       </section>
 
-      <section className="cardapio mesa" id="mesa">
+      <section className="cardapio secao-cafe" id="acucareiro">
+        <div className="secao-topo">
+          <p className="kicker">🧊 AÇUCAREIRO</p>
+          <h2>Para adoçar qualquer bebida</h2>
+          <p>Jeitos de organizar o código que valem em qualquer linguagem.</p>
+        </div>
+        <GrupoDoCardapio grupo={grupoDe("paradigmas")} concluidas={concluidas} />
+        <EmBreve
+          itens={[{ icone: "🍯", nome: "Programação funcional", item: "Mel: puro, não muda" }]}
+        />
+      </section>
+
+      <section className="cardapio mesa secao-cafe" id="mesa">
         <div className="secao-topo">
           <p className="kicker">🍽️ A MESA POSTA</p>
           <h2>Antes de servir, os talheres</h2>
           <p>
-            Toda profissão da padaria usa Git e GitHub todos os dias. Dá para aprender a qualquer
-            momento, mas antes de entrar numa equipe, a mesa precisa estar posta.
+            As ferramentas de todo dia. Toda profissão da padaria usa essas, então vale aprender
+            antes de entrar numa equipe.
           </p>
         </div>
         <GrupoDoCardapio grupo={grupoDe("ferramentas")} concluidas={concluidas} />
+        <EmBreve
+          itens={[
+            { icone: "🔪", nome: "Terminal e Linux", item: "A faca do chef" },
+            { icone: "🥄", nome: "Testes e depuração", item: "A colher de prova" },
+          ]}
+        />
       </section>
 
-      <section className="cardapio padaria" id="profissoes">
+      <section className="cardapio secao-cafe" id="cozinha">
+        <div className="secao-topo">
+          <p className="kicker">👨‍🍳 A COZINHA</p>
+          <h2>Os bastidores</h2>
+          <p>Como o sistema funciona por dentro. Ninguém vê, mas sem isso o restaurante fecha.</p>
+        </div>
+        <GrupoDoCardapio grupo={grupoDe("cozinha")} concluidas={concluidas} />
+        <EmBreve
+          itens={[
+            { icone: "🧑‍🍳", nome: "Arquitetura de software", item: "A brigada de cozinha" },
+            { icone: "🍽️", nome: "Design System", item: "A louça e o uniforme" },
+          ]}
+        />
+      </section>
+
+      <section className="cardapio padaria secao-cafe" id="profissoes">
         <div className="secao-topo">
           <p className="kicker">🥐 PADARIA DAS PROFISSÕES</p>
           <h2>E pra acompanhar?</h2>
@@ -161,6 +260,42 @@ export function Inicio() {
           </p>
         </div>
         <GrupoDoCardapio grupo={grupoDe("profissoes")} concluidas={concluidas} />
+      </section>
+
+      <section className="cardapio secao-cafe" id="para-viagem">
+        <div className="secao-topo">
+          <p className="kicker">🛍️ PARA VIAGEM</p>
+          <h2>O que você leva daqui</h2>
+          <p>
+            Antes de sair da cafeteria para o mercado de trabalho, retire o seu pedido no balcão.
+          </p>
+        </div>
+        <EmBreve
+          itens={[
+            { icone: "🇺🇸", nome: "Inglês para devs", item: "O cardápio bilíngue" },
+            { icone: "🪟", nome: "LinkedIn e portfólio", item: "A vitrine da fachada" },
+            { icone: "🧾", nome: "Entrevistas", item: "O teste do cozinheiro novo" },
+          ]}
+        />
+      </section>
+
+      <section className="cardapio secao-cafe" id="salao">
+        <div className="secao-topo">
+          <p className="kicker">🪑 O SALÃO</p>
+          <h2>A mesa compartilhada</h2>
+          <p>
+            Onde a comunidade se encontra: estudar junto, mostrar o que fez e construir em equipe.
+          </p>
+        </div>
+        <div className="salao-links">
+          {SALAO.map((l) => (
+            <a key={l.url} href={l.url}>
+              <span aria-hidden="true">{l.icone}</span>
+              <b>{l.nome}</b>
+              <small>{l.texto}</small>
+            </a>
+          ))}
+        </div>
       </section>
 
       <section className="como-estudar">

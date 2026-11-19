@@ -1,0 +1,289 @@
+<Aquecimento perguntas={[
+  { p: "Qual a exigência da busca binária?", r: "A lista precisa estar ordenada." },
+  { p: "Qual o Big O da busca binária e por quê?", r: "O(log n): cada passo descarta metade dos itens." },
+  { p: "Quando a busca linear é a melhor escolha?", r: "Quando a lista está desordenada e você vai procurar poucas vezes." },
+]} />
+
+Ordenar é colocar em ordem: comandas por número, produtos por preço, alunos por nota. Parece simples, mas existem dezenas de jeitos de ordenar, e a diferença entre eles é enorme. Nesta aula você vai implementar um jeito simples, entender a ideia de um jeito esperto e aprender a usar o que a linguagem já oferece.
+
+<Chute pergunta="Você tem 10 cartas de baralho bagunçadas na mão. Como você as coloca em ordem?">
+
+A maioria das pessoas faz algo parecido com isto: procura a menor carta e coloca na ponta, depois a menor das que sobraram, e assim por diante. Ou vai pegando uma carta por vez e encaixando no lugar certo entre as que já estão ordenadas. Esses dois jeitos têm nome: **Selection Sort** e **Insertion Sort**. Você já sabe ordenar; agora vai dar nome e medir.
+
+</Chute>
+
+## Selection Sort: escolhe o menor e coloca no lugar
+
+A ideia: encontre o **menor** item e troque com o da primeira posição. Depois, encontre o menor do **resto** e troque com a segunda posição. Repita.
+
+<Nota tipo="analogia" titulo="Pensa assim: arrumar as xícaras por tamanho">
+
+Na prateleira, você procura a menor xícara e coloca na ponta esquerda. Depois procura a menor entre as que sobraram e coloca do lado. No fim, todas estão em ordem. Simples, mas você passou o olho na prateleira inteira várias vezes.
+
+</Nota>
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+def selection_sort(lista):
+    lista = lista[:]
+    n = len(lista)
+    for i in range(n):
+        menor = i
+        for j in range(i + 1, n):
+            if lista[j] < lista[menor]:
+                menor = j
+        lista[i], lista[menor] = lista[menor], lista[i]
+        print(f"passo {i + 1}: {lista}")
+    return lista
+
+
+print(selection_sort([42, 7, 19, 3, 88]))
+```
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.Arrays;
+
+public class Main {
+    static int[] selectionSort(int[] original) {
+        int[] lista = original.clone();
+        int n = lista.length;
+        for (int i = 0; i < n; i++) {
+            int menor = i;
+            for (int j = i + 1; j < n; j++) {
+                if (lista[j] < lista[menor]) menor = j;
+            }
+            int temp = lista[i];
+            lista[i] = lista[menor];
+            lista[menor] = temp;
+            System.out.println("passo " + (i + 1) + ": " + Arrays.toString(lista));
+        }
+        return lista;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(selectionSort(new int[] {42, 7, 19, 3, 88})));
+    }
+}
+```
+
+</Aba>
+</Abas>
+
+```saida
+passo 1: [3, 7, 19, 42, 88]
+passo 2: [3, 7, 19, 42, 88]
+passo 3: [3, 7, 19, 42, 88]
+passo 4: [3, 7, 19, 42, 88]
+passo 5: [3, 7, 19, 42, 88]
+[3, 7, 19, 42, 88]
+```
+
+Repare: nessa lista, depois do passo 1 já estava tudo em ordem, mas o algoritmo continuou procurando o menor em cada pedaço. Ele **não sabe** que já terminou.
+
+<Nota tipo="dica" titulo="Por que lista[:] e clone()?">
+
+Para não bagunçar a lista original de quem chamou a função. Ordenamos uma **cópia**. É um cuidado bom de ter: funções que mudam o que receberam surpreendem quem usa.
+
+</Nota>
+
+### Quanto custa?
+
+Para cada posição i, o laço de dentro olha todos os itens que sobraram: n − 1, depois n − 2, ... até 1. A soma dá cerca de n²/2 comparações. Big O: **O(n²)**.
+
+Com 10 mil itens, são uns 50 milhões de comparações. Com 1 milhão, meio trilhão. Não serve para dados grandes.
+
+## A ideia esperta: dividir para conquistar
+
+Os algoritmos rápidos usam uma estratégia diferente. O mais famoso para entender é o **Merge Sort**:
+
+<Passos itens={[
+  { icone: "✂️", titulo: "Dividir", texto: "corta a lista ao meio, e cada metade ao meio, até sobrar 1 item" },
+  { icone: "✅", titulo: "Trivial", texto: "uma lista de 1 item já está ordenada" },
+  { icone: "🔗", titulo: "Intercalar", texto: "junta duas listas ordenadas, pegando sempre o menor da frente" },
+]} />
+
+```texto
+[42, 7, 19, 3]
+   /        \
+[42, 7]    [19, 3]
+ /   \      /   \
+[42] [7]  [19]  [3]       ← listas de 1 item: já ordenadas
+ \   /      \   /
+[7, 42]    [3, 19]        ← intercala pegando o menor da frente
+    \        /
+  [3, 7, 19, 42]
+```
+
+<Nota tipo="analogia" titulo="Juntar duas filas ordenadas">
+
+Duas filas de clientes, cada uma já em ordem de chegada. Para formar uma fila única, você só olha **a pessoa da frente** de cada fila e chama a que chegou primeiro. Nunca precisa olhar o meio das filas. Isso é o "intercalar", e é rápido.
+
+</Nota>
+
+São cerca de log₂ n "andares" de divisão, e em cada andar você passa por todos os n itens para intercalar. Resultado: **O(n log n)**. Com 1 milhão de itens, uns 20 milhões de passos, contra meio trilhão do Selection Sort.
+
+| n | Selection Sort (n²/2) | Merge Sort (n log n) |
+| --- | --- | --- |
+| 1.000 | 500.000 | ~10.000 |
+| 1.000.000 | 500.000.000.000 | ~20.000.000 |
+
+## No dia a dia: use o que a linguagem já tem
+
+Você raramente vai escrever um algoritmo de ordenação no trabalho. As linguagens já trazem um, muito bem otimizado, **O(n log n)**. Saber como funciona serve para escolher bem, entender o custo e ir bem em entrevistas.
+
+<Abas>
+<Aba rotulo="Python">
+
+```python
+precos = [9.0, 5.5, 12.0, 7.25]
+print(sorted(precos))
+
+pedidos = [
+    {"cliente": "Bia", "total": 32.0},
+    {"cliente": "Ana", "total": 18.5},
+    {"cliente": "Caio", "total": 32.0},
+]
+por_total = sorted(pedidos, key=lambda p: p["total"])
+for p in por_total:
+    print(p["cliente"], p["total"])
+```
+
+- `sorted()` devolve uma **lista nova**; `lista.sort()` ordena a própria lista. Para a ordem decrescente, use `sorted(precos, reverse=True)`.
+- `key=` diz **por qual valor** ordenar. `lambda p: p["total"]` é uma função curtinha que recebe um pedido e devolve o total.
+
+</Aba>
+<Aba rotulo="Java">
+
+```java
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
+public class Main {
+    record Pedido(String cliente, double total) {}
+
+    public static void main(String[] args) {
+        double[] precos = {9.0, 5.5, 12.0, 7.25};
+        Arrays.sort(precos);
+        System.out.println(Arrays.toString(precos));
+
+        List<Pedido> pedidos = new ArrayList<>(List.of(
+            new Pedido("Bia", 32.0),
+            new Pedido("Ana", 18.5),
+            new Pedido("Caio", 32.0)
+        ));
+        pedidos.sort(Comparator.comparingDouble(Pedido::total));
+        for (Pedido p : pedidos) {
+            System.out.println(p.cliente() + " " + p.total());
+        }
+    }
+}
+```
+
+- `Arrays.sort` ordena arrays; `lista.sort(...)` ordena listas.
+- `Comparator.comparingDouble(Pedido::total)` diz **por qual valor** ordenar.
+
+</Aba>
+</Abas>
+
+```saida
+[5.5, 7.25, 9.0, 12.0]
+Ana 18.5
+Bia 32.0
+Caio 32.0
+```
+
+<Nota tipo="curiosidade" titulo="Estabilidade: quem empata mantém a ordem">
+
+Bia e Caio têm o mesmo total. Repare que a Bia continuou antes do Caio, como estava na lista original. Ordenações que mantêm a ordem de quem empata se chamam **estáveis**. As do Python e as de listas de objetos em Java são estáveis, e isso permite ordenar por um critério e depois por outro sem bagunçar o primeiro.
+
+</Nota>
+
+<Explique pergunta="Se a linguagem já tem uma ordenação pronta, por que estudar Selection Sort e Merge Sort?">
+
+Porque entender como os algoritmos funcionam ensina a pensar em custo: por que dois laços aninhados ficam lentos, por que dividir o problema ao meio acelera tanto. Isso ajuda a escolher a estrutura e o algoritmo certos em outros problemas, a perceber quando um código (seu ou da IA) vai travar com muitos dados, e é exatamente o tipo de raciocínio que as entrevistas técnicas avaliam.
+
+</Explique>
+
+## Erros comuns
+
+- **Ordenar dentro de um laço** (ordenar a lista a cada item novo): vira O(n² log n). Ordene uma vez no fim.
+- **Confundir `sorted()` com `.sort()`** em Python: `.sort()` devolve `None`, então `lista = lista.sort()` apaga a sua lista.
+- **Comparar textos com números**: em Python, `sorted(["10", "9", "100"])` dá `['10', '100', '9']`, porque compara letra por letra. Converta para número antes.
+
+<Tarefa titulo="Insertion Sort, o das cartas">
+
+Implemente o **Insertion Sort**: percorra a lista da esquerda para a direita e, para cada item, empurre-o para a esquerda enquanto o vizinho da esquerda for maior. Teste com `[42, 7, 19, 3, 88]` e mostre a lista depois de cada item encaixado.
+
+Depois responda: qual o Big O no pior caso? E se a lista **já estiver ordenada**, quantas comparações ele faz?
+
+<Dica>
+
+Use um `while` dentro do `for`: enquanto `j > 0` e `lista[j - 1] > lista[j]`, troque os dois e faça `j -= 1`.
+
+</Dica>
+
+<Resposta>
+
+```python
+def insertion_sort(lista):
+    lista = lista[:]
+    for i in range(1, len(lista)):
+        j = i
+        while j > 0 and lista[j - 1] > lista[j]:
+            lista[j - 1], lista[j] = lista[j], lista[j - 1]
+            j -= 1
+        print(f"encaixou {lista[j]}: {lista}")
+    return lista
+
+
+insertion_sort([42, 7, 19, 3, 88])
+```
+
+```saida
+encaixou 7: [7, 42, 19, 3, 88]
+encaixou 19: [7, 19, 42, 3, 88]
+encaixou 3: [3, 7, 19, 42, 88]
+encaixou 88: [3, 7, 19, 42, 88]
+```
+
+No pior caso (lista ao contrário) é **O(n²)**. Mas com a lista **já ordenada**, cada item faz só uma comparação e para: n − 1 comparações, **O(n)**. Por isso o Insertion Sort é ótimo para listas pequenas ou quase ordenadas.
+
+</Resposta>
+
+</Tarefa>
+
+<Quiz
+  pergunta="Qual o Big O do Selection Sort?"
+  opcoes={["O(n)", "O(n log n)", "O(n²)"]}
+  correta={2}
+  explicacao="Para cada posição ele percorre o resto da lista: cerca de n²/2 comparações."
+/>
+
+<Quiz
+  pergunta="Em Python, o que acontece em lista = lista.sort()?"
+  opcoes={["A lista fica ordenada", "A variável lista vira None", "Dá erro de sintaxe"]}
+  correta={1}
+  explicacao=".sort() ordena a lista no lugar e devolve None. Use só lista.sort(), ou nova = sorted(lista)."
+/>
+
+<Cartoes itens={[
+  { frente: "Ideia do Selection Sort", verso: "Escolhe o menor do que sobrou e coloca na próxima posição. O(n²)." },
+  { frente: "Ideia do Merge Sort", verso: "Divide ao meio até sobrar 1 item e intercala as metades ordenadas. O(n log n)." },
+  { frente: "Big O das ordenações prontas das linguagens", verso: "O(n log n)." },
+  { frente: "O que é uma ordenação estável?", verso: "Quem empata mantém a ordem original entre si." },
+  { frente: "sorted() × .sort() em Python", verso: "sorted() devolve uma lista nova; .sort() ordena a própria lista e devolve None." },
+]} />
+
+## Resumindo
+
+- **Selection Sort** e **Insertion Sort** são simples e O(n²): bons para entender e para listas pequenas.
+- **Dividir para conquistar** (Merge Sort) chega a O(n log n).
+- No trabalho, use a ordenação da linguagem, com `key=` ou `Comparator`.
+- Ordene uma vez, no lugar certo, e cuidado com textos que parecem números.
