@@ -1,4 +1,9 @@
 {
+  "github": "raynaracabral",
   "nome": "Raynara",
-  "area": "Desenvolvimento Web"
+  "avatar": "/avatares/feminino/01.svg",
+  "periodo": "1º",
+  "areas": ["Front-end"],
+  "frase": "Um café e um commit de cada vez ☕",
+  "entrouEm": "2026-11-25"
 }
